@@ -256,6 +256,29 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .aim-res{display:flex;gap:26px;justify-content:center;margin-bottom:18px}
 .aim-res div{text-align:center}.aim-res b{display:block;font-size:30px;letter-spacing:-.03em}.aim-res span{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 
+/* goals */
+.goals{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.goal{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;border:1px dashed var(--line-2);font-size:15px;font-weight:500}
+.goal i{flex:none;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line-2);display:grid;place-items:center;font-style:normal;font-size:13px}
+.goal.done{border-style:solid;border-color:var(--fg)}
+.goal.done i{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.goal small{display:block;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px}
+
+/* leaderboard */
+.aim-sub{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.aim-sub input{width:170px;padding:11px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:13px;outline:0}
+.aim-sub input:focus{border-color:var(--fg)}
+.lb{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;counter-reset:r}
+.lb li{display:grid;grid-template-columns:28px 1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.lb li .rk{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lb li .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb li .ac{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lb li b{font-weight:700;letter-spacing:-.02em}
+.lb li.host{grid-column:1/-1;border:1px solid var(--fg);border-radius:10px;padding:8px 12px}
+.lb li.host .nm::after{content:" · host";font-family:var(--mono);font-size:10px;color:var(--muted)}
+.lb li.me .nm{text-decoration:underline;text-underline-offset:3px}
+.lb li.lb-empty{display:block;grid-column:1/-1;font-family:var(--mono);font-size:12px;color:var(--muted);border:0}
+
 /* contact */
 .ccard{display:flex;flex-direction:column;gap:12px}
 .ccard .who{font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -343,6 +366,8 @@ html.xh .xhair.on{opacity:1}
   .music .lbl{display:none}.music{padding:8px}
   .aim{height:300px}
   .poll-opts{grid-template-columns:1fr}
+  .goals{grid-template-columns:1fr 1fr}
+  .lb{grid-template-columns:1fr}
   #kf{top:66px;right:8px}.kill{font-size:11px}
   .langs .row{grid-template-columns:80px 1fr 50px}
 }
@@ -456,6 +481,10 @@ html.xh .xhair.on{opacity:1}
         <div class="poll-n" id="pollN"></div>
       </div>
     </div>
+    <div class="card mt">
+      <h4 class="ch"><b data-i18n="goals.title">goals</b><span data-i18n="goals.sub">the roadmap</span></h4>
+      <div class="goals" id="goals"></div>
+    </div>
   </section>
 
   <!-- ROUND 2 -->
@@ -549,10 +578,18 @@ html.xh .xhair.on{opacity:1}
           <h4 data-i18n="a.h">30 second aim check</h4>
           <p data-i18n="a.p">Hit as many targets as you can. Misses lower your accuracy. Your best is saved in your browser.</p>
           <div class="aim-res" id="aimRes" style="display:none"></div>
+          <form class="aim-sub" id="aimSub" style="display:none" autocomplete="off">
+            <input id="aimName" maxlength="16" placeholder="your name" aria-label="name">
+            <button class="btn" type="submit" data-i18n="a.submit">submit</button>
+          </form>
           <button class="btn primary" id="aimStart">start</button>
           <p style="margin:14px 0 0;font-family:var(--mono);font-size:11px" id="aimBest"></p>
         </div>
       </div>
+    </div>
+    <div class="card mt">
+      <h4 class="ch"><b data-i18n="lb.title">leaderboard</b><span data-i18n="lb.sub">top 10 · 30s</span></h4>
+      <ol class="lb" id="lb"><li class="lb-empty" data-i18n="lb.empty">no scores yet. be the first.</li></ol>
     </div>
   </section>
 
@@ -610,8 +647,14 @@ const CFG = {
   twitch: "kurexus",
   youtubeChannelId: "UC8g56Ya8gibDCxCJYtxpNKA",
   faceitFallback: { elo: 1342, level: 6 },          // falls live-Daten nicht laden
-  crosshairCode: null,                               // z.B. "CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
-  crosshair: { size: 2, gap: -2, thickness: 1, dot: false, outline: true, color: "#ffffff" },
+  crosshairCode: "CSGO-HHKf7-FhiKk-Ur7nE-jiZkt-Ey4tJ",
+  crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00ffff" },
+  goals: [                                           // done: true = abgehakt
+    { en: "FACEIT level 10", de: "FACEIT Level 10", auto: "faceit10" },
+    { en: "Twitch Partner", de: "Twitch Partner" },
+    { en: "visit China", de: "China besuchen" },
+    { en: "do what I love", de: "das machen, was ich liebe" }
+  ],
   kurAimBest: null                                   // dein Aim-Trainer Rekord, z.B. 47
 };
 
@@ -639,7 +682,9 @@ const T = { en:{}, de:{
   "r5.label":"runde fünf — kontakt","r5.title":"sag <em>hi</em>",
   "c.server.k":"discord server · community","c.server.p":"Komm auf den Server für Stream-Pings, 5-Stacks, Clips und Vibes. Offen für alle.",
   "c.join":"server beitreten","c.dm.k":"discord dm · nur ich","c.dm.p":"Für Collabs, Raids, Teams oder Business — adde mich und schreib eine DM.","c.copy":"tag kopieren",
-  "visitor":"besucher","hint":"drück ^ für die konsole"
+  "visitor":"besucher","hint":"drück ^ für die konsole",
+  "goals.title":"ziele","goals.sub":"die roadmap","a.submit":"eintragen",
+  "lb.title":"bestenliste","lb.sub":"top 10 · 30s","lb.empty":"noch keine scores. sei der erste."
 }};
 let LANG = "en";
 document.querySelectorAll("[data-i18n]").forEach(el=>T.en[el.dataset.i18n] = el.innerHTML);
@@ -651,7 +696,8 @@ function applyLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
   $("aimStart").textContent = aimPlayed ? L("again","nochmal") : "start";
-  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive();
+  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb();
+  $("aimName").placeholder = L("your name","dein name");
   store.set("lang", l);
 }
 
@@ -768,15 +814,14 @@ $("copyXhair").onclick = ()=>CFG.crosshairCode && copy(CFG.crosshairCode, L("cro
 
 /* ---------- crosshair preview ---------- */
 (function(){
-  const c = CFG.crosshair, s = 4, cx = 40;
-  const len = c.size*s*2, gap = (c.gap+5)*s*.6, th = Math.max(1,c.thickness*s*.9);
+  const c = CFG.crosshair, k = 2.4, cx = 40;
+  const len = c.size*2*k, gap = Math.max(0, c.gap+4)*k*.6, th = Math.max(1, c.thickness*k*.8);
   const bars = [[cx-th/2, cx-gap-len, th, len],[cx-th/2, cx+gap, th, len],[cx-gap-len, cx-th/2, len, th],[cx+gap, cx-th/2, len, th]];
   let h = "";
   bars.forEach(b=>{ if(c.outline) h += `<rect x="${b[0]-1}" y="${b[1]-1}" width="${b[2]+2}" height="${b[3]+2}" fill="#000"/>`; h += `<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" fill="${c.color}"/>`; });
   if(c.dot) h += `<rect x="${cx-th/2}" y="${cx-th/2}" width="${th}" height="${th}" fill="${c.color}"/>`;
   $("xsvg").innerHTML = h;
-  if(CFG.crosshairCode){ $("xcode").textContent = CFG.crosshairCode; const b = $("copyXhair"); b.disabled = false; b.dataset.i18n = "copy"; b.textContent = "copy"; }
-})();
+  if(CFG.crosshairCode){ $("xcode").textContent = CFG.crosshairCode; const b = $("copyXhair"); b.disabled = false; b.dataset.i18n = "copy"; b.textContent = "copy"; }})();
 
 /* ---------- today ---------- */
 try{
@@ -802,7 +847,42 @@ function renderFaceit(d){
   if(d.krunkerLevel) $("krunkerLvl").textContent = "FACEIT lvl " + d.krunkerLevel;
   $("fStats").style.opacity = d.matches ? 1 : .5;
 }
-api("/api/faceit").then(d=>{ if(d && d.level){ lastFaceit = d; renderFaceit(d); buildTicker(); } }).catch(()=>{});
+api("/api/faceit").then(d=>{ if(d && d.level){ lastFaceit = d; renderFaceit(d); buildTicker(); renderGoals(); } }).catch(()=>{});
+
+/* ---------- goals ---------- */
+function renderGoals(){
+  $("goals").innerHTML = CFG.goals.map(g=>{
+    const f10 = g.auto === "faceit10", done = g.done || (f10 && lastFaceit.level >= 10);
+    const sub = f10 && !done ? `<small>lvl ${lastFaceit.level} · ${L(`${fmt(Math.max(0,2001-lastFaceit.elo))} elo to go`,`noch ${fmt(Math.max(0,2001-lastFaceit.elo))} elo`)}</small>` : "";
+    return `<div class="goal${done?" done":""}"><i>${done?"✓":""}</i><span>${esc(g[LANG]||g.en)}${sub}</span></div>`;
+  }).join("");
+}
+
+/* ---------- aim leaderboard ---------- */
+let lbData = [], lastScore = null;
+function renderLb(){
+  const me = (store.get("aimName")||"").toLowerCase();
+  const rows = [];
+  if(CFG.kurAimBest) rows.push(`<li class="host"><span class="rk">★</span><span class="nm">kurexus</span><span class="ac"></span><b>${CFG.kurAimBest}</b></li>`);
+  lbData.slice(0,10).forEach((r,i)=>rows.push(`<li class="${r.name.toLowerCase()===me?"me":""}"><span class="rk">#${i+1}</span><span class="nm">${esc(r.name)}</span><span class="ac">${r.acc}%</span><b>${r.score}</b></li>`));
+  if(!lbData.length) rows.push(`<li class="lb-empty">${t("lb.empty")}</li>`);
+  $("lb").innerHTML = rows.join("");
+}
+api("/api/aim").then(d=>{ lbData = d.top||[]; renderLb(); }).catch(()=>{});
+$("aimSub").onsubmit = e=>{
+  e.preventDefault();
+  const name = $("aimName").value.trim().slice(0,16);
+  if(name.length < 2 || !lastScore) return show(L("enter a name","gib einen namen ein"));
+  store.set("aimName", name);
+  $("aimSub").style.display = "none";
+  api("/api/aim",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name, score:lastScore.score, acc:lastScore.acc})})
+    .then(d=>{
+      if(d.error) return show(d.error === "reserved" ? L("that name is taken","der name ist vergeben") : L("couldn't save","konnte nicht speichern"));
+      lbData = d.top||[]; renderLb();
+      show(d.rank && d.rank <= 10 ? L(`you're #${d.rank}!`,`du bist #${d.rank}!`) : L("saved","gespeichert"));
+    })
+    .catch(()=>show(L("couldn't save","konnte nicht speichern")));
+};
 
 /* ---------- Twitch: avatar, followers, subs, live ---------- */
 txt(`https://decapi.me/twitch/avatar/${CFG.twitch}`).then(u=>{
@@ -856,8 +936,7 @@ function renderYt(v){
   $("ytBox").innerHTML = `<button class="yt" id="ytBtn"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><span class="play"><i></i></span><span class="ttl">${esc(v.title)}</span></button>`;
   $("ytBtn").onclick = ()=>{ $("ytBtn").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`; };
 }
-api("/api/youtube").then(v=>{ if(!v.id) throw 0; renderYt(v); })
-  .catch(()=>txt(`https://decapi.me/youtube/latest_video?id=${CFG.youtubeChannelId}&format={id}|{title}`).then(s=>{
+Promise.resolve().then(()=>txt(`https://decapi.me/youtube/latest_video?id=${CFG.youtubeChannelId}&format={id}|{title}`).then(s=>{
     const [id, ...rest] = s.split("|"); if(/^[\w-]{11}$/.test(id)) renderYt({id, title: rest.join("|")}); else throw 0;
   }))
   .catch(()=>{ $("ytBox").innerHTML = `<a class="empty" style="display:block" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener">youtube.com/@kurexus ↗</a>`; });
@@ -1007,7 +1086,7 @@ addEventListener("keydown", e=>{
   });
   function start(){
     size(); targets = []; fx = []; score = shots = hits = 0; react = [];
-    $("aScore").textContent = 0; ui.classList.add("hide"); $("aimHud").style.display = "flex";
+    $("aScore").textContent = 0; ui.classList.add("hide"); $("aimHud").style.display = "flex"; $("aimSub").style.display = "none";
     running = true; const n = performance.now(); tEnd = n + 30000; spawnAt = n + 300; requestAnimationFrame(loop);
   }
   function end(){
@@ -1018,6 +1097,8 @@ addEventListener("keydown", e=>{
     $("aimRes").innerHTML = `<div><b>${score}</b><span>score</span></div><div><b>${acc}%</b><span>accuracy</span></div><div><b>${avg}ms</b><span>${L("reaction","reaktion")}</span></div>`;
     $("aimStart").textContent = L("again","nochmal");
     renderBest(); ui.classList.remove("hide");
+    lastScore = {score, acc};
+    if(score > 0){ $("aimSub").style.display = "flex"; $("aimName").value = store.get("aimName") || ""; }
     if(CFG.kurAimBest && score > CFG.kurAimBest) kill(L("you","du"),"awp","kurexus",{hs:true,me:true});
   }
   $("aimStart").onclick = start;
