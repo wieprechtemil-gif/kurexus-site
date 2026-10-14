@@ -36,6 +36,9 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
 html.xh, html.xh *{cursor:none!important}
+html.xh .pip,html.xh .pip *,html.xh .yt,html.xh .yt *{cursor:auto!important}
+html.xh .pip-bar{cursor:grab!important}html.xh .pip.drag .pip-bar{cursor:grabbing!important}
+html.xh .pip-rz{cursor:nwse-resize!important}html.xh .pip-x{cursor:pointer!important}
 ::selection{background:var(--fg);color:var(--bg)}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit}
@@ -171,9 +174,12 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .recent i{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-style:normal;font-family:var(--mono);font-size:11px;font-weight:700;color:#0b0b0c}
 .recent i.w{background:var(--win)}.recent i.l{background:var(--loss)}
 .recent i.n{background:transparent;border:1px dashed var(--line-2);color:var(--dim)}
-.premier{display:inline-flex;align-items:center;gap:4px;padding:6px 14px 6px 10px;font-weight:700;font-size:26px;letter-spacing:-.02em;color:#fff;
-  background:linear-gradient(90deg,var(--pc1),var(--pc2));clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);font-style:italic}
-.premier small{font-size:15px;opacity:.9}
+.premier{position:relative;display:inline-block;padding:7px 20px 7px 34px;transform:skewX(-16deg);border-radius:3px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--pc1) 62%,#0a0a0c),color-mix(in srgb,var(--pc1) 30%,#0a0a0c));
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--pc2) 45%,transparent),0 8px 24px -10px var(--pc1)}
+.premier::before{content:"";position:absolute;left:9px;top:5px;bottom:5px;width:13px;background:linear-gradient(90deg,var(--pc2) 0 4px,transparent 4px 8px,var(--pc2) 8px 12px)}
+.premier span{display:inline-block;transform:skewX(16deg);font-weight:700;font-style:italic;font-size:27px;letter-spacing:-.01em;line-height:1;color:var(--pc2);text-shadow:0 0 14px color-mix(in srgb,var(--pc2) 55%,transparent)}
+.premier small{font-size:17px}
 .fact .v{font-size:24px}
 .game h4{font-size:18px;letter-spacing:-.02em;margin-bottom:4px}
 .game p{font-family:var(--mono);font-size:12px;color:var(--muted)}
@@ -613,7 +619,7 @@ html.xh .xhair.on{opacity:1}
         <div class="lastlive" id="lastLive"></div>
       </div>
       <div class="card">
-        <h4 class="ch"><b data-i18n="yt.title">latest video</b><a class="mini" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener">YouTube ↗</a></h4>
+        <h4 class="ch"><b data-i18n="yt.title">featured video</b><a class="mini" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener">YouTube ↗</a></h4>
         <div id="ytBox"><div class="empty" data-i18n="loadingtxt">loading…</div></div>
       </div>
     </div>
@@ -706,7 +712,8 @@ const CFG = {
   faceitFallback: { elo: 1342, level: 6 },          // falls live-Daten nicht laden
   crosshairCode: "CSGO-HHKf7-FhiKk-Ur7nE-jiZkt-Ey4tJ",
   crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00ffff" },
-  premier: 22000,                                    // dein Premier-Rating
+  premier: 21199,                                    // dein Premier-Rating
+  featuredVideo: { id: "pm47XXnnRKA", title: "counter-krunk" },   // video in R4
   goals: [                                           // done: true = abgehakt
     { en: "FACEIT level 10", de: "FACEIT Level 10", auto: "faceit10" },
     { en: "Twitch Partner", de: "Twitch Partner" },
@@ -737,7 +744,7 @@ const T = { en:{}, de:{
   "copy":"kopieren",
   "r4.label":"runde vier — content","r4.title":"schau <em>live</em> vorbei","st.when":"wann",
   "st.desc":"Fast jeden Tag live, irgendwann in dem Zeitfenster. Meistens CS2, manchmal worauf ich Bock hab.",
-  "yt.title":"neuestes video","loadingtxt":"lädt…","clips.title":"top clips","clips.none":"clips laden… oder werden noch gekocht.",
+  "yt.title":"empfohlenes video","loadingtxt":"lädt…","clips.title":"top clips","clips.none":"clips laden… oder werden noch gekocht.",
   "r5.label":"runde fünf — warmup","r5.title":"schlag mein <em>aim</em>",
   "a.score":"score","a.h":"30 sekunden aim check","a.p":"Triff so viele Ziele wie möglich. Fehlschüsse senken deine Accuracy. Dein Rekord wird im Browser gespeichert.",
   "r6.label":"runde sechs — kontakt","r6.title":"sag <em>hi</em>",
@@ -952,7 +959,7 @@ $("copyXhair").onclick = ()=>CFG.crosshairCode && copy(CFG.crosshairCode, L("cro
   const [, c1, c2] = tiers.find(t=>r >= t[0]);
   const el = $("premier"); el.style.setProperty("--pc1", c1); el.style.setProperty("--pc2", c2);
   const str = fmt(r), cut = str.indexOf(",");
-  el.innerHTML = cut > 0 ? `${str.slice(0,cut)}<small>${str.slice(cut)}</small>` : str;
+  el.innerHTML = `<span>${cut > 0 ? `${str.slice(0,cut)}<small>${str.slice(cut)}</small>` : str}</span>`;
 })();
 
 /* ---------- today ---------- */
@@ -1097,10 +1104,7 @@ function renderYt(v){
   $("ytBox").innerHTML = `<button class="yt" id="ytBtn"><img src="https://i.ytimg.com/vi/${esc(v.id)}/hqdefault.jpg" alt=""><span class="play"><i></i></span><span class="ttl">${esc(v.title)}</span></button>`;
   $("ytBtn").onclick = ()=>{ $("ytBtn").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`; };
 }
-Promise.resolve().then(()=>txt(`https://decapi.me/youtube/latest_video?id=${CFG.youtubeChannelId}&format={id}|{title}`).then(s=>{
-    const [id, ...rest] = s.split("|"); if(/^[\w-]{11}$/.test(id)) renderYt({id, title: rest.join("|")}); else throw 0;
-  }))
-  .catch(()=>{ $("ytBox").innerHTML = `<a class="empty" style="display:block" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener">youtube.com/@kurexus ↗</a>`; });
+renderYt(CFG.featuredVideo);
 
 /* ---------- poll ---------- */
 function renderPoll(d){
@@ -1291,8 +1295,10 @@ const mouse = {x:-999,y:-999,sx:-999,sy:-999,in:false};
 if(FINE){
   document.documentElement.classList.add("xh");
   const xh = $("xhair");
-  addEventListener("mousemove", e=>{ mouse.x=e.clientX; mouse.y=e.clientY; mouse.in=true; xh.style.transform=`translate3d(${e.clientX}px,${e.clientY}px,0)`; xh.classList.add("on"); }, {passive:true});
+  addEventListener("pointermove", e=>{ if(e.pointerType !== "mouse") return; mouse.x=e.clientX; mouse.y=e.clientY; mouse.in=true; xh.style.transform=`translate3d(${e.clientX}px,${e.clientY}px,0)`; xh.classList.toggle("on", !e.target.closest(".pip,.yt")); }, {passive:true, capture:true});
   document.addEventListener("mouseleave", ()=>{ xh.classList.remove("on"); mouse.in=false; });
+  // when the mouse goes into an embedded player the page loses it → hide crosshair, show the normal cursor there
+  addEventListener("blur", ()=>xh.classList.remove("on"));
   addEventListener("mouseover", e=>{ xh.classList.toggle("wide", !!e.target.closest("a,button,.status.live,.avatar")); });
   addEventListener("mousedown", ()=>{ xh.classList.remove("hit"); void xh.offsetWidth; xh.classList.add("hit","shoot"); setTimeout(()=>xh.classList.remove("shoot"),90); setTimeout(()=>xh.classList.remove("hit"),140); });
 }
