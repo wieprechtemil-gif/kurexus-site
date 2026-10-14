@@ -576,7 +576,7 @@ html.is-live #liveFx{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,77,94,.35),in
 .buy-ft{margin-top:14px;text-align:center;font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--dim, var(--muted))}
 .knock{animation:knock .6s cubic-bezier(.2,.7,.3,1)}
 @keyframes knock{18%{translate:var(--kx) var(--ky)}100%{translate:0 0}}
-.scorch{position:absolute;width:260px;height:120px;margin:-60px 0 0 -130px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),rgba(0,0,0,.28) 60%,transparent);animation:scorch 9s forwards;pointer-events:none}
+.scorch{position:absolute;width:280px;height:280px;margin:-140px 0 0 -140px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),rgba(0,0,0,.28) 60%,transparent);animation:scorch 9s forwards;pointer-events:none}
 .scorch.he{width:150px;height:150px;margin:-75px 0 0 -75px}
 [data-theme="light"] .scorch{background:radial-gradient(closest-side,rgba(40,30,20,.35),rgba(40,30,20,.15) 60%,transparent)}
 @keyframes scorch{0%{opacity:0}8%{opacity:1}75%{opacity:1}100%{opacity:0}}
@@ -2314,7 +2314,7 @@ if(!REDUCED){
 // is a page point inside a smoke that's still thick?
 const inSmoke = (x, y)=>{ const now = performance.now(); return SMOKES.some(k=>{ const age = (now-k.t)/1000; return age < 9 && Math.hypot(x-k.x, y-k.y) < k.r*.9; }); };
 const FIRES = [], BLASTS = [], CASINGS = [], FLAMES = [];
-const inFire = (x, y)=>{ const now = performance.now(); return FIRES.some(f=>{ const age = (now-f.t)/1000; return age < 7 && Math.hypot((x-f.x), (y-f.y)/.5) < f.r; }); };
+const inFire = (x, y)=>{ const now = performance.now(); return FIRES.some(f=>{ const age = (now-f.t)/1000; return age < 7 && Math.hypot(x-f.x, y-f.y) < f.r; }); };
 const drawSmokes = (function(){
   const cv = $("smokeFx"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio||1,2);
   let W = 0, H = 0, had = false, last = performance.now(), lastTink = 0;
@@ -2324,33 +2324,42 @@ const drawSmokes = (function(){
     const now = performance.now(), dt = Math.min(.05, (now - last)/1000); last = now;
     if(!SMOKES.length && !FIRES.length && !BLASTS.length && !CASINGS.length && !FLAMES.length){ if(had){ ctx.clearRect(0,0,W,H); had = false; } return; }
     had = true; ctx.clearRect(0,0,W,H);
-    // ---- molotov fires (page coords): flat burning ellipse + licking flames + embers
+    // ---- molotov fires, seen from above: an irregular burning patch of flickering flame cells + sparks
+    ctx.globalCompositeOperation = "lighter";
     for(let i=FIRES.length-1;i>=0;i--){
       const f = FIRES[i], age = (now - f.t)/1000;
       if(age > 7.6){ FIRES.splice(i,1); continue; }
-      f.r = 115*(1-Math.pow(1-Math.min(1, age/.8),3));
-      const x = f.x - scrollX, y = f.y - scrollY, fade = age > 6.4 ? 1-(age-6.4)/1.2 : 1;
-      if(y < -200 || y > H+200) continue;
-      ctx.globalCompositeOperation = "lighter";
-      const g = ctx.createRadialGradient(x,y,0,x,y,f.r*1.25); g.addColorStop(0,`rgba(255,140,40,${.28*fade})`); g.addColorStop(.6,`rgba(255,70,20,${.12*fade})`); g.addColorStop(1,"rgba(255,40,0,0)");
-      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x,y,f.r*1.25,f.r*.62,0,0,7); ctx.fill();
-      if(age < 6.6) for(let n=0;n<Math.round(5*fade+1);n++){
-        const a = Math.random()*6.283, d = Math.sqrt(Math.random())*f.r;
-        FLAMES.push({ x:f.x + Math.cos(a)*d, y:f.y + Math.sin(a)*d*.5, vy:-(40+Math.random()*70), vx:(Math.random()-.5)*14, life:.45+Math.random()*.5, t:now, s:8+Math.random()*14, ember:Math.random() < .06 });
+      if(!f.cells){
+        f.h = [Math.random()*6, Math.random()*6, Math.random()*6];
+        f.cells = Array.from({length:120}, ()=>{ const a = Math.random()*6.283, d = Math.sqrt(Math.random()); return { a, d, s:13 + Math.random()*18, ph:Math.random()*6.3, sp:6 + Math.random()*10 }; });
       }
-      ctx.globalCompositeOperation = "source-over";
+      const grow = 1-Math.pow(1-Math.min(1, age/.9),3), fade = age > 6.4 ? 1-(age-6.4)/1.2 : 1;
+      f.r = 120*grow;
+      const x = f.x - scrollX, y = f.y - scrollY;
+      if(y < -200 || y > H+200) continue;
+      const edge = a=>1 + .16*Math.sin(3*a + f.h[0]) + .1*Math.sin(5*a + f.h[1]) + .06*Math.sin(8*a + f.h[2] + tt*.6);
+      // ground glow under the fire
+      const g = ctx.createRadialGradient(x,y,0,x,y,f.r*1.35); g.addColorStop(0,`rgba(255,120,30,${.32*fade})`); g.addColorStop(.7,`rgba(255,60,10,${.12*fade})`); g.addColorStop(1,"rgba(255,40,0,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,f.r*1.35,0,7); ctx.fill();
+      for(const c of f.cells){
+        const rr = c.d * f.r * edge(c.a); if(rr > f.r*1.2) continue;
+        const cx = x + Math.cos(c.a)*rr, cy = y + Math.sin(c.a)*rr;
+        const fl = .55 + .45*Math.sin(tt*c.sp + c.ph) * Math.sin(tt*c.sp*.37 + c.ph*2);
+        const inner = 1 - c.d, sz = c.s*(.7 + fl*.5)*(.6 + grow*.4);
+        const gg = ctx.createRadialGradient(cx,cy,0,cx,cy,sz);
+        gg.addColorStop(0, `rgba(255,${200 + inner*55|0},${80 + inner*120|0},${(.5 + fl*.35)*fade})`);
+        gg.addColorStop(.5,`rgba(255,${110 + inner*60|0},20,${.28*fade})`); gg.addColorStop(1,"rgba(255,40,0,0)");
+        ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx,cy,sz,0,7); ctx.fill();
+      }
+      // sparks drift outwards across the ground
+      if(age < 6.6 && Math.random() < .5){ const a = Math.random()*6.283, d = f.r*Math.random()*.8, v = 30 + Math.random()*60; FLAMES.push({ x:f.x + Math.cos(a)*d, y:f.y + Math.sin(a)*d, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:.5 + Math.random()*.7, t:now, ember:true }); }
       if(Math.random() < .05) noise(.08,.012,3200,900);   // crackle
     }
-    ctx.globalCompositeOperation = "lighter";
     for(let i=FLAMES.length-1;i>=0;i--){
       const q = FLAMES[i], k = (now - q.t)/1000/q.life;
       if(k >= 1){ FLAMES.splice(i,1); continue; }
-      q.x += q.vx*dt; q.y += q.vy*dt*(q.ember ? 2.2 : 1);
-      const x = q.x - scrollX, y = q.y - scrollY;
-      if(q.ember){ ctx.fillStyle = `rgba(255,${190-k*80|0},90,${1-k})`; ctx.fillRect(x, y, 2, 2); continue; }
-      const r = q.s*(1-k*.6), gg = ctx.createRadialGradient(x,y,0,x,y,r);
-      gg.addColorStop(0,`rgba(255,${230-k*150|0},${120-k*110|0},${.55*(1-k)})`); gg.addColorStop(1,"rgba(255,60,0,0)");
-      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+      q.x += q.vx*dt; q.y += q.vy*dt; q.vx *= .97; q.vy *= .97;
+      ctx.fillStyle = `rgba(255,${200 - k*90|0},90,${1-k})`; ctx.fillRect(q.x - scrollX, q.y - scrollY, 2, 2);
     }
     // ---- HE blasts: fireball, shockwave ring, debris
     for(let i=BLASTS.length-1;i>=0;i--){
