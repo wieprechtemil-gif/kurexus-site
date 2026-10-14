@@ -234,6 +234,27 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .clip .rank{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:5px;pointer-events:none}
 .empty{font-family:var(--mono);font-size:12px;color:var(--muted);padding:22px;border:1px dashed var(--line-2);border-radius:12px;text-align:center}
 
+/* mini player */
+.pip{position:fixed;right:20px;bottom:84px;width:min(520px,calc(100vw - 32px));z-index:130;border-radius:14px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 80px -20px rgba(0,0,0,.8);display:none;flex-direction:column;animation:pipIn .22s ease-out}
+.pip.open{display:flex}
+@keyframes pipIn{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.pip-bar{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;background:#111113;color:#e9e9e6;font-family:var(--mono);font-size:12px;cursor:grab;user-select:none;touch-action:none}
+.pip-bar:active{cursor:grabbing}
+.pip-t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pip-x{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;font-size:16px;line-height:1}
+.pip-x:hover{background:#fff;color:#000}
+.pip-body{position:relative;aspect-ratio:16/9;background:#000}
+.pip-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pip.drag .pip-body iframe{pointer-events:none}
+.pip-rz{position:absolute;right:0;bottom:0;width:22px;height:22px;cursor:nwse-resize;touch-action:none;background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 58%,transparent 58%,transparent 70%,rgba(255,255,255,.5) 70%,rgba(255,255,255,.5) 78%,transparent 78%)}
+.clip .pl{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.clip .pl i{width:46px;height:46px;border-radius:50%;background:rgba(245,245,242,.95);display:grid;place-items:center}
+.clip .pl i::after{content:"";border-left:13px solid #0b0b0c;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
+.clip:hover .pl,.clip:focus-visible .pl{opacity:1}
+.clip img{transition:transform .4s ease,filter .3s}
+.clip:hover img{transform:scale(1.06);filter:brightness(.8)}
+.clip.playing{outline:2px solid var(--fg);outline-offset:2px}
+
 /* modal */
 .modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.82);display:none;place-items:center;padding:20px}
 .modal.open{display:grid}
@@ -666,7 +687,7 @@ html.xh .xhair.on{opacity:1}
 <div id="kf"></div>
 <div id="scope"></div>
 <div id="flash"></div>
-<div class="modal" id="modal"><button class="x" id="modalX" aria-label="close">×</button><div class="box" id="modalBox"></div></div>
+<div class="pip" id="pip" aria-hidden="true"><div class="pip-bar" id="pipBar"><span class="pip-t" id="pipTitle"></span><button class="pip-x" id="pipX" aria-label="close">×</button></div><div class="pip-body" id="pipBody"></div><i class="pip-rz" id="pipRz" aria-hidden="true"></i></div>
 <div id="con" aria-hidden="true">
   <div class="hd"><span>developer console</span><span>esc / ^</span></div>
   <div class="out" id="conOut"></div>
@@ -1029,23 +1050,45 @@ function ago(iso){
   return LANG==="de" ? `vor ${n} ${{m:"Min.",h:"Std.",d:n===1?"Tag":"Tagen"}[u]}` : `${n}${u} ago`;
 }
 function renderLastLive(){ if(!lastStream) return; $("lastLive").innerHTML = `${L("last live","zuletzt live")} <b>${ago(lastStream.date)}</b>${lastStream.game?` · ${esc(lastStream.game)}`:""}`; }
-function openModal(src){ $("modalBox").innerHTML = `<iframe src="${src}" allow="autoplay; fullscreen" allowfullscreen></iframe>`; $("modal").classList.add("open"); }
-function closeModal(){ $("modal").classList.remove("open"); $("modalBox").innerHTML = ""; }
-$("modalX").onclick = closeModal; $("modal").onclick = e=>{ if(e.target.id==="modal") closeModal(); };
+/* ---------- mini player (draggable + resizable) ---------- */
+const pip = $("pip");
+function openPip(src, title){
+  $("pipBody").innerHTML = `<iframe src="${src}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+  $("pipTitle").textContent = title || "clip";
+  pip.classList.add("open"); pip.setAttribute("aria-hidden","false");
+}
+function closeModal(){ pip.classList.remove("open"); pip.setAttribute("aria-hidden","true"); $("pipBody").innerHTML = ""; document.querySelectorAll(".clip.playing").forEach(c=>c.classList.remove("playing")); }
+$("pipX").onclick = e=>{ e.stopPropagation(); closeModal(); };
+function dragger(handle, onMove){
+  handle.addEventListener("pointerdown", e=>{
+    if(e.target.closest(".pip-x")) return;
+    e.preventDefault(); handle.setPointerCapture(e.pointerId); pip.classList.add("drag");
+    const r = pip.getBoundingClientRect(), sx = e.clientX, sy = e.clientY;
+    pip.style.left = r.left+"px"; pip.style.top = r.top+"px"; pip.style.right = "auto"; pip.style.bottom = "auto";
+    const mv = ev=>onMove(ev.clientX-sx, ev.clientY-sy, r);
+    const up = ()=>{ pip.classList.remove("drag"); handle.removeEventListener("pointermove", mv); handle.removeEventListener("pointerup", up); handle.removeEventListener("pointercancel", up); };
+    handle.addEventListener("pointermove", mv); handle.addEventListener("pointerup", up); handle.addEventListener("pointercancel", up);
+  });
+}
+dragger($("pipBar"), (dx, dy, r)=>{
+  pip.style.left = Math.max(0, Math.min(innerWidth - r.width, r.left + dx)) + "px";
+  pip.style.top = Math.max(0, Math.min(innerHeight - 40, r.top + dy)) + "px";
+});
+dragger($("pipRz"), (dx, dy, r)=>{
+  pip.style.width = Math.max(260, Math.min(innerWidth - r.left - 8, r.width + dx)) + "px";
+});
 api("/api/twitch").then(d=>{
   if(d.lastStream){ lastStream = d.lastStream; renderLastLive(); }
   const clips = (d.clips||[]).sort((a,b)=>b.views-a.views).slice(0,10);
   if(!clips.length) return;
   const host = location.hostname || "localhost";
-  $("clips").innerHTML = clips.map((c,i)=>`<button class="clip" data-id="${esc(c.id)}"><img loading="lazy" src="${esc(c.thumb)}" alt=""><span class="rank">#${i+1} · ${fmt(c.views)} views</span><span class="meta">${esc(c.title)}<span>${Math.round(c.duration)}s</span></span></button>`).join("");
+  $("clips").innerHTML = clips.map((c,i)=>`<button class="clip" data-id="${esc(c.id)}" data-t="${esc(c.title)}"><img loading="lazy" src="${esc(c.thumb)}" alt=""><span class="pl"><i></i></span><span class="rank">#${i+1} · ${fmt(c.views)} views</span><span class="meta">${esc(c.title)}<span>${Math.round(c.duration)}s</span></span></button>`).join("");
   document.querySelectorAll(".clip").forEach(el=>{
-    const id = encodeURIComponent(el.dataset.id), src = m=>`https://clips.twitch.tv/embed?clip=${id}&parent=${host}&autoplay=true&muted=${m}`;
-    let tmr;
-    if(FINE){
-      el.addEventListener("mouseenter", ()=>{ tmr = setTimeout(()=>{ if(!el.querySelector("iframe")) el.insertAdjacentHTML("beforeend", `<iframe src="${src(true)}" allow="autoplay"></iframe>`); }, 450); });
-      el.addEventListener("mouseleave", ()=>{ clearTimeout(tmr); const f = el.querySelector("iframe"); f && f.remove(); });
-    }
-    el.addEventListener("click", ()=>{ const f = el.querySelector("iframe"); f && f.remove(); openModal(src(false)); });
+    const id = encodeURIComponent(el.dataset.id);
+    el.addEventListener("click", ()=>{
+      openPip(`https://clips.twitch.tv/embed?clip=${id}&parent=${host}&autoplay=true&muted=false`, el.dataset.t);
+      document.querySelectorAll(".clip.playing").forEach(c=>c.classList.remove("playing")); el.classList.add("playing");
+    });
   });
 }).catch(()=>{});
 
