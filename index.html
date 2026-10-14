@@ -2516,7 +2516,7 @@ const drawSmokes = (function(){
   const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp,.lp-vol,#aimBox,#rx,nav,.yt,#hud,#buy");
   function hole(x, y, silent){
     const h = document.createElement("i"); h.className = "hole";
-    h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`;
+    h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`; h.dataset.t = performance.now();
     layer.appendChild(h); while(layer.children.length > 40) layer.firstChild.remove();
     setTimeout(()=>h.remove(), 6600);
     if(!silent){ tone(1700,.03,.025,"square",900,3000); noise(.04,.03,3500,900); }
@@ -2562,6 +2562,9 @@ const drawSmokes = (function(){
   addEventListener("dblclick", e=>{
     if(!empty(e.target)) return;
     stop(); getSelection()?.removeAllRanges();
+    // the two clicks of a double-click shouldn't leave bullet holes under the grenade
+    const now = performance.now();
+    layer.querySelectorAll(".hole").forEach(h=>{ if(now - (+h.dataset.t || 0) < 600 && Math.hypot(parseFloat(h.style.left) - e.pageX, parseFloat(h.style.top) - e.pageY) < 30) h.remove(); });
     NADES.throw(e.pageX, e.pageY);
   });
   // clicking a link from inside a smoke → killfeed with the smoke icon
