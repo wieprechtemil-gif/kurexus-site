@@ -532,7 +532,7 @@ footer{position:relative;z-index:2;text-align:center;padding:40px 20px 120px;fon
 .kill.me{border-color:#c9273b;background:rgba(20,0,4,.6)}
 .kill.bye{opacity:0;transform:translateX(20px)}
 .kill .a{color:#9cc6f2}.kill .b{color:#e8c66a}
-.kill svg{height:14px;fill:#e9e9e6}.kill img{height:16px;width:auto}.kill .emo{font-size:15px;line-height:1}.kill.tk{border-color:#ff4d5e;background:rgba(120,0,12,.55)}.kill.tk .b{color:#ff9aa5}
+.kill svg{height:14px;fill:#e9e9e6}.kill img{height:17px;width:auto}.kill img.mod{height:15px}.kill .emo{font-size:15px;line-height:1}.kill.tk{border-color:#ff4d5e;background:rgba(120,0,12,.55)}.kill.tk .b{color:#ff9aa5}
 @keyframes kin{from{opacity:0;transform:translateX(30px)}}
 
 /* scope transition */
@@ -579,7 +579,7 @@ html.xh .xhair.on{opacity:1}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
 
-@media (max-width:1060px){ .score{display:none} }
+@media (max-width:1240px){ .score{display:none} }
 @media (max-width:680px){
   .g2,.g3,.fc{grid-template-columns:1fr}
   .g4,.settings{grid-template-columns:repeat(2,1fr)}
@@ -614,10 +614,11 @@ html.xh .xhair.on{opacity:1}
       <div class="links">
         <a href="#about" data-scope><i>R1</i><span data-i18n="nav.about">about</span></a>
         <a href="#games" data-scope><i>R2</i><span data-i18n="nav.games">games</span></a>
-        <a href="#setup" data-scope><i>R3</i><span data-i18n="nav.setup">setup</span></a>
-        <a href="#stream" data-scope><i>R4</i><span data-i18n="nav.stream">content</span></a>
-        <a href="#aim" data-scope><i>R5</i><span data-i18n="nav.aim">warmup</span></a>
-        <a href="#contact" data-scope><i>R6</i><span data-i18n="nav.contact">contact</span></a>
+        <a href="#music" data-scope><i>R3</i><span data-i18n="nav.music">music</span></a>
+        <a href="#setup" data-scope><i>R4</i><span data-i18n="nav.setup">setup</span></a>
+        <a href="#stream" data-scope><i>R5</i><span data-i18n="nav.stream">content</span></a>
+        <a href="#aim" data-scope><i>R6</i><span data-i18n="nav.aim">warmup</span></a>
+        <a href="#contact" data-scope><i>R7</i><span data-i18n="nav.contact">contact</span></a>
       </div>
       <button class="tog" id="langBtn" aria-label="Sprache / language">DE</button>
       <button class="tog" id="themeBtn" aria-label="Theme"><svg viewBox="0 0 24 24" id="themeIcon"></svg></button>
@@ -708,19 +709,27 @@ html.xh .xhair.on{opacity:1}
         <span class="gt-name">Red Dead Redemption 2</span>
         <span class="gt-meta" data-i18n="g.rdr.meta">the cozy one · clips</span>
       </button>
-      <button class="gtile wide" data-game="music" style="--gc:#1ed760">
+    </div>
+  </section>
+
+  <!-- ROUND 3: MUSIC -->
+  <section id="music" class="rv" data-round="3">
+    <div class="label"><b>R3</b><span data-i18n="r3.label">round three — music</span></div>
+    <h2 data-i18n="r3.title">what I <em>listen to</em></h2>
+    <div class="gtiles">
+      <button class="gtile wide big" data-game="music" style="--gc:#1ed760">
         <span class="gt-art" data-art="music"></span>
         <span class="gt-top"><span class="tag" data-i18n="g.mu.tag">MUSIC</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
-        <span class="gt-name" data-i18n="g.mu.name">what I listen to</span>
+        <span class="gt-name" data-i18n="g.mu.name">top songs &amp; artists</span>
         <span class="gt-meta" id="gtMu" data-i18n="g.mu.meta">top songs · top artists · on repeat</span>
       </button>
     </div>
   </section>
 
-  <!-- ROUND 3: SETUP -->
-  <section id="setup" class="rv" data-round="3">
-    <div class="label"><b>R3</b><span data-i18n="r3.label">round three — setup</span></div>
-    <h2 data-i18n="r3.title">the <em>all-white</em> build</h2>
+  <!-- ROUND 4: SETUP -->
+  <section id="setup" class="rv" data-round="4">
+    <div class="label"><b>R4</b><span data-i18n="r4.label">round four — setup</span></div>
+    <h2 data-i18n="r4.title">the <em>all-white</em> build</h2>
     <div class="grid g2">
       <div class="card">
         <h4 class="ch"><b>PC</b><span>white edition</span></h4>
@@ -747,10 +756,10 @@ html.xh .xhair.on{opacity:1}
 
   </section>
 
-  <!-- ROUND 4: CONTENT -->
-  <section id="stream" class="rv" data-round="4">
-    <div class="label"><b>R4</b><span data-i18n="r4.label">round four — content</span></div>
-    <h2 data-i18n="r4.title">catch me <em>live</em></h2>
+  <!-- ROUND 5: CONTENT -->
+  <section id="stream" class="rv" data-round="5">
+    <div class="label"><b>R5</b><span data-i18n="r5.label">round five — content</span></div>
+    <h2 data-i18n="r5.title">catch me <em>live</em></h2>
     <div class="player" id="player"></div>
     <div class="grid g2">
       <div class="card">
@@ -769,10 +778,10 @@ html.xh .xhair.on{opacity:1}
     <div class="clips" id="clips"><div class="empty" style="grid-column:1/-1" data-i18n="clips.none">clips are loading… or still being cooked.</div></div>
   </section>
 
-  <!-- ROUND 5: WARMUP -->
-  <section id="aim" class="rv" data-round="5">
-    <div class="label"><b>R5</b><span data-i18n="r5.label">round five — warmup</span></div>
-    <h2 data-i18n="r5.title">beat my <em>aim</em></h2>
+  <!-- ROUND 6: WARMUP -->
+  <section id="aim" class="rv" data-round="6">
+    <div class="label"><b>R6</b><span data-i18n="r6.label">round six — warmup</span></div>
+    <h2 data-i18n="r6.title">beat my <em>aim</em></h2>
     <div class="aim" id="aimBox">
       <canvas id="aimCv"></canvas>
       <div class="aim-hud" id="aimHud" style="display:none"><span><span data-i18n="a.score">score</span> <b id="aScore">0</b></span><span><b id="aTime">30.0</b>s</span></div>
@@ -798,10 +807,10 @@ html.xh .xhair.on{opacity:1}
     <button class="rx" id="rx" data-s="idle"><span class="rx-m" id="rxMsg" data-i18n="rx.start">click to start</span><span class="rx-s" id="rxSub" data-i18n="rx.hint">wait for white, then click as fast as you can · 5 tries</span></button>
   </section>
 
-  <!-- ROUND 6: CONTACT -->
-  <section id="contact" class="rv" data-round="6">
-    <div class="label"><b>R6</b><span data-i18n="r6.label">round six — contact</span></div>
-    <h2 data-i18n="r6.title">say <em>hi</em></h2>
+  <!-- ROUND 7: CONTACT -->
+  <section id="contact" class="rv" data-round="7">
+    <div class="label"><b>R7</b><span data-i18n="r7.label">round seven — contact</span></div>
+    <h2 data-i18n="r7.title">say <em>hi</em></h2>
     <div class="grid g2">
       <div class="card ccard">
         <div class="k" data-i18n="c.server.k">discord server · community</div>
@@ -1031,7 +1040,7 @@ const CFG = {
 
 /* ---------- i18n ---------- */
 const T = { en:{}, de:{
-  "nav.about":"about","nav.games":"games","nav.setup":"setup","nav.stream":"content","nav.aim":"warmup","nav.contact":"kontakt",
+  "nav.about":"about","nav.games":"games","nav.music":"musik","nav.setup":"setup","nav.stream":"content","nav.aim":"warmup","nav.contact":"kontakt",
   "time.label":"kurs zeit",
   "status.off":"offline","status.live":"jetzt live auf twitch",
   "aka":"aka kur — locked in, meistens",
@@ -1039,8 +1048,9 @@ const T = { en:{}, de:{
   "germany":"Deutschland","btn.server":"Discord-Server",
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
   "r1.label":"runde eins — about","r1.title":"about",
+  "r3.label":"runde drei — musik","r3.title":"was ich <em>höre</em>",
   "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
-  "g.open":"öffnen","g.mu.tag":"MUSIK","g.mu.name":"was ich höre","g.mu.meta":"top songs · top artists · on repeat","mu.days":"tage","mu.month":"monat","mu.all":"all time","mu.tracks":"top songs","mu.artists":"top artists","mu.recent":"zuletzt gehört","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"best movement shooter out there","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
+  "g.open":"öffnen","g.mu.tag":"MUSIK","g.mu.name":"top songs &amp; artists","g.mu.meta":"top songs · top artists · on repeat","mu.days":"tage","mu.month":"monat","mu.all":"all time","mu.tracks":"top songs","mu.artists":"top artists","mu.recent":"zuletzt gehört","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"best movement shooter out there","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
   "gw.clips":"medal clips","gw.og":"og clips","gw.c":"clips","gw.settings":"settings",
   "kr.k":"movement fps","kr.v":"das schnelle","kr.p":"best movement shooter out there.","kr.prof":"profil","kr.vid":"meistens hier drin",
   "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
@@ -1050,14 +1060,14 @@ const T = { en:{}, de:{
   "r1.also":"spiele ich auch","g.rdr":"das gemütliche",
   "l.title":"sprachen","l.de":"Deutsch","l.en":"Englisch","l.native":"muttersprache","l.fluent":"fließend",
   "p.title":"die wette","p.vote":"abstimmen","p.q":"Schafft kur <em>FACEIT 10</em> bis Ende 2026?","p.yes":"vertrau 🔥","p.no":"niemals 💀",
-  "r3.label":"runde drei — setup","r3.title":"der <em>komplett weiße</em> build","s.periph":"Peripherie",
+  "r4.label":"runde vier — setup","r4.title":"der <em>komplett weiße</em> build","s.periph":"Peripherie",
   "copy":"kopieren",
-  "r4.label":"runde vier — content","r4.title":"schau <em>live</em> vorbei","st.when":"wann",
+  "r5.label":"runde fünf — content","r5.title":"schau <em>live</em> vorbei","st.when":"wann",
   "st.desc":"Fast jeden Tag live, irgendwann in dem Zeitfenster. Meistens CS2, manchmal worauf ich Bock hab.",
   "yt.title":"empfohlenes video","loadingtxt":"lädt…","clips.title":"top clips","clips.none":"clips laden… oder werden noch gekocht.",
-  "r5.label":"runde fünf — warmup","r5.title":"schlag mein <em>aim</em>",
+  "r6.label":"runde sechs — warmup","r6.title":"schlag mein <em>aim</em>",
   "a.score":"score","a.h":"30 sekunden aim check","a.p":"Triff so viele Ziele wie möglich. Fehlschüsse senken deine Accuracy. Dein Rekord wird im Browser gespeichert.",
-  "r6.label":"runde sechs — kontakt","r6.title":"sag <em>hi</em>",
+  "r7.label":"runde sieben — kontakt","r7.title":"sag <em>hi</em>",
   "c.server.k":"discord server · community","c.server.p":"Komm auf den Server für Stream-Pings, 5-Stacks, Clips und Vibes. Offen für alle.",
   "c.join":"server beitreten","c.dm.k":"discord dm · nur ich","c.dm.p":"Für Collabs, Raids, Teams oder Business — adde mich und schreib eine DM.","c.copy":"tag kopieren",
   "visitor":"besucher","snd.fx":"soundeffekte","snd.music":"musik","hint":"drück ^ für die konsole",
@@ -1216,23 +1226,16 @@ function buildTicker(){
 }
 
 /* ---------- killfeed ---------- */
-const GUN = {
-  ak:'<img src="/img/ak.png" alt="AK-47">',
-  awp:'<svg viewBox="0 0 72 16"><path d="M1 7h22l1-3h14v2h33v2H40l-4 2h-8l-2 5h-5l1-5h-6l-2 3H9l2-3H1z"/></svg>',
-  deagle:'<svg viewBox="0 0 34 18"><path d="M2 3h28v5H14l-2 9H5l2-9H2z"/></svg>',
-  knife:'<svg viewBox="0 0 48 14"><path d="M1 6h14l2-2h4v6h-4l-2-2H1zM21 4l26 2-8 4H21z"/></svg>',
-  fist:'<span class="emo">👊</span>'
-};
-const XI = {
-  ns:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#e9e9e6" stroke-width="1.6"/><path d="M3.5 12.5l9-9" stroke="#e9e9e6" stroke-width="1.6"/></svg>',
-  wb:'<svg viewBox="0 0 16 16"><path d="M2 2h2.5v12H2zM6.5 2H9v12H6.5z"/><path d="M10 8h5M12.5 5.5L15 8l-2.5 2.5" fill="none" stroke="#e9e9e6" stroke-width="1.6"/></svg>',
-  blind:'<svg viewBox="0 0 16 16"><path d="M1 8s2.6-4.5 7-4.5S15 8 15 8s-2.6 4.5-7 4.5S1 8 1 8z" fill="none" stroke="#e9e9e6" stroke-width="1.4"/><circle cx="8" cy="8" r="2"/><path d="M2.5 13.5l11-11" stroke="#e9e9e6" stroke-width="1.6"/></svg>'
-};
-const HS = '<svg viewBox="0 0 16 16"><path d="M8 1a6 6 0 0 0-6 6c0 2 1 3.5 2 4.3V14h2v-1.5h1V14h2v-1.5h1V14h2v-2.7c1-.8 2-2.3 2-4.3a6 6 0 0 0-6-6Zm-2.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg>';
+const KFI = n => `<img src="/img/kf/${n}.png" alt="${n}">`;
+const GUN = Object.fromEntries(["ak","aug","awp","deagle","m4","usp","glock","p90","mac10","scout","shotgun","revolver","he","molly"].map(n=>[n, KFI(n)]));
+GUN.knife = '<svg viewBox="0 0 48 14"><path d="M1 6h14l2-2h4v6h-4l-2-2H1zM21 4l26 2-8 4H21z"/></svg>';
+GUN.fist = '<span class="emo">👊</span>';
+const XI = { ns:'<img class="mod" src="/img/kf/ns.png" alt="noscope">', wb:'<img class="mod" src="/img/kf/wb.png" alt="wallbang">', blind:'<img class="mod" src="/img/kf/blind.png" alt="blind">', smoke:'<img class="mod" src="/img/kf/smoke.png" alt="through smoke">' };
+const HS = '<img class="mod" src="/img/kf/hs.png" alt="headshot">';
 function kill(a, gun, b, opt={}){
   const kf = $("kf"), el = document.createElement("div");
   el.className = "kill" + (opt.me ? " me" : "") + (opt.tk ? " tk" : "");
-  el.innerHTML = `${opt.blind?XI.blind:""}<span class="a">${esc(a)}</span>${GUN[gun]||""}${opt.ns?XI.ns:""}${opt.wb?XI.wb:""}${opt.hs?HS:""}<span class="b">${esc(b)}</span>`;
+  el.innerHTML = `${opt.blind?XI.blind:""}<span class="a">${esc(a)}</span>${GUN[gun]||""}${opt.ns?XI.ns:""}${opt.smoke?XI.smoke:""}${opt.wb?XI.wb:""}${opt.hs?HS:""}<span class="b">${esc(b)}</span>`;
   kf.appendChild(el); SFX.kill();
   while(kf.children.length > 4) kf.firstChild.remove();
   setTimeout(()=>{ el.classList.add("bye"); setTimeout(()=>el.remove(), 500); }, opt.ms || 5200);
@@ -1241,10 +1244,11 @@ function welcome(){ setTimeout(()=>kill("kurexus","ak", L("you","du"),{hs:true,m
 const ROUND_KILLS = {
   1:()=>["kurexus","ak",L("boredom","langeweile"),{hs:true}],
   2:()=>["kurexus","ak",L("elo hell","elo-hölle"),{hs:true}],
-  3:()=>["kurexus","awp",L("bad setups","schlechte setups"),{}],
-  4:()=>["kurexus","deagle",L("offline mode","offline-modus"),{hs:true}],
-  5:()=>[L("you","du"),"ak",L("your warmup","dein warmup"),{}],
-  6:()=>["kurexus","knife",L("shyness","schüchternheit"),{}]
+  3:()=>["kurexus","fist",L("silence","stille"),{}],
+  4:()=>["kurexus","awp",L("bad setups","schlechte setups"),{}],
+  5:()=>["kurexus","deagle",L("offline mode","offline-modus"),{hs:true}],
+  6:()=>[L("you","du"),"ak",L("your warmup","dein warmup"),{}],
+  7:()=>["kurexus","knife",L("shyness","schüchternheit"),{}]
 };
 
 /* ---------- random killfeed with the squad (insiders) ---------- */
@@ -1257,13 +1261,19 @@ const FEED = [
   ()=>["hanyola","deagle","creative",{hs:true}],
   ()=>["janis","knife","tim",{}],
   ()=>["lele","ak","janis",{wb:true}],
-  ()=>["13 55","awp","lele",{}],
-  ()=>["creative","ak","hanyola",{blind:true}],
-  ()=>["tim","deagle","wanderstock",{hs:true}],
+  ()=>["13 55","awp","lele",{smoke:true}],
+  ()=>["creative","m4","hanyola",{blind:true}],
+  ()=>["tim","usp","wanderstock",{hs:true}],
   ()=>["angel","knife","kurexus",{}],
-  ()=>["kurexus","awp","13 55",{ns:true,wb:true}],
+  ()=>["kurexus","scout","13 55",{ns:true,hs:true}],
   ()=>["kurexus","ak","hanyola",{wb:true,hs:true}],
   ()=>["lele","fist","kurexus",{}],
+  ()=>["kurexus","deagle","tim",{smoke:true,hs:true}],
+  ()=>["hanyola","molly","janis",{}],
+  ()=>["kurexus","he","angel",{}],
+  ()=>["wanderstock","p90","creative",{}],
+  ()=>["janis","shotgun","lele",{}],
+  ()=>["13 55","revolver","kurexus",{blind:true}],
   ()=>["kurexus","ak","janis",{tk:true}]                               // rare teamkill
 ];
 function randomKill(){
