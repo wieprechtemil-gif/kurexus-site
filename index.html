@@ -400,7 +400,18 @@ html.gw-lock{overflow:hidden}
 .mclip.empty{border-style:dashed;justify-content:center;align-items:center;color:var(--muted);font-family:var(--mono);font-size:11px;background:transparent}
 
 /* last played */
-.lp{display:flex;align-items:center;gap:12px;width:max-content;max-width:100%;margin:16px auto 0;padding:8px 16px 8px 8px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-align:left;transition:border-color .2s}
+.lp-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:16px auto 0}
+.lp-wrap[hidden]{display:none}
+.lp-wrap .lp{margin:0}
+.lp-vol{display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .25s,transform .25s}
+.lp-wrap.playing .lp-vol,.lp-wrap:hover .lp-vol,.lp-vol:focus-within{opacity:1;transform:none;pointer-events:auto}
+.lp-vol svg{width:16px;height:16px;fill:currentColor;flex:none}
+.lp-vol input{-webkit-appearance:none;appearance:none;width:140px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--fg) var(--v,50%),var(--line-2) var(--v,50%));outline:none}
+.lp-vol input::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--fg);border:2px solid var(--bg)}
+.lp-vol input::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--fg);border:2px solid var(--bg)}
+html.xh .lp-vol input{cursor:pointer!important}
+
+.lp{display:flex;align-items:center;gap:12px;width:max-content;max-width:100%;margin:0 auto;padding:8px 16px 8px 8px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-align:left;transition:border-color .2s}
 .lp[hidden]{display:none}
 .lp:hover{border-color:var(--line-2)}
 .lp-art{position:relative;flex:none;width:52px;height:52px;border-radius:9px;overflow:hidden;background:var(--bg-2)}
@@ -418,6 +429,27 @@ html.gw-lock{overflow:hidden}
 .lp-eq i{width:3px;height:3px;background:var(--fg);border-radius:1px;opacity:.5}
 .lp.now .lp-eq i,.lp.playing .lp-eq i{opacity:1;animation:eq .9s ease-in-out infinite}
 .lp-eq i:nth-child(2){animation-delay:.25s}.lp-eq i:nth-child(3){animation-delay:.5s}
+
+/* sound panel */
+.snd-panel{position:fixed;right:18px;bottom:76px;z-index:61;width:250px;padding:14px;border-radius:16px;border:1px solid var(--line-2);background:color-mix(in srgb,var(--card-solid) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 50px -20px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:12px;animation:pipIn .2s ease-out}
+.snd-panel[hidden]{display:none}
+.snd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+.snd-row.vol{justify-content:flex-start;color:var(--muted)}
+.snd-row.vol svg{width:16px;height:16px;fill:currentColor;flex:none}
+.snd-row.vol span{font-family:var(--mono);font-size:11px;width:26px;text-align:right}
+.snd-row input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--fg) var(--v,50%),var(--line-2) var(--v,50%));outline:none}
+.snd-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--fg);border:2px solid var(--bg)}
+.snd-row input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--fg);border:2px solid var(--bg)}
+.snd-row input:disabled{opacity:.35}
+.sw{position:relative;width:38px;height:22px;border-radius:11px;border:1px solid var(--line-2);background:var(--bg-2);transition:background .2s,border-color .2s;flex:none}
+.sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.sw[aria-checked="true"]{background:var(--fg);border-color:var(--fg)}
+.sw[aria-checked="true"] i{transform:translateX(16px);background:var(--bg)}
+.snd-now{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.snd-now[hidden]{display:none}
+.snd-now span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-wrap.nomusic .lp-play,.lp-wrap.nomusic .lp-vol{display:none}
+html.xh .snd-row input{cursor:pointer!important}
 
 /* contact */
 .ccard{display:flex;flex-direction:column;gap:12px}
@@ -504,6 +536,7 @@ html.xh .xhair.on{opacity:1}
   .links{display:none}
   .v{font-size:32px}
   .music .lbl{display:none}.music{padding:8px}
+  .snd-panel{right:10px;bottom:64px}
   .aim,.aim-ui{min-height:300px}
   .poll-opts{grid-template-columns:1fr}
   .goals{grid-template-columns:1fr 1fr}
@@ -548,12 +581,18 @@ html.xh .xhair.on{opacity:1}
     <h1 id="name"><span data-t="kur">kur</span><em data-t="exus">exus</em></h1>
     <p class="aka" data-i18n="aka">aka kur — locked in, mostly</p>
     <div class="currently"><i></i><b data-i18n="cur.label">currently</b><span data-i18n="cur.text">grinding faceit · streaming almost daily · learning 中文</span></div>
-    <a class="lp" id="lp" target="_blank" rel="noopener" hidden>
-      <span class="lp-art"><img id="lpArt" alt=""><button class="lp-play" id="lpPlay" aria-label="play 30s preview"><svg viewBox="0 0 24 24" id="lpIcon"><path d="M7 4v16l13-8z"/></svg></button></span>
-      <span class="lp-txt"><span class="lp-k" id="lpK">last played</span><b id="lpTitle"></b><span id="lpArtist"></span></span>
-      <span class="lp-eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <svg class="lp-sp" viewBox="0 0 24 24" aria-label="Spotify"><path d="M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm5 15.9a.7.7 0 0 1-.9.2c-2.6-1.6-5.8-1.9-9.6-1a.7.7 0 1 1-.3-1.3c4.2-1 7.7-.6 10.6 1.2.3.2.4.6.2.9Zm1.3-3a.9.9 0 0 1-1.2.3c-2.9-1.8-7.4-2.3-10.9-1.3a.9.9 0 1 1-.5-1.7c4-1.2 9-.6 12.3 1.5.4.3.6.8.3 1.2Zm.1-3.1C14.9 8.7 9 8.5 5.6 9.5a1 1 0 1 1-.6-2c3.9-1.2 10.4-1 14.5 1.5a1 1 0 0 1-1 1.8Z"/></svg>
-    </a>
+    <div class="lp-wrap" id="lpWrap" hidden>
+      <a class="lp" id="lp" target="_blank" rel="noopener">
+        <span class="lp-art"><img id="lpArt" alt=""><button class="lp-play" id="lpPlay" aria-label="play 30s preview"><svg viewBox="0 0 24 24" id="lpIcon"><path d="M7 4v16l13-8z"/></svg></button></span>
+        <span class="lp-txt"><span class="lp-k" id="lpK">last played</span><b id="lpTitle"></b><span id="lpArtist"></span></span>
+        <span class="lp-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <svg class="lp-sp" viewBox="0 0 24 24" aria-label="Spotify"><path d="M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm5 15.9a.7.7 0 0 1-.9.2c-2.6-1.6-5.8-1.9-9.6-1a.7.7 0 1 1-.3-1.3c4.2-1 7.7-.6 10.6 1.2.3.2.4.6.2.9Zm1.3-3a.9.9 0 0 1-1.2.3c-2.9-1.8-7.4-2.3-10.9-1.3a.9.9 0 1 1-.5-1.7c4-1.2 9-.6 12.3 1.5.4.3.6.8.3 1.2Zm.1-3.1C14.9 8.7 9 8.5 5.6 9.5a1 1 0 1 1-.6-2c3.9-1.2 10.4-1 14.5 1.5a1 1 0 0 1-1 1.8Z"/></svg>
+      </a>
+      <label class="lp-vol" id="lpVol" title="volume">
+        <svg viewBox="0 0 24 24" id="lpVolIcon"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="range" id="lpVolRange" min="0" max="100" value="50" aria-label="preview volume">
+      </label>
+    </div>
     <div class="chips">
       <span class="chip">Emil</span>
       <span class="chip">19</span>
@@ -728,7 +767,13 @@ html.xh .xhair.on{opacity:1}
   <div>kurexus · germany · <span style="font-family:var(--mono);font-style:normal;font-size:11px" data-i18n="hint">press ^ for console</span></div>
 </footer>
 
-<button class="music" id="sndBtn" aria-label="sound on/off">
+<div class="snd-panel" id="sndPanel" hidden>
+  <div class="snd-row"><span data-i18n="snd.fx">sound effects</span><button class="sw" id="swFx" role="switch" aria-checked="true"><i></i></button></div>
+  <div class="snd-row"><span data-i18n="snd.music">music</span><button class="sw" id="swMusic" role="switch" aria-checked="true"><i></i></button></div>
+  <div class="snd-row vol"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg><input type="range" id="sndVol" min="0" max="100" value="50" aria-label="music volume"><span id="sndVolN">50</span></div>
+  <div class="snd-now" id="sndNow" hidden><button class="mini" id="sndNowBtn">▶</button><span id="sndNowT"></span></div>
+</div>
+<button class="music" id="sndBtn" aria-label="sound settings" aria-expanded="false">
   <span class="disc"><svg viewBox="0 0 24 24" id="sIcon"></svg></span>
   <span class="bars"><i></i><i></i><i></i><i></i></span>
   <span class="lbl" id="sLabel">sound on</span>
@@ -940,7 +985,7 @@ const T = { en:{}, de:{
   "r6.label":"runde sechs — kontakt","r6.title":"sag <em>hi</em>",
   "c.server.k":"discord server · community","c.server.p":"Komm auf den Server für Stream-Pings, 5-Stacks, Clips und Vibes. Offen für alle.",
   "c.join":"server beitreten","c.dm.k":"discord dm · nur ich","c.dm.p":"Für Collabs, Raids, Teams oder Business — adde mich und schreib eine DM.","c.copy":"tag kopieren",
-  "visitor":"besucher","hint":"drück ^ für die konsole",
+  "visitor":"besucher","snd.fx":"soundeffekte","snd.music":"musik","hint":"drück ^ für die konsole",
   "goals.title":"ziele","goals.sub":"die roadmap","a.submit":"eintragen",
   "lb.title":"bestenliste","lb.sub":"top 10 · 30s","lb.empty":"noch keine scores. sei der erste.",
   "rx.title":"reaktionstest","rx.start":"klick zum starten","rx.hint":"warte bis es weiß wird, dann so schnell wie möglich klicken · 5 versuche"
@@ -1053,14 +1098,22 @@ document.addEventListener("pointerdown", e=>{
   if(e.target.closest("input")) return;
   SFX.clickEmpty();
 });
+let MUSIC = store.get("music") !== "off";
 function renderSound(){
-  $("sndBtn").classList.toggle("on", SOUND);
-  $("sLabel").textContent = SOUND ? L("sound on","sound an") : L("sound off","sound aus");
-  $("sIcon").innerHTML = SOUND
+  $("sndBtn").classList.toggle("on", SOUND || MUSIC);
+  $("sLabel").textContent = (SOUND || MUSIC) ? L("sound","sound") : L("muted","stumm");
+  $("sIcon").innerHTML = (SOUND || MUSIC)
     ? '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
     : '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+  $("swFx").setAttribute("aria-checked", String(SOUND));
+  $("swMusic").setAttribute("aria-checked", String(MUSIC));
+  $("sndVol").disabled = !MUSIC;
+  const w = $("lpWrap"); if(w) w.classList.toggle("nomusic", !MUSIC);
 }
-$("sndBtn").onclick = ()=>{ SOUND = !SOUND; store.set("sound", SOUND ? "on" : "off"); renderSound(); SFX.toggle(); };
+$("sndBtn").onclick = e=>{ e.stopPropagation(); const p = $("sndPanel"); p.hidden = !p.hidden; $("sndBtn").setAttribute("aria-expanded", String(!p.hidden)); };
+$("swFx").onclick = ()=>{ SOUND = !SOUND; store.set("sound", SOUND ? "on" : "off"); renderSound(); SFX.toggle(); };
+$("swMusic").onclick = ()=>{ MUSIC = !MUSIC; store.set("music", MUSIC ? "on" : "off"); if(!MUSIC && window.musicStop) musicStop(); renderSound(); SFX.toggle(); };
+document.addEventListener("pointerdown", e=>{ const p = $("sndPanel"); if(!p.hidden && !e.target.closest("#sndPanel,#sndBtn")){ p.hidden = true; $("sndBtn").setAttribute("aria-expanded","false"); } });
 renderSound();
 
 /* ---------- theme ---------- */
@@ -1624,25 +1677,48 @@ if(GAMES[location.hash.slice(1)]) setTimeout(()=>openGame(location.hash.slice(1)
 
 /* ---------- last played (Last.fm) + 30s preview ---------- */
 (function(){
-  const box = $("lp"), au = new Audio(); au.volume = .5; let data = null;
+  const box = $("lp"), wrap = $("lpWrap"), au = new Audio(), range = $("lpVolRange"); let data = null;
+  const saved = +store.get("lpVol"); au.volume = (store.get("lpVol") !== null && !isNaN(saved)) ? saved/100 : .5;
+  function volUI(){
+    const v = Math.round(au.volume*100); range.value = v; range.style.setProperty("--v", v + "%");
+    const sv = $("sndVol"); sv.value = v; sv.style.setProperty("--v", v + "%"); $("sndVolN").textContent = v;
+    $("lpVolIcon").innerHTML = v === 0
+      ? '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+      : '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7' + (v > 55 ? 'M18.5 6a8.5 8.5 0 0 1 0 12' : '') + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+  }
+  function setVol(v){ au.volume = v/100; store.set("lpVol", v); volUI(); }
+  range.addEventListener("input", ()=>setVol(+range.value));
+  $("sndVol").addEventListener("input", e=>setVol(+e.target.value));
+  $("lpVol").addEventListener("click", e=>{ if(e.target.closest("svg")){ e.preventDefault(); au.volume = au.volume > 0 ? 0 : .5; store.set("lpVol", Math.round(au.volume*100)); volUI(); } });
+  volUI();
   function setIcon(p){ $("lpIcon").innerHTML = p ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>'; }
   function render(d){
-    data = d; box.hidden = false; box.href = d.spotify || d.lastfm || d.url || "#";
+    data = d; wrap.hidden = false; box.href = d.spotify || d.lastfm || d.url || "#";
     box.classList.toggle("now", !!d.nowPlaying);
     const k = $("lpK"); k.classList.toggle("now", !!d.nowPlaying);
     k.textContent = d.nowPlaying ? L("listening now","hört gerade") : L("last played","zuletzt gehört");
     $("lpTitle").textContent = d.title; $("lpArtist").textContent = d.artist + (d.album ? " · " + d.album : "");
     if(d.art) $("lpArt").src = d.art;
     $("lpPlay").style.display = d.preview ? "" : "none";
-    if(au.src && au.src !== d.preview){ au.pause(); box.classList.remove("playing"); setIcon(false); }
+    nowUI && nowUI();
+    if(au.src && d.preview && au.src.split("?")[0] !== d.preview.split("?")[0]){ au.pause(); box.classList.remove("playing"); wrap.classList.remove("playing"); setIcon(false); }
   }
   $("lpPlay").addEventListener("click", e=>{
     e.preventDefault(); e.stopPropagation();
-    if(!data || !data.preview) return;
-    if(au.paused){ if(au.src !== data.preview) au.src = data.preview; au.play().then(()=>{ box.classList.add("playing"); setIcon(true); }).catch(()=>{}); }
-    else { au.pause(); box.classList.remove("playing"); setIcon(false); }
+    if(!data || !data.preview || !MUSIC) return;
+    if(au.paused){ if(au.src !== data.preview) au.src = data.preview; au.play().then(()=>{ box.classList.add("playing"); wrap.classList.add("playing"); setIcon(true); }).catch(()=>{}); }
+    else { au.pause(); box.classList.remove("playing"); wrap.classList.remove("playing"); setIcon(false); }
   });
-  au.addEventListener("ended", ()=>{ box.classList.remove("playing"); setIcon(false); });
+  function nowUI(){
+    const playing = !au.paused;
+    $("sndNow").hidden = !data || !data.preview || !MUSIC;
+    $("sndNowBtn").textContent = playing ? "❚❚" : "▶";
+    if(data) $("sndNowT").textContent = `${data.title} — ${data.artist}`;
+  }
+  window.musicStop = ()=>{ au.pause(); box.classList.remove("playing"); wrap.classList.remove("playing"); setIcon(false); nowUI(); };
+  $("sndNowBtn").onclick = ()=>$("lpPlay").click();
+  ["play","pause","ended"].forEach(ev=>au.addEventListener(ev, nowUI));
+  au.addEventListener("ended", ()=>{ box.classList.remove("playing"); wrap.classList.remove("playing"); setIcon(false); });
   const load = ()=>api("/api/lastfm").then(d=>{ if(d && d.title) render(d); }).catch(()=>{});
   load(); setInterval(load, 60000);
   window.renderLastPlayed = ()=>data && render(data);
