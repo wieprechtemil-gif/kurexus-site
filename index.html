@@ -2399,20 +2399,6 @@ const drawSmokes = (function(){
       const g = ctx.createRadialGradient(sx2,sy2,0,sx2,sy2,rr); g.addColorStop(0,`rgba(${sc},${a})`); g.addColorStop(.6,`rgba(${sc},${a*.45})`); g.addColorStop(1,`rgba(${sc},0)`);
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx2,sy2,rr,0,7); ctx.fill();
     }
-    // music: a live spectrum hanging from the bottom edge of the nav, in the album colour
-    if(playing || A.specOn > .01){
-      A.specOn = (A.specOn || 0) + ((playing ? 1 : 0) - (A.specOn || 0))*.08;
-      const bc = (A.tintTarget ? tintNow : base).join(","), n = 72, bw = W/n, top = 58;
-      if(!A.spec) A.spec = new Float32Array(n);
-      for(let i=0;i<n;i++){
-        const bin = Math.floor(Math.pow(i/n, 1.6)*90) + 1, v = playing ? A.data[bin]/255 : 0;
-        A.spec[i] += (v - A.spec[i])*.35;
-        const h = Math.pow(A.spec[i], 1.25)*48*A.specOn;
-        if(h < .6) continue;
-        const g = ctx.createLinearGradient(0, top, 0, top + h); g.addColorStop(0,`rgba(${bc},${.7*A.specOn})`); g.addColorStop(1,`rgba(${bc},0)`);
-        ctx.fillStyle = g; ctx.fillRect(i*bw + 1, top, bw - 2, h);
-      }
-    }
     // thrown smokes live on their own canvas above the content (#smokeFx), drawn here in the same frame
     drawSmokes(tt);
     // cursor spotlight
