@@ -567,13 +567,6 @@ html.vibing .glow{scale:calc(1 + var(--beat,0)*.18);opacity:calc(.75 + var(--bea
 html.vibing .avatar .ring{scale:calc(1 + var(--beat,0)*.12)}
 html.vibing .lp-art img{box-shadow:0 0 calc(var(--beat,0)*26px) rgba(var(--tint,255,255,255),.7)}
 html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,0)*.5))}
-#skyFx{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
-html.bg-skyline #sky,html.bg-skyline .glow{display:none}
-html.bg-skyline:not(.sky-laptop) #skyFx{z-index:0}
-html.sky-laptop body{padding-top:var(--scr-top);padding-bottom:var(--scr-bot)}
-html.sky-laptop nav{top:var(--scr-top);max-width:var(--scr-w);margin:0 auto;border-radius:12px 12px 0 0}
-html.sky-laptop .wrap{max-width:calc(var(--scr-w) - 24px)}
-html.sky-laptop #liveFx{display:none}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -1190,6 +1183,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FINE = matchMedia("(pointer:fine)").matches;
 const fmt = n => Number(n).toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+try{ localStorage.removeItem("bgMode"); }catch(e){}
 const store = { get(k){ try{return localStorage.getItem(k);}catch(e){return null;} }, set(k,v){ try{localStorage.setItem(k,v);}catch(e){} } };
 function show(msg){ const el=$("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(show.t); show.t = setTimeout(()=>el.classList.remove("show"), 1800); }
 function copy(text, msg){
@@ -1674,12 +1668,7 @@ const CMDS = {
   "sv_cheats 1":()=>{ document.body.classList.remove("shake"); void document.body.offsetWidth; document.body.classList.add("shake"); return ["e","nice try. VAC'd 🔨"]; },
   noclip:()=>["e","noclip requires sv_cheats 1"],
   kill:()=>{ kill(L("you","du"),"knife",L("yourself","dich selbst"),{me:true}); return "you died."; },
-  "fps_max 0":()=>"unlocked. your gpu is now screaming.",
-  bg:()=>"bg modes: classic, shapes, strat, skyline — e.g. type: bg skyline",
-  "bg classic":()=>{ store.set("bgMode","classic"); location.search = "?bg=classic"; return "loading..."; },
-  "bg shapes":()=>{ location.search = "?bg=shapes"; return "loading..."; },
-  "bg strat":()=>{ location.search = "?bg=strat"; return "loading..."; },
-  "bg skyline":()=>{ location.search = "?bg=skyline"; return "loading..."; }
+  "fps_max 0":()=>"unlocked. your gpu is now screaming."
 };
 $("conForm").onsubmit = e=>{
   e.preventDefault(); const raw = inp.value.trim(); inp.value = ""; if(!raw) return;
@@ -2107,296 +2096,6 @@ const AMBIENT = (function(){
   return { st, setAlbum, hookAudio, isNight:()=>st.hour < 5 || st.hour >= 23 };
 })();
 
-/* ---------- background modes (preview: ?bg=classic | shapes | strat | skyline, or console "bg <mode>") ---------- */
-const BGMODE = (()=>{
-  const MODES = ["classic","shapes","strat","skyline"];
-  let m = null; try{ m = new URLSearchParams(location.search).get("bg"); }catch(e){}
-  if(m && MODES.includes(m)){ store.set("bgMode", m); } else m = store.get("bgMode");
-  return MODES.includes(m) ? m : "classic";
-})();
-document.documentElement.classList.add("bg-" + BGMODE);
-
-const BGX = {};
-
-/* ===== 6 · particles that assemble into things (crosshair, kur, 加油, horse, AK, GG) ===== */
-BGX.shapes = (function(){
-  const N = 240, P = [], SH = [];
-  let phase = "free", phaseT = 0, idx = -1, W = 0, H = 0, ready = false;
-  const off = document.createElement("canvas"); off.width = off.height = 320; const o = off.getContext("2d", { willReadFrequently:true });
-  function sample(draw){
-    o.clearRect(0,0,320,320); o.fillStyle = o.strokeStyle = "#fff"; draw(o);
-    const d = o.getImageData(0,0,320,320).data, pts = [];
-    for(let y=0;y<320;y+=4) for(let x=0;x<320;x+=4) if(d[(y*320+x)*4+3] > 128) pts.push([x/320-.5, y/320-.5]);
-    return pts;
-  }
-  function build(){
-    const C = CFG.crosshair || {};
-    SH.length = 0;
-    SH.push(sample(c=>{ const g = 26, l = 92, t = 22; c.fillRect(160-t/2,160-g-l,t,l); c.fillRect(160-t/2,160+g,t,l); c.fillRect(160-g-l,160-t/2,l,t); c.fillRect(160+g,160-t/2,l,t); }));
-    SH.push(sample(c=>{ c.font = "italic 190px 'Instrument Serif', Georgia, serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("kur", 160, 150); }));
-    SH.push(sample(c=>{ c.font = "700 120px 'Noto Sans SC','Microsoft YaHei','PingFang SC',sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("加油", 160, 160); }));
-    SH.push(sample(c=>{ c.font = "200px serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("🐎", 160, 170); }));
-    SH.push(sample(c=>{ c.font = "700 170px 'Space Grotesk', system-ui, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("GG", 160, 165); }));
-    const ak = new Image(); ak.onload = ()=>{ SH.splice(3, 0, sample(c=>{ const s = 300/ak.width; c.drawImage(ak, 10, 160 - ak.height*s/2, 300, ak.height*s); })); }; ak.src = "/img/kf/ak.png";
-    ready = true;
-  }
-  (document.fonts?.ready || Promise.resolve()).then(build);
-  function init(w, h){
-    W = w; H = h;
-    if(!P.length) for(let i=0;i<N;i++) P.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3, tx:0, ty:0, r:.6+Math.random()*1.1, ph:Math.random()*6.3 });
-  }
-  return function(ctx, w, h, tt, k){
-    if(w !== W || h !== H) init(w, h);
-    phaseT += .016;
-    if(ready && SH.length){
-      if(phase === "free" && phaseT > 4.5){
-        phase = "form"; phaseT = 0; idx = (idx + 1) % SH.length;
-        const side = (W - 960)/2, useSide = side > 200;
-        const size = useSide ? Math.min(side*.92, H*.5, 420) : Math.min(W*.42, H*.7, 560);
-        const cx = useSide ? (idx % 2 ? W - side/2 : side/2) : W/2, cy = H*.5, pts = SH[idx];
-        P.forEach((q,i)=>{ const p = pts[Math.floor(i/N*pts.length + Math.random()*2) % pts.length]; q.tx = cx + p[0]*size + (Math.random()-.5)*2; q.ty = cy + p[1]*size + (Math.random()-.5)*2; });
-      } else if(phase === "form" && phaseT > 5){
-        phase = "free"; phaseT = 0;
-        P.forEach(q=>{ const a = Math.random()*6.283, v = .6 + Math.random()*1.8; q.vx = Math.cos(a)*v; q.vy = Math.sin(a)*v; });
-      }
-    }
-    const ox = -k.par.x*24, oy = -k.par.y*16;
-    const formed = phase === "form" ? Math.min(1, phaseT/1.6) * (phaseT > 4.4 ? Math.max(0, 1-(phaseT-4.4)/.6) : 1) : 0;
-    for(const q of P){
-      if(phase === "form"){ q.vx += (q.tx - q.x)*.012; q.vy += (q.ty - q.y)*.012; q.vx *= .86; q.vy *= .86; }
-      else { q.vx *= .985; q.vy *= .985; q.vx += (Math.random()-.5)*.02; q.vy += (Math.random()-.5)*.02 - .002; }
-      if(k.beat > .2){ q.vx += (Math.random()-.5)*k.beat*1.6; q.vy += (Math.random()-.5)*k.beat*1.6; }
-      q.x += q.vx*k.boost; q.y += q.vy*k.boost;
-      if(phase !== "form"){ if(q.x < -10) q.x = W+10; if(q.x > W+10) q.x = -10; if(q.y < -10) q.y = H+10; if(q.y > H+10) q.y = -10; }
-      const m = k.mouse; if(m.in){ const dx = q.x+ox-m.x, dy = q.y+oy-m.y, d = Math.hypot(dx,dy); if(d < 90 && d > 0){ q.x += dx/d*1.6; q.y += dy/d*1.6; } }
-    }
-    // faint links only while drifting
-    if(formed < .5){
-      ctx.lineWidth = 1;
-      for(let i=0;i<P.length;i+=2){ const a = P[i]; for(let j=i+2;j<P.length;j+=2){ const b = P[j], dx = a.x-b.x, dy = a.y-b.y, d2 = dx*dx+dy*dy; if(d2 < 6400){ ctx.strokeStyle = `rgba(${k.sc},${(1-Math.sqrt(d2)/80)*.06*(1-formed*2)*k.boost})`; ctx.beginPath(); ctx.moveTo(a.x+ox,a.y+oy); ctx.lineTo(b.x+ox,b.y+oy); ctx.stroke(); } } }
-    }
-    for(const q of P){
-      const al = (.25 + .6*formed) * (.75 + .25*Math.sin(tt*1.6+q.ph)) * Math.min(1.6, k.boost);
-      ctx.fillStyle = `rgba(${k.p},${Math.min(1,al)})`; ctx.beginPath(); ctx.arc(q.x+ox, q.y+oy, q.r*(1+formed*.5), 0, 6.283); ctx.fill();
-    }
-  };
-})();
-
-/* ===== 2 · strat board: blueprint map + hand-drawn tactics that appear and fade ===== */
-BGX.strat = (function(){
-  let W = 0, H = 0, map = [], items = [], nextAt = 0;
-  const NOTES = ["smoke ct","flash over","2 a main","lurk b","awp mid","exec in 3","nade stack","kur entry","rotate!","fake b","boost here","molly default","save","plant safe","jump spot","trade me"];
-  const R = (a,b)=>a + Math.random()*(b-a);
-  function init(w, h){
-    W = w; H = h; map = [];
-    // blueprint: rooms + corridors on a grid that's taller than the screen (scrolls slowly)
-    const cols = 6, rows = 9, cw = W/cols, ch = (H*2)/rows;
-    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
-      if(Math.random() < .45) continue;
-      const x = c*cw + R(8, cw*.3), y = r*ch + R(8, ch*.3), w2 = R(cw*.45, cw*.85), h2 = R(ch*.35, ch*.8);
-      map.push({ x, y, w:w2, h:h2 });
-    }
-  }
-  function spawn(now){
-    const type = ["arrow","arrow","smoke","x","note","path"][Math.floor(Math.random()*6)];
-    const pad = 60, x = R(pad, W-pad), y = R(90, H-pad);
-    const col = Math.random() < .55 ? "w" : Math.random() < .6 ? "y" : "r";
-    const it = { type, x, y, t:now, col, draw:1.1, hold:R(3.5,5.5), fade:1.4 };
-    if(type === "arrow" || type === "path"){
-      const a = R(0, 6.283), L = R(120, 300);
-      it.pts = []; const x1 = x + Math.cos(a)*L, y1 = y + Math.sin(a)*L, cx = (x+x1)/2 + R(-80,80), cy = (y+y1)/2 + R(-80,80);
-      for(let i=0;i<=40;i++){ const t = i/40; it.pts.push([(1-t)*(1-t)*x + 2*(1-t)*t*cx + t*t*x1 + R(-.6,.6), (1-t)*(1-t)*y + 2*(1-t)*t*cy + t*t*y1 + R(-.6,.6)]); }
-      it.dash = type === "path";
-    }
-    if(type === "smoke") it.r = R(26, 46);
-    if(type === "note"){ it.text = NOTES[Math.floor(Math.random()*NOTES.length)]; it.size = R(18, 28); }
-    items.push(it); if(items.length > 7) items.shift();
-  }
-  const C = (col, k, a)=> col === "y" ? `rgba(242,201,76,${a})` : col === "r" ? `rgba(255,95,95,${a})` : `rgba(${k.p},${a})`;
-  return function(ctx, w, h, tt, k){
-    if(w !== W || h !== H) init(w, h);
-    const now = performance.now();
-    if(now > nextAt){ spawn(now); nextAt = now + R(900, 1700); }
-    const ox = -k.par.x*16, oy = -k.par.y*10 - (scrollY*.06 % (H*2));
-    // blueprint grid + walls
-    ctx.save(); ctx.translate(ox, 0);
-    ctx.fillStyle = `rgba(${k.p},.05)`;
-    for(let x=0;x<W+40;x+=40) for(let y=((oy%40)+40)%40;y<H;y+=40) ctx.fillRect(x, y, 1.2, 1.2);
-    ctx.strokeStyle = `rgba(${k.p},${.07*Math.min(1.8,k.boost)})`; ctx.lineWidth = 1;
-    for(const m of map){ for(const off of [0, H*2]){ const y = m.y + oy + off; if(y > H || y + m.h < 0) continue; ctx.strokeRect(m.x, y, m.w, m.h); ctx.strokeRect(m.x+4, y+4, m.w-8, m.h-8); } }
-    ctx.restore();
-    // tactics
-    ctx.lineCap = "round"; ctx.lineJoin = "round";
-    for(let i=items.length-1;i>=0;i--){
-      const it = items[i], age = (now - it.t)/1000, end = it.draw + it.hold + it.fade;
-      if(age > end){ items.splice(i,1); continue; }
-      const pr = Math.min(1, age/it.draw), a = (age > it.draw + it.hold ? 1 - (age - it.draw - it.hold)/it.fade : 1) * .32 * Math.min(1.6, k.boost);
-      ctx.save(); ctx.translate(-k.par.x*10, -k.par.y*6);
-      ctx.strokeStyle = C(it.col, k, a); ctx.fillStyle = C(it.col, k, a); ctx.lineWidth = 2;
-      if(it.pts){
-        const n = Math.max(2, Math.round(it.pts.length*pr));
-        if(it.dash) ctx.setLineDash([7,7]);
-        ctx.beginPath(); ctx.moveTo(...it.pts[0]); for(let j=1;j<n;j++) ctx.lineTo(...it.pts[j]); ctx.stroke(); ctx.setLineDash([]);
-        if(pr >= 1){ const [x1,y1] = it.pts[it.pts.length-1], [x0,y0] = it.pts[it.pts.length-4], an = Math.atan2(y1-y0, x1-x0);
-          ctx.beginPath(); ctx.moveTo(x1 - Math.cos(an-.45)*14, y1 - Math.sin(an-.45)*14); ctx.lineTo(x1, y1); ctx.lineTo(x1 - Math.cos(an+.45)*14, y1 - Math.sin(an+.45)*14); ctx.stroke(); }
-      } else if(it.type === "smoke"){
-        ctx.beginPath(); ctx.arc(it.x, it.y, it.r, -1.57, -1.57 + 6.283*pr); ctx.stroke();
-        if(pr >= 1){ ctx.save(); ctx.beginPath(); ctx.arc(it.x, it.y, it.r-2, 0, 7); ctx.clip(); ctx.lineWidth = 1; for(let d=-it.r;d<it.r;d+=7){ ctx.beginPath(); ctx.moveTo(it.x+d, it.y-it.r); ctx.lineTo(it.x+d+it.r, it.y+it.r); ctx.stroke(); } ctx.restore(); }
-      } else if(it.type === "x"){
-        const s = 12, p1 = Math.min(1, pr*2), p2 = Math.max(0, pr*2-1);
-        ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(it.x-s, it.y-s); ctx.lineTo(it.x-s + 2*s*p1, it.y-s + 2*s*p1); ctx.stroke();
-        if(p2){ ctx.beginPath(); ctx.moveTo(it.x+s, it.y-s); ctx.lineTo(it.x+s - 2*s*p2, it.y-s + 2*s*p2); ctx.stroke(); }
-      } else if(it.type === "note"){
-        ctx.font = `italic ${it.size}px 'Instrument Serif', Georgia, serif`;
-        const tw = ctx.measureText(it.text).width; ctx.beginPath(); ctx.rect(it.x - 4, it.y - it.size, (tw + 8)*pr, it.size*1.6); ctx.clip();
-        ctx.fillText(it.text, it.x, it.y); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(it.x, it.y + 6); ctx.lineTo(it.x + tw, it.y + 5); ctx.stroke();
-      }
-      ctx.restore();
-    }
-  };
-})();
-
-/* ===== 4 · high-rise view over Guangzhou at night, the site runs on a laptop in front of you ===== */
-BGX.skyline = (function(){
-  if(BGMODE !== "skyline") return null;
-  const cv = document.createElement("canvas"); cv.id = "skyFx"; cv.setAttribute("aria-hidden","true");
-  document.body.insertBefore(cv, $("smokeFx"));
-  const ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio||1, 2);
-  let W = 0, H = 0, laptop = true, S = null, stat = null, refl = null, towers = [], lights = [], wins = [];
-  const R = (a,b)=>a + Math.random()*(b-a);
-  function layout(){
-    W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    laptop = W >= 980 && FINE;
-    document.documentElement.classList.toggle("sky-laptop", laptop);
-    const sw = Math.round(Math.min(Math.max(760, W*.6), 1000)), baseH = Math.round(Math.min(150, Math.max(96, H*.15))), top = Math.round(Math.max(18, H*.05));
-    S = { x0:Math.round((W - sw)/2), x1:Math.round((W + sw)/2), y0:top, y1:H - baseH, bz:14, baseH };
-    const R0 = document.documentElement.style;
-    R0.setProperty("--scr-w", sw + "px"); R0.setProperty("--scr-top", top + "px"); R0.setProperty("--scr-bot", (baseH + 14) + "px");
-    render();
-  }
-  // ---- static skyline (pre-rendered once per resize)
-  function render(){
-    const hz = H*.6;                       // horizon / river bank
-    stat = document.createElement("canvas"); stat.width = (W+120)*dpr; stat.height = H*dpr;
-    const c = stat.getContext("2d"); c.setTransform(dpr,0,0,dpr,0,0); c.translate(60, 0);
-    const sky = c.createLinearGradient(0,0,0,hz);
-    sky.addColorStop(0,"#05060f"); sky.addColorStop(.55,"#0d0b20"); sky.addColorStop(.85,"#2a1838"); sky.addColorStop(1,"#4a2446");
-    c.fillStyle = sky; c.fillRect(-60,0,W+120,hz);
-    for(let i=0;i<70;i++){ c.fillStyle = `rgba(255,255,255,${R(.15,.6)})`; c.fillRect(R(-60,W+60), R(0,hz*.5), 1.1, 1.1); }
-    // city glow on the horizon (magenta haze, not orange)
-    const hg = c.createRadialGradient(W/2, hz, 0, W/2, hz, W*.7); hg.addColorStop(0,"rgba(190,90,170,.28)"); hg.addColorStop(1,"rgba(190,90,170,0)");
-    c.fillStyle = hg; c.fillRect(-60, 0, W+120, hz);
-    // far layer
-    wins = [];
-    const block = (x, w, h, col, winA, tall)=>{
-      c.fillStyle = col; c.fillRect(x, hz - h, w, h);
-      for(let yy = hz - h + 6; yy < hz - 4; yy += tall ? 7 : 9) for(let xx = x + 3; xx < x + w - 4; xx += 6){
-        if(Math.random() < winA){ const warm = Math.random() < .6; c.fillStyle = warm ? `rgba(255,214,150,${R(.35,.85)})` : `rgba(200,225,255,${R(.3,.8)})`; c.fillRect(xx, yy, 2.4, 3.2); if(Math.random() < .03) wins.push([xx, yy]); }
-      }
-    };
-    for(let x=-60;x<W+60;){ const w = R(18,46); block(x, w, R(30, H*.16), "#0f0d18", .12); x += w + R(0,6); }
-    for(let x=-60;x<W+60;){ const w = R(24,60); block(x, w, R(50, H*.26), "#0b0a12", .22, true); x += w + R(4,20); }
-    // landmarks: CTF Finance Centre + IFC on the left, Canton Tower on the right (kept beside the laptop)
-    const leftC = laptop ? Math.max(70, S.x0*.45) : W*.22, rightC = laptop ? S.x1 + (W - S.x1)*.5 : W*.8;
-    // CTF: stepped tower with a crown of fins
-    (function(){
-      const cx = leftC + 40, h = H*.5, w = 46, base = hz;
-      c.fillStyle = "#0e0c16";
-      c.fillRect(cx - w/2, base - h*.55, w, h*.55); c.fillRect(cx - w*.42, base - h*.78, w*.84, h*.25); c.fillRect(cx - w*.34, base - h*.93, w*.68, h*.16);
-      for(let i=0;i<7;i++) c.fillRect(cx - w*.3 + i*w*.1, base - h - R(0,10), 3, h*.08);
-      c.fillStyle = "rgba(220,235,255,.22)"; for(let i=0;i<5;i++) c.fillRect(cx - w*.4 + i*w*.2, base - h*.92, 1.2, h*.9);
-      lights.push([cx, base - h - 6]);
-    })();
-    // IFC: tapered diagrid tower
-    (function(){
-      const cx = leftC - 24, h = H*.44, b = hz, w0 = 40, w1 = 24;
-      c.fillStyle = "#100e19"; c.beginPath(); c.moveTo(cx - w0/2, b); c.lineTo(cx - w1/2, b - h); c.lineTo(cx + w1/2 + 6, b - h - 10); c.lineTo(cx + w0/2, b); c.fill();
-      c.save(); c.clip(); c.strokeStyle = "rgba(200,230,255,.16)"; c.lineWidth = .8;
-      for(let y=b; y>b-h-20; y-=16){ c.beginPath(); c.moveTo(cx - 30, y); c.lineTo(cx + 30, y - 16); c.moveTo(cx + 30, y); c.lineTo(cx - 30, y - 16); c.stroke(); }
-      c.restore(); lights.push([cx + 3, b - h - 12]);
-    })();
-    towers = [{ cx:rightC, base:hz, h:H*.58 }];
-    for(let i=0;i<4;i++) lights.push([R(0, W), hz - R(80, H*.24)]);
-    // near bank + river
-    c.fillStyle = "#06050b"; c.fillRect(-60, hz, W+120, H - hz);
-    // reflection source
-    refl = document.createElement("canvas"); refl.width = stat.width; refl.height = Math.round(hz*dpr);
-    const r = refl.getContext("2d"); r.drawImage(stat, 0, 0, stat.width, hz*dpr, 0, 0, stat.width, hz*dpr);
-  }
-  // Canton Tower: twisted hyperboloid made of straight lines, LEDs cycling colours, pulsing with the beat
-  function canton(c, t, k){
-    const T = towers[0]; if(!T) return;
-    const { cx, base, h } = T, rb = 34, rt = 13, top = base - h, N = 22, tw = 2.1;
-    const hue = (t*18) % 360, glow = .55 + .45*Math.sin(t*1.3) * .5 + k.beat*.6;
-    c.save(); c.lineWidth = 1; c.shadowBlur = 10; c.shadowColor = `hsla(${hue},90%,65%,.9)`;
-    for(let i=0;i<N;i++){
-      const th = i/N*6.283, x0 = cx + Math.cos(th)*rb, x1 = cx + Math.cos(th + tw)*rt;
-      const front = Math.sin(th) > 0;
-      c.strokeStyle = `hsla(${(hue + i*4)%360},90%,${front ? 70 : 55}%,${(front ? .55 : .25)*Math.min(1.4, glow)})`;
-      c.beginPath(); c.moveTo(x0, base); c.lineTo(x1, top + h*.12); c.stroke();
-    }
-    for(let j=1;j<9;j++){ const y = base - j*h*.1, f = j/9, r = rb*(1-f) + rt*f - Math.sin(f*3.14)*8; c.strokeStyle = `hsla(${hue},90%,70%,${.18*glow})`; c.beginPath(); c.ellipse(cx, y, Math.max(6, r), 2.4, 0, 0, 6.283); c.stroke(); }
-    c.shadowBlur = 0; c.strokeStyle = "rgba(255,255,255,.55)"; c.lineWidth = 2; c.beginPath(); c.moveTo(cx, top + h*.12); c.lineTo(cx, top - 20); c.stroke();
-    c.fillStyle = `rgba(255,60,60,${Math.sin(t*2.4) > .3 ? .95 : .2})`; c.beginPath(); c.arc(cx, top - 22, 2.2, 0, 7); c.fill();
-    c.restore();
-  }
-  function laptopDraw(c, k){
-    const { x0, x1, y0, y1, bz } = S, rr = 12;
-    // desk behind/under the laptop
-    const dy = y1 + bz - 2, dg = c.createLinearGradient(0, dy, 0, H); dg.addColorStop(0,"#16110f"); dg.addColorStop(1,"#070505");
-    c.fillStyle = dg; c.fillRect(0, dy, W, H - dy);
-    c.fillStyle = "rgba(255,255,255,.06)"; c.fillRect(0, dy, W, 1);
-    // screen light spilling onto the desk
-    const sp = c.createRadialGradient(W/2, dy, 0, W/2, dy, (x1-x0)*.7); sp.addColorStop(0,`rgba(220,225,255,${.1 + k.beat*.08})`); sp.addColorStop(1,"rgba(220,225,255,0)");
-    c.fillStyle = sp; c.fillRect(0, dy, W, H - dy);
-    // keyboard deck in perspective
-    const ty = y1 + bz + 6, tl = x0 - bz - 14, tr = x1 + bz + 14, spread = (x1 - x0)*.22;
-    const kg = c.createLinearGradient(0, ty, 0, H); kg.addColorStop(0,"#2c2c31"); kg.addColorStop(1,"#141417");
-    c.fillStyle = kg; c.beginPath(); c.moveTo(tl, ty); c.lineTo(tr, ty); c.lineTo(tr + spread, H + 30); c.lineTo(tl - spread, H + 30); c.closePath(); c.fill();
-    c.strokeStyle = "rgba(255,255,255,.1)"; c.beginPath(); c.moveTo(tl, ty); c.lineTo(tr, ty); c.stroke();
-    // keys (rows get bigger towards you), soft white backlight that pulses with the music
-    let y = ty + 10, kh = 9;
-    for(let row=0; row<6 && y < H; row++){
-      const f = (y - ty)/(H + 30 - ty), l = tl + (tl - spread - tl)*f + 26 + row*2, r = tr + (spread)*f - 26 - row*2, n = 15, kw = (r - l)/n;
-      for(let i=0;i<n;i++){ c.fillStyle = "#101012"; c.fillRect(l + i*kw + 1.5, y, kw - 3, kh); c.fillStyle = `rgba(255,255,255,${.05 + k.beat*.18})`; c.fillRect(l + i*kw + 1.5, y + kh - 1, kw - 3, 1); }
-      y += kh + 5; kh *= 1.14;
-    }
-    // hinge
-    c.fillStyle = "#18181b"; c.fillRect(x0 - bz, y1 + bz, x1 - x0 + bz*2, 7);
-    // bezel (outer rounded rect minus the screen)
-    c.fillStyle = "#0b0b0c"; c.beginPath(); c.roundRect(x0 - bz, y0 - bz - 40, x1 - x0 + bz*2, y1 - y0 + bz*2 + 40, rr + 6); c.roundRect(x0, y0, x1 - x0, y1 - y0, rr); c.fill("evenodd");
-    c.strokeStyle = "rgba(255,255,255,.09)"; c.lineWidth = 1; c.beginPath(); c.roundRect(x0 - bz + .5, y0 - bz - 40, x1 - x0 + bz*2 - 1, y1 - y0 + bz*2 + 40, rr + 6); c.stroke();
-    c.fillStyle = "rgba(255,255,255,.18)"; c.font = "600 7px 'JetBrains Mono', monospace"; c.textAlign = "center"; c.fillText("kur", W/2, y1 + bz - 3);
-  }
-  addEventListener("resize", layout); layout();
-  return function(tt, k){
-    ctx.clearRect(0,0,W,H);
-    const px = -k.par.x*(laptop ? 30 : 14), py = -k.par.y*8;
-    ctx.drawImage(stat, -60 + px, py, W + 120, H);
-    // river: reflection with shimmer
-    const hz = H*.6, rh = H*.16;
-    for(let y=0; y<rh; y+=2){
-      const sy = hz - 2 - y, wob = Math.sin(tt*1.6 + y*.22)*(1 + y*.04);
-      ctx.globalAlpha = .26*(1 - y/rh)*(.85 + .15*Math.sin(tt*3 + y));
-      ctx.drawImage(refl, 0, Math.max(0, sy)*dpr, refl.width, 2*dpr, -60 + px + wob, hz + y + py, W + 120, 2);
-    }
-    ctx.globalAlpha = 1;
-    ctx.save(); ctx.translate(60 - 60 + px, py); canton(ctx, tt, k);
-    for(const [x,y] of lights){ ctx.fillStyle = `rgba(255,50,50,${(Math.sin(tt*2.2 + x) > .4) ? .9 : .15})`; ctx.fillRect(x - 1, y - 1, 2.4, 2.4); }
-    if(Math.random() < .25 && wins.length){ const [x,y] = wins[Math.floor(Math.random()*wins.length)]; ctx.fillStyle = "#0b0a12"; ctx.fillRect(x, y, 2.4, 3.2); }
-    ctx.restore();
-    // glass: faint reflection + vignette
-    const gl = ctx.createLinearGradient(0,0,W,H); gl.addColorStop(0,"rgba(255,255,255,.03)"); gl.addColorStop(.5,"rgba(255,255,255,0)"); gl.addColorStop(1,"rgba(255,255,255,.02)");
-    ctx.fillStyle = gl; ctx.fillRect(0,0,W,H);
-    if(laptop){
-      laptopDraw(ctx, k);
-      ctx.globalCompositeOperation = "destination-out"; ctx.fillStyle = "#000"; ctx.beginPath(); ctx.roundRect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0, 12); ctx.fill(); ctx.globalCompositeOperation = "source-over";
-    }
-    else { ctx.fillStyle = "rgba(8,8,10,.6)"; ctx.fillRect(0,0,W,H); }
-  };
-})();
-
 /* ---------- background canvas: smoke + particles + stars + thrown smokes ---------- */
 const SMOKES = [];
 // parallax target (-1..1) from mouse position or phone tilt
@@ -2534,8 +2233,6 @@ const drawSmokes = (function(){
     PAR.x += (PAR.tx - PAR.x)*.05; PAR.y += (PAR.ty - PAR.y)*.05;
     const wrapX = v=>((v+10)%(W+20)+(W+20))%(W+20)-10, wrapY = (v,h)=>((v+10)%(h+20)+(h+20))%(h+20)-10;
     if(glowEl) glowEl.style.translate = `${(-PAR.x*22).toFixed(1)}px ${(-PAR.y*14).toFixed(1)}px`;
-    const K = { p, sc, boost, beat:A.beat, par:PAR, mouse };
-    if(BGMODE === "skyline"){ BGX.skyline(tt, K); drawSmokes(tt); if(!REDUCED && !document.hidden) requestAnimationFrame(frame); return; }
     // stars at night (furthest layer)
     if(AMBIENT.isNight() && document.documentElement.dataset.theme !== "light"){
       const so = -PAR.x*5, sy = -PAR.y*4 - scrollY*.015;
@@ -2565,8 +2262,6 @@ const drawSmokes = (function(){
       mouse.sx += (mouse.x-mouse.sx)*.08; mouse.sy += (mouse.y-mouse.sy)*.08; if(mouse.sx < -900){ mouse.sx=mouse.x; mouse.sy=mouse.y; }
       const g = ctx.createRadialGradient(mouse.sx,mouse.sy,0,mouse.sx,mouse.sy,320); g.addColorStop(0,`rgba(${p},.04)`); g.addColorStop(1,`rgba(${p},0)`); ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
     }
-    if(BGMODE === "shapes"){ BGX.shapes(ctx, W, H, tt, K); if(!REDUCED && !document.hidden) requestAnimationFrame(frame); return; }
-    if(BGMODE === "strat"){ BGX.strat(ctx, W, H, tt, K); if(!REDUCED && !document.hidden) requestAnimationFrame(frame); return; }
     // particles (closest layer: moves most, and drifts with scroll)
     const po = -PAR.x*30, pyo = -PAR.y*20 - scrollY*.12;
     const D = P.map(q=>{
