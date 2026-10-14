@@ -335,8 +335,32 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .gt-top{position:absolute;top:18px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center}
 .gt-open{font-family:var(--mono);font-size:11px;color:var(--muted);transition:color .2s}
 .gtile:hover .gt-open{color:var(--fg)}
-.gt-name{position:relative;font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1.05}
-.gt-meta{position:relative;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.gt-name{position:relative;text-shadow:0 2px 24px var(--bg),0 0 2px var(--bg);font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.gt-meta{position:relative;text-shadow:0 1px 12px var(--bg);font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+
+/* game art (original illustrations, hover-driven motion only) */
+.gt-art{position:absolute;inset:0;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 80%);mask-image:linear-gradient(90deg,transparent 30%,#000 80%)}
+.gt-art svg{position:absolute;right:0;top:0;height:100%;width:56%;display:block}
+.gtile.big .gt-art svg{width:62%}
+.art-cs .sweep{transform-origin:450px 130px;transition:transform 2.4s cubic-bezier(.3,.6,.2,1)}
+.gtile:hover .art-cs .sweep{transform:rotate(300deg)}
+.art-cs .ping{opacity:0;transition:opacity .3s}
+.gtile:hover .art-cs .ping{opacity:1;animation:ping 1.6s ease-out infinite}
+.gtile:hover .art-cs .ping.b{animation-delay:.5s}
+@keyframes ping{0%{r:3}100%{r:16;opacity:0}}
+.art-kr .cubes{transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.gtile:hover .art-kr .cubes{transform:translate(-18px,-6px)}
+.art-kr .speed line{stroke-dasharray:60 400;stroke-dashoffset:0;transition:stroke-dashoffset 1s ease-out}
+.gtile:hover .art-kr .speed line{stroke-dashoffset:-200}
+.art-rd .sun{transition:transform 2s cubic-bezier(.2,.8,.2,1)}
+.gtile:hover .art-rd .sun{transform:translateY(22px)}
+.art-rd .far{transition:transform 2s cubic-bezier(.2,.8,.2,1)}
+.gtile:hover .art-rd .far{transform:translateX(-12px)}
+.gw-banner{position:absolute;inset:0;z-index:-1;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent 15%,#000 70%);mask-image:linear-gradient(90deg,transparent 15%,#000 70%);pointer-events:none;overflow:hidden}
+.gw-banner svg{position:absolute;right:0;top:50%;transform:translateY(-50%);width:70%;height:auto;min-height:100%}
+.gw-head{isolation:isolate;overflow:hidden}
+@media (prefers-reduced-motion:reduce){.gtile:hover .art-cs .sweep,.gtile:hover .art-kr .cubes,.gtile:hover .art-rd .sun,.gtile:hover .art-rd .far{transform:none}}
 
 /* game window */
 .gw{position:fixed;inset:0;z-index:110;display:none;align-items:flex-end;justify-content:center;padding:24px 16px 0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
@@ -344,7 +368,7 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 @keyframes gwFade{from{opacity:0}}
 .gw-panel{width:min(1000px,100%);max-height:calc(100vh - 24px);overflow-y:auto;overscroll-behavior:contain;background:var(--bg);border:1px solid var(--line-2);border-bottom:0;border-radius:22px 22px 0 0;box-shadow:0 -30px 80px -30px rgba(0,0,0,.8);animation:gwUp .35s cubic-bezier(.2,.8,.2,1)}
 @keyframes gwUp{from{transform:translateY(40px);opacity:.4}}
-.gw-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.gw-head{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .gw-head .k{margin-bottom:2px}
 .gw-head h3{font-size:clamp(24px,4vw,34px);letter-spacing:-.03em;line-height:1}
 .gw-x{width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:transparent;font-size:20px;line-height:1;transition:.2s}
@@ -548,19 +572,19 @@ html.xh .xhair.on{opacity:1}
     <h2 data-i18n="r2.title">what I <em>play</em></h2>
     <div class="gtiles">
       <button class="gtile big" data-game="cs2" style="--gc:#e8a33a">
-        <span class="gt-bg">CS2</span>
+        <span class="gt-art" data-art="cs2"></span>
         <span class="gt-top"><span class="tag">AIMER</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
         <span class="gt-name">Counter-Strike 2</span>
         <span class="gt-meta" id="gtCs">FACEIT · premier · settings · clips</span>
       </button>
       <button class="gtile" data-game="krunker" style="--gc:#5ad0ff">
-        <span class="gt-bg">KR</span>
-        <span class="gt-top"><span class="tag" data-i18n="g.kr.tag">BROWSER FPS</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
+        <span class="gt-art" data-art="krunker"></span>
+        <span class="gt-top"><span class="tag" data-i18n="g.kr.tag">MOVEMENT FPS</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
         <span class="gt-name">Krunker</span>
         <span class="gt-meta" data-i18n="g.kr.meta">the fast one · profile · og clips</span>
       </button>
       <button class="gtile" data-game="rdr2" style="--gc:#d9573b">
-        <span class="gt-bg">RDR2</span>
+        <span class="gt-art" data-art="rdr2"></span>
         <span class="gt-top"><span class="tag" data-i18n="g.rdr.tag">STORY</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
         <span class="gt-name">Red Dead Redemption 2</span>
         <span class="gt-meta" data-i18n="g.rdr.meta">the cozy one · clips</span>
@@ -688,6 +712,7 @@ html.xh .xhair.on{opacity:1}
 <div class="gw" id="gw" aria-hidden="true">
   <div class="gw-panel" role="dialog" aria-modal="true" aria-labelledby="gwTitle">
     <div class="gw-head">
+      <div class="gw-banner" id="gwBanner"></div>
       <div><div class="k" id="gwKicker">game</div><h3 id="gwTitle"></h3></div>
       <button class="gw-x" id="gwX" aria-label="close">×</button>
     </div>
@@ -772,9 +797,9 @@ html.xh .xhair.on{opacity:1}
       <div class="gw-page" data-page="krunker">
         <div class="grid g2">
           <div class="card">
-            <div class="k" data-i18n="kr.k">browser fps</div>
+            <div class="k" data-i18n="kr.k">movement fps</div>
             <div class="v" style="font-size:30px" data-i18n="kr.v">the fast one</div>
-            <p class="gw-p" data-i18n="kr.p">Pure movement and flicks, straight in the browser. My warmup when CS isn't enough.</p>
+            <p class="gw-p" data-i18n="kr.p">Bhops, slides and flicks. Pure movement, my warmup when CS isn't fast enough.</p>
           </div>
           <div class="card ccard">
             <div class="k" data-i18n="kr.prof">profile</div>
@@ -868,9 +893,9 @@ const T = { en:{}, de:{
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
   "r1.label":"runde eins — about","r1.title":"about",
   "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
-  "g.open":"öffnen","g.kr.tag":"BROWSER FPS","g.kr.meta":"das schnelle · profil · og clips","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
+  "g.open":"öffnen","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"das schnelle · profil · og clips","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
   "gw.clips":"medal clips","gw.og":"og clips","gw.c":"clips","gw.settings":"settings",
-  "kr.k":"browser fps","kr.v":"das schnelle","kr.p":"Pure Movement und Flicks, direkt im Browser. Mein Warmup, wenn CS nicht reicht.","kr.prof":"profil","kr.vid":"meistens hier drin",
+  "kr.k":"movement fps","kr.v":"das schnelle","kr.p":"Bhops, Slides und Flicks. Pure Movement, mein Warmup, wenn CS nicht schnell genug ist.","kr.prof":"profil","kr.vid":"meistens hier drin",
   "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
   "rdr.horse.k":"pferde geschlagen statt gesattelt","rdr.horse.v":"zu viele","rdr.horse.p":"Falscher Knopf. Jedes. Einzelne. Mal.",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
@@ -1459,10 +1484,53 @@ addEventListener("keydown", e=>{
   }
   $("aimStart").onclick = start;
 })();
+/* ---------- game art (original SVG illustrations) ---------- */
+const ART = {
+  cs2: `<svg class="art-cs" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><radialGradient id="csG" cx="450" cy="130" r="170" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e8a33a" stop-opacity=".22"/><stop offset="1" stop-color="#e8a33a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="csS" x1="0" x2="1"><stop offset="0" stop-color="#e8a33a" stop-opacity="0"/><stop offset="1" stop-color="#e8a33a" stop-opacity=".35"/></linearGradient></defs>
+    <circle cx="450" cy="130" r="170" fill="url(#csG)"/>
+    <g fill="none" stroke="#e8a33a" stroke-opacity=".28">${[40,80,120,160].map(r=>`<circle cx="450" cy="130" r="${r}"/>`).join("")}
+      <path d="M450 -40V300M280 130H620" stroke-dasharray="3 6"/></g>
+    <g fill="none" stroke="#f3e2c2" stroke-opacity=".32" stroke-width="2" stroke-linejoin="round">
+      <path d="M340 60h70v40h40v-30h80v70h-50v60h-90v-40h-50z"/><path d="M380 190h40v40M500 40v30h50"/></g>
+    <g font-family="Space Grotesk,sans-serif" font-weight="700" font-size="18" fill="#e8a33a" fill-opacity=".85">
+      <rect x="372" y="72" width="26" height="26" rx="5" fill="none" stroke="#e8a33a" stroke-opacity=".7"/><text x="385" y="91" text-anchor="middle">A</text>
+      <rect x="496" y="152" width="26" height="26" rx="5" fill="none" stroke="#e8a33a" stroke-opacity=".7"/><text x="509" y="171" text-anchor="middle">B</text></g>
+    <path class="sweep" d="M450 130 L620 130 A170 170 0 0 0 570 10 Z" fill="url(#csS)"/>
+    <circle cx="450" cy="130" r="4" fill="#f5f5f2"/>
+    <circle class="ping" cx="530" cy="92" r="3" fill="none" stroke="#ff4d5e" stroke-width="2"/><circle cx="530" cy="92" r="2.5" fill="#ff4d5e" fill-opacity=".8"/>
+    <circle class="ping b" cx="400" cy="200" r="3" fill="none" stroke="#ff4d5e" stroke-width="2"/><circle cx="400" cy="200" r="2.5" fill="#ff4d5e" fill-opacity=".8"/>
+  </svg>`,
+  krunker: `<svg class="art-kr" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="krT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9be6ff"/><stop offset="1" stop-color="#5ad0ff"/></linearGradient></defs>
+    <g class="speed" stroke="#5ad0ff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round">${[[220,70],[180,120],[250,170],[200,215]].map(([x,y])=>`<line x1="${x}" y1="${y}" x2="${x+260}" y2="${y}"/>`).join("")}</g>
+    <g class="cubes">${[[430,120,46],[510,70,30],[520,175,38],[370,190,22],[580,120,24],[460,40,18]].map(([x,y,r])=>{
+      const h=r*.58; return `<g transform="translate(${x} ${y})" opacity=".92">
+      <path d="M0 ${-r}L${r*.87} ${-h}L0 ${-h+h}L${-r*.87} ${-h}Z" fill="url(#krT)" fill-opacity=".85"/>
+      <path d="M${-r*.87} ${-h}L0 0V${r}L${-r*.87} ${r-h}Z" fill="#2f8fb8" fill-opacity=".8"/>
+      <path d="M${r*.87} ${-h}L0 0V${r}L${r*.87} ${r-h}Z" fill="#1d5f7c" fill-opacity=".85"/></g>`;}).join("")}</g>
+  </svg>`,
+  rdr2: `<svg class="art-rd" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="rdSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9573b" stop-opacity="0"/><stop offset="1" stop-color="#d9573b" stop-opacity=".28"/></linearGradient>
+    <linearGradient id="rdSun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf8a"/><stop offset="1" stop-color="#e2683f"/></linearGradient>
+    <clipPath id="rdClip"><circle cx="450" cy="130" r="70"/></clipPath></defs>
+    <rect width="600" height="260" fill="url(#rdSky)"/>
+    <g class="sun" clip-path="url(#rdClip)"><circle cx="450" cy="130" r="70" fill="url(#rdSun)" fill-opacity=".9"/>
+      ${[150,162,173,183,192].map((y,i)=>`<rect x="370" y="${y}" width="160" height="${3+i}" fill="#140c0a"/>`).join("")}</g>
+    <path class="far" d="M260 260V200l40-6 14-22h50l10 18 30-4 20-30h46l12 24 40 6 22-12 60 8V260Z" fill="#5a2a1f" fill-opacity=".85"/>
+    <path d="M300 260v-30l60-10 30 8 50-6 26-26h54l14 22 66 4V260Z" fill="#2a1612"/>
+    <path d="M330 248c30-8 60-8 90 0s60 8 90 0" fill="none" stroke="#d9573b" stroke-opacity=".35" stroke-dasharray="2 6"/>
+  </svg>`
+};
+document.querySelectorAll("[data-art]").forEach(el=>{ el.innerHTML = ART[el.dataset.art] || ""; });
+// unique gradient ids for the window banner copy
+const bannerArt = g => ART[g].replace(/id="(\w+)"/g,'id="b$1"').replace(/url\(#(\w+)\)/g,'url(#b$1)');
+
 /* ---------- game windows ---------- */
 const GAMES = {
   cs2:{ title:"Counter-Strike 2", kicker:"game · main", color:"#e8a33a" },
-  krunker:{ title:"Krunker", kicker:"game · browser fps", color:"#5ad0ff" },
+  krunker:{ title:"Krunker", kicker:"game · movement fps", color:"#5ad0ff" },
   rdr2:{ title:"Red Dead Redemption 2", kicker:"game · story", color:"#d9573b" }
 };
 const gw = $("gw"); let gwCurrent = null;
@@ -1508,6 +1576,7 @@ function openGame(g, push=true){
   gwCurrent = g;
   document.querySelectorAll(".gw-page").forEach(p=>p.classList.toggle("on", p.dataset.page === g));
   $("gwTitle").textContent = GAMES[g].title; $("gwKicker").textContent = GAMES[g].kicker;
+  $("gwBanner").innerHTML = bannerArt(g);
   gw.classList.add("open"); gw.setAttribute("aria-hidden","false"); document.documentElement.classList.add("gw-lock");
   gw.querySelector(".gw-panel").scrollTop = 0;
   if(push) history.replaceState(null, "", "#" + g);
