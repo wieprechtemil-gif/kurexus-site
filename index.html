@@ -567,6 +567,13 @@ html.vibing .glow{scale:calc(1 + var(--beat,0)*.18);opacity:calc(.75 + var(--bea
 html.vibing .avatar .ring{scale:calc(1 + var(--beat,0)*.12)}
 html.vibing .lp-art img{box-shadow:0 0 calc(var(--beat,0)*26px) rgba(var(--tint,255,255,255),.7)}
 html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,0)*.5))}
+.mu-rc .rc-cv{position:relative;flex:none;display:block;width:36px;height:36px;border-radius:6px}
+.mu-rc{border-radius:10px;transition:background .2s}.mu-rc.can:hover{background:var(--card)}
+.mu-rc .rc-cv .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);border-radius:inherit;opacity:0;transition:.2s}
+.mu-rc .rc-cv .pl svg{width:14px;height:14px;fill:#fff}
+.mu-rc.can{cursor:pointer}
+.mu-rc.can:hover .pl,.mu-rc.playing .pl{opacity:1}
+.mu-rc.playing .t{color:var(--fg)}
 /* R3: top songs this week + popup player */
 .mw{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:16px 14px 10px}
 .mw-head{display:flex;justify-content:space-between;align-items:center;padding:0 6px 12px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
@@ -598,7 +605,7 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 .mw-row.sk .t b{height:12px;width:60%;margin-bottom:6px}.mw-row.sk .t span{height:9px;width:40%}
 @keyframes mwSk{to{background-position:-150% 0}}
 .mw-empty{padding:18px 8px;color:var(--muted);font:500 12px var(--mono)}
-#mpop{position:fixed;left:50%;bottom:20px;z-index:95;width:min(460px,calc(100vw - 24px));transform:translateX(-50%);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);color:#fff;animation:mpIn .3s cubic-bezier(.2,.8,.3,1)}
+#mpop{position:fixed;left:50%;bottom:20px;z-index:115;width:min(460px,calc(100vw - 24px));transform:translateX(-50%);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);color:#fff;animation:mpIn .3s cubic-bezier(.2,.8,.3,1)}
 #mpop[hidden]{display:none}
 @keyframes mpIn{from{opacity:0;transform:translate(-50%,20px) scale(.97)}}
 .mp-bg{position:absolute;inset:0;background:#111}
@@ -1955,6 +1962,44 @@ const player = (function(){
   };
 })();
 window.musicStop = ()=>player.stop();
+// playable queue item from any song object (top tracks, recent, …)
+const qItem = (t, kicker)=>({ url:t.preview, title:t.title, artist:t.artist, art:t.art || null, spotify:t.spotify || `https://open.spotify.com/search/${encodeURIComponent((t.artist||"") + " " + (t.title||""))}`, kicker });
+function playFrom(list, i, kicker){
+  const q = list.filter(t=>t.preview).map((t,j)=>qItem(t, typeof kicker === "function" ? kicker(t) : kicker));
+  const k = q.findIndex(x=>x.url === list[i].preview); if(k < 0) return;
+  player.toggle({ ...q[k], queue:q, qi:k });
+}
+
+/* ---------- pop-up player: shows for every 30s preview, wherever it was started ---------- */
+(function(){
+  const pop = $("mpop"); let shownUrl = null;
+  const mm = s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`;
+  function fill(c){
+    shownUrl = c.url;
+    $("mpCv").src = c.art || ""; $("mpBg").src = c.art || ""; $("mpCv").style.visibility = c.art ? "" : "hidden";
+    $("mpT").textContent = c.title || ""; $("mpA").textContent = c.artist || "";
+    $("mpK").textContent = c.kicker || L("30s preview","30s vorschau");
+    $("mpSp").href = c.spotify || `https://open.spotify.com/search/${encodeURIComponent((c.artist||"") + " " + (c.title||""))}`; $("mpSp").innerHTML = SP_ICON;
+    const q = !!(c.queue && c.queue.length > 1); $("mpPrev").hidden = $("mpNext").hidden = !q;
+    $("mpFill").style.width = "0%"; $("mpCur").textContent = "0:00";
+  }
+  const step = dir=>{ const c = player.current; if(!c || !c.queue) return; const n = c.queue.length, k = (c.qi + dir + n) % n; player.toggle({ ...c.queue[k], queue:c.queue, qi:k }); };
+  $("mpPrev").onclick = ()=>step(-1);
+  $("mpNext").onclick = ()=>step(1);
+  $("mpPlay").onclick = ()=>{ if(player.current) player.toggle(player.current); };
+  $("mpX").onclick = ()=>{ pop.hidden = true; player.stop(); };
+  $("mpBar").addEventListener("click", e=>{ const r = e.currentTarget.getBoundingClientRect(), d = player.au.duration; if(d) player.au.currentTime = (e.clientX - r.left)/r.width*d; });
+  player.au.addEventListener("timeupdate", ()=>{
+    const d = player.au.duration || 30, c = player.au.currentTime || 0;
+    $("mpFill").style.width = (c/d*100).toFixed(1) + "%"; $("mpCur").textContent = mm(c); $("mpDur").textContent = mm(d);
+  });
+  player.au.addEventListener("ended", ()=>{ const c = player.current; if(c && c.queue && c.queue.length > 1 && !pop.hidden) setTimeout(()=>step(1), 400); });
+  player.on((cur, playing)=>{
+    if(cur && playing && cur.url !== shownUrl) fill(cur);
+    if(cur && playing) pop.hidden = false;
+    $("mpIcon").innerHTML = playing ? PAUSE_ICON : PLAY_ICON;
+  });
+})();
 
 /* volume (widget slider + sound menu slider stay in sync) */
 (function(){
@@ -1983,7 +2028,7 @@ window.musicStop = ()=>player.stop();
 /* ---------- last played (Last.fm) ---------- */
 (function(){
   const box = $("lp"), wrap = $("lpWrap"); let data = null;
-  const track = ()=>data && data.preview ? { url:data.preview, title:data.title, artist:data.artist } : null;
+  const track = ()=>data && data.preview ? { url:data.preview, title:data.title, artist:data.artist, art:data.art || data.image || null, spotify:data.spotify, kicker:data.nowPlaying ? L("kur is listening to","kur hört gerade") : L("kur last played","kur zuletzt gehört") } : null;
   function render(d){
     data = d; wrap.hidden = false; box.href = d.spotify || d.lastfm || d.url || "#";
     box.classList.toggle("now", !!d.nowPlaying);
@@ -2028,17 +2073,18 @@ const music = (function(){
       </li>`).join("") : `<li class="mu-empty">${L("nothing played in this period yet.","in diesem zeitraum noch nichts gehört.")}</li>`;
     $("muTracks").querySelectorAll(".mu-tr").forEach((li,i)=>{
       const t = d.tracks[i], b = li.querySelector(".mu-cov");
-      if(t.preview) b.onclick = ()=>player.toggle({ url:t.preview, title:t.title, artist:t.artist });
+      if(t.preview) b.onclick = ()=>playFrom(d.tracks, i, x=>`${L("top songs","top songs")} · #${x.rank}`);
     });
     $("muArtists").innerHTML = d.artists.map(a=>`
       <a class="mu-ar" href="${esc(a.spotify)}" target="_blank" rel="noopener">
         <span class="img">${a.image ? `<img loading="lazy" src="${esc(a.image)}" alt="">` : ""}<i>#${a.rank}</i></span>
         <b>${esc(a.name)}</b><span>${plays(a.plays)}</span>
       </a>`).join("");
-    $("muRecent").innerHTML = d.recent.map(r=>`
-      <li>${r.art ? `<img loading="lazy" src="${esc(r.art)}" alt="">` : `<span class="ph"></span>`}
+    $("muRecent").innerHTML = d.recent.map((r,i)=>`
+      <li class="mu-rc${r.preview ? " can" : ""}${r.preview && player.isPlaying(r.preview) ? " playing" : ""}" data-i="${i}" data-url="${esc(r.preview||"")}"><span class="rc-cv">${r.art ? `<img loading="lazy" src="${esc(r.art)}" alt="">` : `<span class="ph"></span>`}${r.preview ? `<span class="pl"><svg viewBox="0 0 24 24">${player.isPlaying(r.preview) ? PAUSE_ICON : PLAY_ICON}</svg></span>` : ""}</span>
         <span class="t">${esc(r.title)} <span>· ${esc(r.artist)}</span></span>
         <span class="when${r.nowPlaying ? " now" : ""}">${r.nowPlaying ? L("playing now","läuft gerade") : r.date ? ago(new Date(r.date).toISOString()) : ""}</span></li>`).join("");
+    $("muRecent").querySelectorAll(".mu-rc.can").forEach(li=>li.addEventListener("click", ()=>playFrom(d.recent, +li.dataset.i, L("recently played","zuletzt gehört"))));
     document.querySelectorAll(".mu-tab").forEach(b=>b.classList.toggle("on", b.dataset.p === period));
   }
   function load(p){
@@ -2052,14 +2098,14 @@ const music = (function(){
   }
   document.querySelectorAll(".mu-tab").forEach(b=>b.addEventListener("click", ()=>load(b.dataset.p)));
   player.on((cur, playing)=>{
-    document.querySelectorAll(".mu-tr").forEach(li=>{
+    document.querySelectorAll(".mu-tr,.mu-rc[data-url]").forEach(li=>{
       const on = !!cur && playing && li.dataset.url === cur.url;
       li.classList.toggle("playing", on);
       const svg = li.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
     });
   });
   // ---- R3: top songs this week + popup player
-  let wk = null, wkIdx = -1;
+  let wk = null;
   function week(d){
     wk = d; if(!d) return;
     const T = d.tracks.slice(0, 8);
@@ -2075,37 +2121,9 @@ const music = (function(){
     $("mwList").querySelectorAll(".mw-row").forEach(li=>li.addEventListener("click", ()=>{
       const i = +li.dataset.i, t = T[i];
       if(!t.preview){ window.open(t.spotify, "_blank", "noopener"); return; }
-      playIdx(i);
+      playFrom(T, i, x=>`${L("this week","diese woche")} · #${x.rank} · ${fmt(x.plays)}×`);
     }));
   }
-  const wkTracks = ()=>(wk?.tracks || []).slice(0, 8);
-  function playIdx(i){
-    const T = wkTracks(); if(!T[i]) return;
-    const t = T[i];
-    if(!t.preview){ return playIdx(i + 1 < T.length ? i + 1 : -1); }
-    wkIdx = i; popFill(t, i);
-    player.toggle({ url:t.preview, title:t.title, artist:t.artist, from:"week" });
-  }
-  function popFill(t, i){
-    const pop = $("mpop"); pop.hidden = false;
-    $("mpCv").src = t.art || ""; $("mpBg").src = t.art || "";
-    $("mpT").textContent = t.title; $("mpA").textContent = t.artist;
-    $("mpK").textContent = `${L("this week","diese woche")} · #${t.rank} · ${fmt(t.plays)}×`;
-    $("mpSp").href = t.spotify; $("mpSp").innerHTML = SP_ICON;
-  }
-  const step = dir=>{ const T = wkTracks(); for(let j=1;j<=T.length;j++){ const k = (wkIdx + dir*j + T.length) % T.length; if(T[k].preview){ playIdx(k); return; } } };
-  $("mpPrev").onclick = ()=>step(-1);
-  $("mpNext").onclick = ()=>step(1);
-  $("mpPlay").onclick = ()=>{ const t = wkTracks()[wkIdx]; if(t) player.toggle({ url:t.preview, title:t.title, artist:t.artist, from:"week" }); };
-  $("mpX").onclick = ()=>{ $("mpop").hidden = true; if(player.current?.from === "week") player.stop(); };
-  const mm = s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`;
-  player.au.addEventListener("timeupdate", ()=>{
-    if(player.current?.from !== "week") return;
-    const d = player.au.duration || 30, c = player.au.currentTime || 0;
-    $("mpFill").style.width = (c/d*100).toFixed(1) + "%"; $("mpCur").textContent = mm(c); $("mpDur").textContent = mm(d);
-  });
-  player.au.addEventListener("ended", ()=>{ if(player.current?.from === "week" && !$("mpop").hidden) setTimeout(()=>step(1), 400); });
-  $("mpBar").addEventListener("click", e=>{ const r = e.currentTarget.getBoundingClientRect(), d = player.au.duration; if(d) player.au.currentTime = (e.clientX - r.left)/r.width*d; });
   $("mwOpen").addEventListener("click", ()=>openGame("music"));
   player.on((cur, playing)=>{
     document.querySelectorAll(".mw-row[data-url]").forEach(li=>{
@@ -2113,8 +2131,6 @@ const music = (function(){
       li.classList.toggle("playing", on);
       const svg = li.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
     });
-    $("mpIcon").innerHTML = (cur && cur.from === "week" && playing) ? PAUSE_ICON : PLAY_ICON;
-    if(cur && cur.from !== "week") $("mpop").hidden = true;      // something else started playing
   });
   setTimeout(()=>{
     api("/api/music?period=7day&v=2").then(d=>{ if(d && d.tracks){ cache["7day"] = d; week(d); } else throw 0; })

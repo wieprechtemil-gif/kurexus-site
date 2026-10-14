@@ -61,11 +61,33 @@ export const onRequestGet = ctx => {
         return o;
       }));
 
-      const recent = (rec.recenttracks?.track || []).slice(0, 10).map(t => ({
+      const recent0 = (rec.recenttracks?.track || []).slice(0, 10).map(t => ({
         title: t.name, artist: t.artist?.["#text"], nowPlaying: t["@attr"]?.nowplaying === "true",
         date: t.date?.uts ? Number(t.date.uts) * 1000 : null,
-        art: [...(t.image || [])].reverse().map(x => x["#text"]).find(x => x && !LF_BLANK.test(x)) || null
+        art: [...(t.image || [])].reverse().map(x => x["#text"]).find(x => x && !LF_BLANK.test(x)) || null,
+        preview: null, spotify: null
       }));
+      // 30s previews for recently played (one lookup per distinct song, reuse top-track hits)
+      const seen = new Map(tracks.map(t => [norm(t.artist) + "|" + norm(t.title), t]));
+      await Promise.all([...new Set(recent0.map(r => norm(r.artist) + "|" + norm(r.title)))].map(async key => {
+        if (seen.has(key)) return;
+        const r = recent0.find(x => norm(x.artist) + "|" + norm(x.title) === key), nt = norm(r.title), na = norm(r.artist).slice(0, 6);
+        const d = await getJ(`https://api.deezer.com/search?limit=8&q=${encodeURIComponent(r.artist + " " + r.title)}`);
+        const dl = d?.data || [];
+        const h = dl.find(x => x.preview && norm(x.title).includes(nt) && norm(x.artist?.name).includes(na)) || dl.find(x => x.preview && norm(x.title).includes(nt));
+        let o = h ? { preview: h.preview, art: h.album?.cover_big || h.album?.cover_medium } : null;
+        if (!o) {
+          const it = await getJ(`https://itunes.apple.com/search?media=music&entity=song&limit=8&term=${encodeURIComponent(r.artist + " " + r.title)}`);
+          const ih = (it?.results || []).find(x => norm(x.trackName).includes(nt) && norm(x.artistName).includes(na));
+          if (ih) o = { preview: ih.previewUrl, art: big(ih.artworkUrl100) };
+        }
+        seen.set(key, o || {});
+      }));
+      const recent = recent0.map(r => {
+        const h = seen.get(norm(r.artist) + "|" + norm(r.title)) || {};
+        return { ...r, preview: h.preview || null, art: r.art || h.art || null,
+          spotify: h.spotify || `https://open.spotify.com/search/${encodeURIComponent(r.artist + " " + r.title)}` };
+      });
 
       return json({
         period, user,
