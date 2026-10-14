@@ -58,6 +58,6 @@ export const onRequestGet = ctx => {
         periodPlays: tracks.reduce((s, t) => s + t.plays, 0),
         tracks, artists, recent
       });
-    } catch (e) { return json({ error: String(e.message || e) }, 502); }
+    } catch (e) { return json({ error: String(e.message || e) }, 500); }
   });
 };

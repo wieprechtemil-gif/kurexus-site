@@ -8,5 +8,5 @@ export const onRequestGet = ctx => cached(ctx, 900, async () => {
     const d = await r.json(), rk = d.ranks || {};
     if (!rk.premier) throw new Error("no premier rating");
     return json({ premier: rk.premier, leetify: rk.leetify ?? null });
-  } catch (e) { return json({ error: String(e.message || e) }, 502); }
+  } catch (e) { return json({ error: String(e.message || e) }, 500); }
 });

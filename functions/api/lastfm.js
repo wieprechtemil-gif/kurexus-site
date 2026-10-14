@@ -62,5 +62,5 @@ export const onRequestGet = ctx => cached(ctx, 30, async () => {
 
     if (debug) out._debug = dbg;
     return json(out);
-  } catch (e) { return json({ error: String(e.message || e) }, 502); }
+  } catch (e) { return json({ error: String(e.message || e) }, 500); }
 });
