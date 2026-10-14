@@ -703,6 +703,17 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 .hm-grid i[data-l="4"]{background:var(--live,#ff4d5e)}
 .hm-grid i.today{outline:1px solid var(--fg);outline-offset:1px}
 .hm-grid i.fut{visibility:hidden}
+.hm-grid i[data-k]:hover{outline:1px solid var(--fg);outline-offset:1px}
+.hm-tip{position:fixed;z-index:200;pointer-events:none;min-width:150px;max-width:240px;padding:10px 12px;border-radius:10px;background:var(--card-solid);border:1px solid var(--line-2);box-shadow:0 14px 40px -10px rgba(0,0,0,.7);display:flex;flex-direction:column;gap:6px;animation:hmTip .12s ease-out}
+.hm-tip[hidden]{display:none}
+@keyframes hmTip{from{opacity:0;transform:translateY(4px)}}
+.hm-tip b{font:600 12px var(--sans)}
+.hm-tip .hm-dur{height:4px;border-radius:4px;background:color-mix(in srgb,var(--fg) 10%,transparent);overflow:hidden}
+.hm-tip .hm-dur i{display:block;height:100%;background:var(--live,#ff4d5e);border-radius:4px}
+.hm-tip .hm-l{display:flex;align-items:center;gap:6px;font:500 11px var(--mono);color:var(--fg)}
+.hm-tip .hm-l .dot{width:6px;height:6px;border-radius:50%;background:var(--live,#ff4d5e)}
+.hm-tip .hm-l.off{color:var(--muted)}
+.hm-tip .hm-tt{font:500 10.5px var(--mono);color:var(--muted);line-height:1.35}
 .hm-leg{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:10px;font:500 10px var(--mono);color:var(--muted)}
 .hm-leg i{width:12px;height:12px;border-radius:3px;background:color-mix(in srgb,var(--fg) 6%,transparent)}
 .hm-leg i:nth-of-type(2){background:color-mix(in srgb,var(--live,#ff4d5e) 30%,transparent)}.hm-leg i:nth-of-type(3){background:color-mix(in srgb,var(--live,#ff4d5e) 52%,transparent)}
@@ -2978,7 +2989,7 @@ const NADES = (function(){
 })();
 // stream days heatmap (last 18 weeks, Monday first)
 (function(){
-  let days = null;
+  let days = null, titles = {};
   function render(){
     if(!days) return; $("hmCard").hidden = false;
     $("hmT").textContent = L("stream days", "stream-tage");
@@ -2992,13 +3003,28 @@ const NADES = (function(){
       const fut = k > todayK, lvl = !m ? 0 : m < 60 ? 1 : m < 180 ? 2 : m < 300 ? 3 : 4;
       if(m && !fut){ streams++; mins += m; }
       const label = d.toLocaleDateString(LANG === "de" ? "de-DE" : "en-GB", { weekday:"short", day:"numeric", month:"short" });
-      cells += `<i data-l="${fut ? 0 : lvl}" class="${k === todayK ? "today" : ""}${fut ? " fut" : ""}" title="${label}${m ? ` · ${Math.floor(m/60)}h ${m%60}m` : ` · ${L("offline","offline")}`}"></i>`;
+      cells += `<i data-l="${fut ? 0 : lvl}" class="${k === todayK ? "today" : ""}${fut ? " fut" : ""}" data-k="${k}" data-m="${fut ? -1 : m}" data-d="${esc(label)}"></i>`;
     }
     $("hmGrid").innerHTML = cells;
     $("hmDays").innerHTML = (LANG === "de" ? ["Mo","","Mi","","Fr","","So"] : ["Mon","","Wed","","Fri","","Sun"]).map(x=>`<span>${x}</span>`).join("");
     $("hmSum").textContent = `${streams} ${L("streams","streams")} · ${Math.round(mins/60)}h ${L("live","live")}`;
   }
-  api("/api/streams").then(x=>{ if(x && x.days){ days = x.days; render(); } }).catch(()=>{});
+  // custom tooltip
+  const tip = document.createElement("div"); tip.className = "hm-tip"; tip.hidden = true; document.body.appendChild(tip);
+  $("hmGrid").addEventListener("pointerover", e=>{
+    const c = e.target.closest("i[data-k]"); if(!c || +c.dataset.m < 0){ tip.hidden = true; return; }
+    const m = +c.dataset.m, t = titles[c.dataset.k];
+    tip.innerHTML = `<b>${c.dataset.d}</b>` + (m
+      ? `<span class="hm-dur"><i style="width:${Math.min(100, m/480*100)}%"></i></span><span class="hm-l"><span class="dot"></span>${Math.floor(m/60)}h ${String(m%60).padStart(2,"0")}m ${L("live","live")}</span>${t ? `<span class="hm-tt">${esc(t)}</span>` : ""}`
+      : `<span class="hm-l off">${L("no stream","kein stream")}</span>`);
+    tip.hidden = false;
+    const r = c.getBoundingClientRect(), w = tip.offsetWidth;
+    tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width/2 - w/2)) + "px";
+    tip.style.top = (r.top - tip.offsetHeight - 10) + "px";
+  });
+  $("hmGrid").addEventListener("pointerleave", ()=>tip.hidden = true);
+  addEventListener("scroll", ()=>tip.hidden = true, { passive:true });
+  api("/api/streams").then(x=>{ if(x && x.days){ days = x.days; titles = x.titles || {}; render(); } }).catch(()=>{});
   window.renderHeatmap = render;
 })();
 // visitors online + global counters

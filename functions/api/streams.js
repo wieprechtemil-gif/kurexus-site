@@ -10,15 +10,18 @@ export const onRequestGet = ctx => cached(ctx, 1800, async () => {
     const helix = async p => { const r = await fetch("https://api.twitch.tv/helix/" + p, { headers: { "Client-Id": id, Authorization: `Bearer ${tk}` } }); if (!r.ok) throw new Error(p + " " + r.status); return (await r.json()).data || []; };
     const [user] = await helix(`users?login=${LOGIN}`);
     const vids = await helix(`videos?user_id=${user.id}&type=archive&first=100`);
-    const fresh = {};
-    for (const v of vids) { const k = day(Date.parse(v.created_at)); fresh[k] = (fresh[k] || 0) + dur(v.duration); }
-    let days = { ...fresh };
+    const fresh = {}, tFresh = {};
+    for (const v of vids) { const k = day(Date.parse(v.created_at)); fresh[k] = (fresh[k] || 0) + dur(v.duration); if (!tFresh[k]) tFresh[k] = String(v.title || "").slice(0, 90); }
+    let days = { ...fresh }, titles = { ...tFresh };
     const KV = ctx.env.KV;
     if (KV) {
       const old = (await KV.get("streamdays", { type: "json" }).catch(() => null)) || {};
       days = { ...old, ...fresh };
       if (JSON.stringify(days) !== JSON.stringify(old)) ctx.waitUntil(KV.put("streamdays", JSON.stringify(days)).catch(() => {}));
+      const oldT = (await KV.get("streamtitles", { type: "json" }).catch(() => null)) || {};
+      titles = { ...oldT, ...tFresh };
+      if (JSON.stringify(titles) !== JSON.stringify(oldT)) ctx.waitUntil(KV.put("streamtitles", JSON.stringify(titles)).catch(() => {}));
     }
-    return json({ days });
+    return json({ days, titles });
   } catch (e) { return json({ error: String(e.message || e) }, 500); }
 });
