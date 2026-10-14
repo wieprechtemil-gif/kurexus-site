@@ -1360,14 +1360,18 @@ $("copyXhair").onclick = ()=>CFG.crosshairCode && copy(CFG.crosshairCode, L("cro
   $("xsvg").innerHTML = h;
   if(CFG.crosshairCode){ $("xcode").textContent = CFG.crosshairCode; const b = $("copyXhair"); b.disabled = false; b.dataset.i18n = "copy"; b.textContent = "copy"; }})();
 
-/* ---------- premier tier colors ---------- */
-(function(){
-  const r = CFG.premier, tiers = [[30000,"#c9a227","#ffd84d"],[25000,"#b3202b","#ff4a4a"],[20000,"#a3209a","#ff3bd8"],[15000,"#6d2bb3","#b56bff"],[10000,"#2f4fbf","#6f8fff"],[5000,"#3f86b8","#7cc4f2"],[0,"#5a6470","#b7c0c9"]];
+/* ---------- premier rating (live via Leetify, fallback = CFG.premier) ---------- */
+function renderPremier(r){
+  CFG.premier = r;
+  const tiers = [[30000,"#c9a227","#ffd84d"],[25000,"#b3202b","#ff4a4a"],[20000,"#a3209a","#ff3bd8"],[15000,"#6d2bb3","#b56bff"],[10000,"#2f4fbf","#6f8fff"],[5000,"#3f86b8","#7cc4f2"],[0,"#5a6470","#b7c0c9"]];
   const [, c1, c2] = tiers.find(t=>r >= t[0]);
   const el = $("premier"); el.style.setProperty("--pc1", c1); el.style.setProperty("--pc2", c2);
   const str = fmt(r), cut = str.indexOf(",");
   el.innerHTML = `<span>${cut > 0 ? `${str.slice(0,cut)}<small>${str.slice(cut)}</small>` : str}</span>`;
-})();
+  const g = $("gtCs"); if(g) g.textContent = `FACEIT lvl ${lastFaceit.level} · ${fmt(lastFaceit.elo)} elo · premier ${fmt(r)}`;
+}
+renderPremier(CFG.premier);
+api("/api/premier").then(d=>{ if(d && d.premier) renderPremier(d.premier); }).catch(()=>{});
 
 /* ---------- today ---------- */
 try{
