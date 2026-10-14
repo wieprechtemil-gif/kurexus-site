@@ -1969,7 +1969,7 @@ function cprint(s, cls){ cout.insertAdjacentHTML("beforeend", `<div class="${cls
 function toggleCon(open){
   const o = open ?? !con.classList.contains("open");
   con.classList.toggle("open", o); con.setAttribute("aria-hidden", String(!o));
-  if(o){ if(!cout.children.length) cprint('kurexus console — type <span class="c">help</span>'); setTimeout(()=>inp.focus(), 50); } else inp.blur();
+  if(o){ if(!cout.children.length) cprint('kurexus console — type <span class="c">help</span>'); setTimeout(()=>{ inp.value = ""; inp.focus(); }, 50); setTimeout(()=>{ inp.value = inp.value.replace(/^[\^`´]+/, ""); }, 120); } else inp.blur();
 }
 const CMDS = {
   help:()=>"commands: status, faceit, setup, settings, socials, discord, stream, aim, theme, lang, flash, stats, clear, quit",
@@ -2000,6 +2000,8 @@ const CMDS = {
     return "loading stats…";
   }
 };
+// German keyboards: ^ is a dead key and leaks into the field when the console opens → strip it
+inp.addEventListener("input", ()=>{ const v = inp.value.replace(/^[\^`´\s]+/, ""); if(v !== inp.value) inp.value = v; });
 $("conForm").onsubmit = e=>{
   e.preventDefault(); const raw = inp.value.trim(); inp.value = ""; if(!raw) return;
   cprint("] " + esc(raw), "c");
