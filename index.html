@@ -1827,7 +1827,7 @@ window.musicStop = ()=>player.stop();
     data = d; wrap.hidden = false; box.href = d.spotify || d.lastfm || d.url || "#";
     box.classList.toggle("now", !!d.nowPlaying);
     const k = $("lpK"); k.classList.toggle("now", !!d.nowPlaying);
-    k.textContent = d.nowPlaying ? L("listening now","hört gerade") : L("last played","zuletzt gehört");
+    k.textContent = d.nowPlaying ? L("currently playing","läuft gerade") : L("last played","zuletzt gehört");
     $("lpTitle").textContent = d.title; $("lpArtist").textContent = d.artist + (d.album ? " · " + d.album : "");
     if(d.art) $("lpArt").src = d.art;
     $("lpPlay").style.display = d.preview ? "" : "none";
@@ -1840,8 +1840,10 @@ window.musicStop = ()=>player.stop();
   }
   player.on(sync);
   $("lpPlay").addEventListener("click", e=>{ e.preventDefault(); e.stopPropagation(); player.toggle(track()); });
-  const load = ()=>api("/api/lastfm").then(d=>{ if(d && d.title) render(d); }).catch(()=>{});
-  load(); setInterval(load, 60000);
+  let timer;
+  const load = ()=>api("/api/lastfm").then(d=>{ if(d && d.title) render(d); }).catch(()=>{})
+    .finally(()=>{ clearTimeout(timer); timer = setTimeout(load, data && data.nowPlaying ? 30000 : 60000); });
+  load();
   window.renderLastPlayed = ()=>data && render(data);
 })();
 
@@ -1874,7 +1876,7 @@ const music = (function(){
     $("muRecent").innerHTML = d.recent.map(r=>`
       <li>${r.art ? `<img loading="lazy" src="${esc(r.art)}" alt="">` : `<span class="ph"></span>`}
         <span class="t">${esc(r.title)} <span>· ${esc(r.artist)}</span></span>
-        <span class="when${r.nowPlaying ? " now" : ""}">${r.nowPlaying ? L("now","jetzt") : r.date ? ago(new Date(r.date).toISOString()) : ""}</span></li>`).join("");
+        <span class="when${r.nowPlaying ? " now" : ""}">${r.nowPlaying ? L("playing now","läuft gerade") : r.date ? ago(new Date(r.date).toISOString()) : ""}</span></li>`).join("");
     document.querySelectorAll(".mu-tab").forEach(b=>b.classList.toggle("on", b.dataset.p === period));
     if(d.tracks[0]) $("gtMu").textContent = `${L("on repeat","on repeat")}: ${d.tracks[0].title} — ${d.tracks[0].artist}`;
   }
