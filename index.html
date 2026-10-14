@@ -759,7 +759,6 @@ function applyLang(l){
   $("aimStart").textContent = aimPlayed ? L("again","nochmal") : "start";
   buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock();
   $("aimName").placeholder = L("your name","dein name");
-  store.set("lang", l);
 }
 
 /* ---------- helpers ---------- */
@@ -877,7 +876,7 @@ function setTheme(th){
 }
 $("themeBtn").onclick = ()=>setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
 setTheme(store.get("theme") || "dark");
-$("langBtn").onclick = ()=>applyLang(LANG === "de" ? "en" : "de");
+$("langBtn").onclick = ()=>{ const l = LANG === "de" ? "en" : "de"; store.set("langChoice", l); applyLang(l); };
 
 /* ---------- ticker ---------- */
 function buildTicker(){
@@ -1380,7 +1379,7 @@ if(FINE){
 })();
 
 /* ---------- init ---------- */
-applyLang(store.get("lang") || ((navigator.language||"").startsWith("de") ? "de" : "en"));
+applyLang(store.get("langChoice") || "en");   // English by default, German only if the visitor switches
 </script>
 </body>
 </html>
