@@ -1,6 +1,6 @@
 import { json, cached } from "../_shared.js";
 // GET /api/lastfm — last played / now playing track (Last.fm)
-// + 30s preview (Deezer / iTunes) + direct Spotify link (via song.link, fallback: Spotify search)
+// + 30s preview (Deezer / iTunes) + Spotify link (direct via Spotify API if keys are set, else Spotify search)
 // env: LASTFM_API_KEY, LASTFM_USER
 const norm = x => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 const UA = { "user-agent": "Mozilla/5.0 (compatible; kurexus-site/1.0)", accept: "application/json" };
@@ -20,7 +20,7 @@ export const onRequestGet = ctx => cached(ctx, 30, async () => {
       lastfm: t.url, user
     };
     out.spotify = `https://open.spotify.com/search/${encodeURIComponent(out.artist + " " + out.title)}`;
-    let sourceUrl = null;
+    let sourceUrl = null; // kept for future use
 
     // 1) Deezer
     try {
@@ -42,13 +42,23 @@ export const onRequestGet = ctx => cached(ctx, 30, async () => {
       if (hit) { if (!out.preview) out.preview = hit.previewUrl; if (!sourceUrl) sourceUrl = hit.trackViewUrl; }
     } catch (e) { dbg.itunesErr = String(e); }
 
-    // 3) song.link → direct Spotify track URL
-    if (sourceUrl) try {
-      const sl = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`, { headers: UA });
-      dbg.songlink = sl.status;
-      const sp = (await sl.json()).linksByPlatform?.spotify?.url;
-      if (sp) out.spotify = sp;
-    } catch (e) { dbg.songlinkErr = String(e); }
+    // 3) Spotify Web API (optional: SPOTIFY_CLIENT_ID + SPOTIFY_CLIENT_SECRET) → direct track link
+    const sid = (ctx.env.SPOTIFY_CLIENT_ID || "").trim(), ssec = (ctx.env.SPOTIFY_CLIENT_SECRET || "").trim();
+    if (sid && ssec) try {
+      const tr = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", authorization: "Basic " + btoa(sid + ":" + ssec) },
+        body: "grant_type=client_credentials"
+      });
+      dbg.spotifyToken = tr.status;
+      const tok = (await tr.json()).access_token;
+      const q = `track:${out.title} artist:${out.artist}`;
+      const sr = await fetch(`https://api.spotify.com/v1/search?type=track&limit=5&q=${encodeURIComponent(q)}`, { headers: { authorization: "Bearer " + tok } });
+      dbg.spotify = sr.status;
+      const items = (await sr.json()).tracks?.items || [];
+      const hit = items.find(x => norm(x.name).includes(norm(out.title))) || items[0];
+      if (hit) { out.spotify = hit.external_urls?.spotify || out.spotify; dbg.spotifyHit = hit.name + " / " + hit.artists?.[0]?.name; }
+    } catch (e) { dbg.spotifyErr = String(e); }
 
     if (debug) out._debug = dbg;
     return json(out);
