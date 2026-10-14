@@ -352,7 +352,7 @@ footer{position:relative;z-index:2;text-align:center;padding:40px 20px 120px;fon
 .kill.me{border-color:#c9273b;background:rgba(20,0,4,.6)}
 .kill.bye{opacity:0;transform:translateX(20px)}
 .kill .a{color:#9cc6f2}.kill .b{color:#e8c66a}
-.kill svg{height:14px;fill:#e9e9e6}.kill img{height:16px;width:auto}
+.kill svg{height:14px;fill:#e9e9e6}.kill img{height:16px;width:auto}.kill .emo{font-size:15px;line-height:1}.kill.tk{border-color:#ff4d5e;background:rgba(120,0,12,.55)}.kill.tk .b{color:#ff9aa5}
 @keyframes kin{from{opacity:0;transform:translateX(30px)}}
 
 /* scope transition */
@@ -894,13 +894,19 @@ const GUN = {
   ak:'<img src="/img/ak.png" alt="AK-47">',
   awp:'<svg viewBox="0 0 72 16"><path d="M1 7h22l1-3h14v2h33v2H40l-4 2h-8l-2 5h-5l1-5h-6l-2 3H9l2-3H1z"/></svg>',
   deagle:'<svg viewBox="0 0 34 18"><path d="M2 3h28v5H14l-2 9H5l2-9H2z"/></svg>',
-  knife:'<svg viewBox="0 0 48 14"><path d="M1 6h14l2-2h4v6h-4l-2-2H1zM21 4l26 2-8 4H21z"/></svg>'
+  knife:'<svg viewBox="0 0 48 14"><path d="M1 6h14l2-2h4v6h-4l-2-2H1zM21 4l26 2-8 4H21z"/></svg>',
+  fist:'<span class="emo">👊</span>'
+};
+const XI = {
+  ns:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#e9e9e6" stroke-width="1.6"/><path d="M3.5 12.5l9-9" stroke="#e9e9e6" stroke-width="1.6"/></svg>',
+  wb:'<svg viewBox="0 0 16 16"><path d="M2 2h2.5v12H2zM6.5 2H9v12H6.5z"/><path d="M10 8h5M12.5 5.5L15 8l-2.5 2.5" fill="none" stroke="#e9e9e6" stroke-width="1.6"/></svg>',
+  blind:'<svg viewBox="0 0 16 16"><path d="M1 8s2.6-4.5 7-4.5S15 8 15 8s-2.6 4.5-7 4.5S1 8 1 8z" fill="none" stroke="#e9e9e6" stroke-width="1.4"/><circle cx="8" cy="8" r="2"/><path d="M2.5 13.5l11-11" stroke="#e9e9e6" stroke-width="1.6"/></svg>'
 };
 const HS = '<svg viewBox="0 0 16 16"><path d="M8 1a6 6 0 0 0-6 6c0 2 1 3.5 2 4.3V14h2v-1.5h1V14h2v-1.5h1V14h2v-2.7c1-.8 2-2.3 2-4.3a6 6 0 0 0-6-6Zm-2.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"/></svg>';
 function kill(a, gun, b, opt={}){
   const kf = $("kf"), el = document.createElement("div");
-  el.className = "kill" + (opt.me ? " me" : "");
-  el.innerHTML = `<span class="a">${esc(a)}</span>${GUN[gun]||""}${opt.hs?HS:""}<span class="b">${esc(b)}</span>`;
+  el.className = "kill" + (opt.me ? " me" : "") + (opt.tk ? " tk" : "");
+  el.innerHTML = `${opt.blind?XI.blind:""}<span class="a">${esc(a)}</span>${GUN[gun]||""}${opt.ns?XI.ns:""}${opt.wb?XI.wb:""}${opt.hs?HS:""}<span class="b">${esc(b)}</span>`;
   kf.appendChild(el); SFX.kill();
   while(kf.children.length > 4) kf.firstChild.remove();
   setTimeout(()=>{ el.classList.add("bye"); setTimeout(()=>el.remove(), 500); }, opt.ms || 5200);
@@ -914,6 +920,33 @@ const ROUND_KILLS = {
   5:()=>[L("you","du"),"ak",L("your warmup","dein warmup"),{}],
   6:()=>["kurexus","knife",L("shyness","schüchternheit"),{}]
 };
+
+/* ---------- random killfeed with the squad (insiders) ---------- */
+const SQUAD = ["angel","wanderstock","hanyola","creative","janis","tim","lele","13 55"];
+const FEED = [
+  ()=>["kurexus","fist",L("horse","pferd"),{}],                       // rdr2: punched the horse instead of mounting it
+  ()=>["kurexus","fist",L("horse","pferd"),{hs:true}],
+  ()=>["kurexus","ak","angel",{hs:true}],
+  ()=>["wanderstock","awp","kurexus",{ns:true}],
+  ()=>["hanyola","deagle","creative",{hs:true}],
+  ()=>["janis","knife","tim",{}],
+  ()=>["lele","ak","janis",{wb:true}],
+  ()=>["13 55","awp","lele",{}],
+  ()=>["creative","ak","hanyola",{blind:true}],
+  ()=>["tim","deagle","wanderstock",{hs:true}],
+  ()=>["angel","knife","kurexus",{}],
+  ()=>["kurexus","awp","13 55",{ns:true,wb:true}],
+  ()=>["kurexus","ak","hanyola",{wb:true,hs:true}],
+  ()=>["lele","fist","kurexus",{}],
+  ()=>["kurexus","ak","janis",{tk:true}]                               // rare teamkill
+];
+function randomKill(){
+  if(document.hidden) return;
+  let k;
+  do { k = FEED[Math.random()*FEED.length|0](); } while(k[3].tk && Math.random() < .75);   // teamkills stay rare
+  kill(...k);
+}
+(function loop(){ setTimeout(()=>{ randomKill(); loop(); }, 16000 + Math.random()*20000); })();
 
 /* ---------- loader ---------- */
 (function(){
