@@ -522,17 +522,18 @@ html.is-live #liveFx{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,77,94,.35),in
 /* hud: radar + grenade chip (bottom left) */
 #hud{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 @media (pointer:coarse){#hud{display:none}}
-.radar{display:none;position:relative;width:156px;height:156px;border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(30,30,32,.92),rgba(8,8,9,.94));border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 40px -10px rgba(0,0,0,.8),inset 0 0 0 4px rgba(0,0,0,.35);overflow:hidden;color:#fff}
-@media (min-width:1180px) and (min-height:620px){.radar{display:block}}
-.radar svg{display:block;width:100%;height:100%}
-.radar .fl{fill:#d9d9d4;fill-opacity:.16}
-.radar .cr{fill:none;stroke:#d9d9d4;stroke-opacity:.16;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
-.radar .hit{fill:transparent;cursor:pointer}
-.radar .hit:hover{fill:rgba(255,255,255,.06)}
-.radar .site{font:700 11px var(--sans,system-ui);fill:#f2c94c;fill-opacity:.85;text-anchor:middle;pointer-events:none}
-.radar .sp{font:600 4.6px var(--mono);fill:#fff;fill-opacity:.45;text-anchor:middle;letter-spacing:.3px;pointer-events:none}
-#radarLbl{display:none;width:156px;text-align:center;margin-top:7px;font:600 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-@media (min-width:1180px) and (min-height:620px){#radarLbl{display:block}}
+.radar{display:none;position:relative;width:148px;border-radius:14px;background:linear-gradient(180deg,rgba(26,26,28,.93),rgba(8,8,9,.95));border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 40px -10px rgba(0,0,0,.8);overflow:hidden;color:#fff}
+@media (min-width:1180px) and (min-height:700px){.radar{display:block}}
+.radar svg{display:block;width:100%;height:auto}
+.radar .rm{fill:#d9d9d4;fill-opacity:.12;stroke:#fff;stroke-opacity:.14;stroke-width:.5;cursor:pointer;transition:fill-opacity .25s}
+.radar .rm:hover{fill-opacity:.22}.radar .rm.on{fill-opacity:.24;stroke-opacity:.4}
+.radar .cor{fill:#d9d9d4;fill-opacity:.12;pointer-events:none}
+.radar .lb{font:600 5px var(--mono);fill:#fff;fill-opacity:.5;letter-spacing:.3px;pointer-events:none;text-transform:uppercase}
+.radar .lb.on{fill:#f2c94c;fill-opacity:.95}
+.radar .rn{font:700 6.5px var(--sans,system-ui);fill:#fff;fill-opacity:.3;pointer-events:none}
+.radar .rn.on{fill:#f2c94c;fill-opacity:.9}
+#radarLbl{display:none;width:148px;text-align:center;margin-top:7px;font:600 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+@media (min-width:1180px) and (min-height:700px){#radarLbl{display:block}}
 .nade-chip{display:flex;align-items:center;gap:8px;padding:7px 8px 7px 10px;border-radius:999px;border:1px solid var(--line-2);background:color-mix(in srgb,var(--card-solid) 85%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font:500 11px var(--mono);color:var(--fg);transition:.2s}
 .nade-chip:hover{border-color:var(--fg)}
 .nade-chip img{height:16px;width:auto}
@@ -1167,7 +1168,7 @@ T.en["status.live"] = "live now on twitch";
 const t = k => (T[LANG] && T[LANG][k]) || T.en[k] || k;
 const L = (en, de) => LANG === "de" ? de : en;
 function applyLang(l){
-  setTimeout(()=>{ try{ NADES.render(); }catch(e){} });
+  setTimeout(()=>{ try{ NADES.render(); window.RADAR_RELABEL && RADAR_RELABEL(); }catch(e){} });
   LANG = l; document.documentElement.lang = l;
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
@@ -2427,101 +2428,93 @@ const NADES = (function(){
   return { throw:(x, y)=>T[cur](x, y), get cur(){ return cur; }, render };
 })();
 
-/* ---------- radar: the page as a de_cache-style minimap, the arrow = where you are ---------- */
+/* ---------- radar: a minimap of THIS page — every section is a room, sized like the real section ---------- */
 (function(){
   const svg = $("radarSvg"); if(!svg) return;
-  // one zone per section (top → bottom); the route between them follows the corridors
-  const Z = [
-    { sel:".hero",    en:"t spawn",  c:[50,84] },
-    { sel:"#about",   en:"a main",   c:[25,68] },
-    { sel:"#games",   en:"a site",   c:[25,30] },
-    { sel:"#music",   en:"checkers", c:[42,24] },
-    { sel:"#setup",   en:"ct spawn", c:[61,15] },
-    { sel:"#stream",  en:"mid",      c:[50,46] },
-    { sel:"#aim",     en:"b site",   c:[78,30] },
-    { sel:"#contact", en:"b main",   c:[78,66] }
-  ].map(z=>({ ...z, el:document.querySelector(z.sel) }));
-  const ROUTE = [
-    [[50,84],[50,80],[31,80],[25,72],[25,68]],
-    [[25,68],[25,30]],
-    [[25,30],[25,24],[42,24]],
-    [[42,24],[56,24],[61,15]],
-    [[61,15],[56,24],[50,24],[50,46]],
-    [[50,46],[70,46],[78,36],[78,30]],
-    [[78,30],[78,66]]
-  ];
+  const SEC = [
+    { sel:".hero",    n:"",   en:"spawn",   de:"spawn" },
+    { sel:"#about",   n:"R1", en:"about",   de:"about" },
+    { sel:"#games",   n:"R2", en:"games",   de:"games" },
+    { sel:"#music",   n:"R3", en:"music",   de:"musik" },
+    { sel:"#setup",   n:"R4", en:"setup",   de:"setup" },
+    { sel:"#stream",  n:"R5", en:"content", de:"content" },
+    { sel:"#aim",     n:"R6", en:"warmup",  de:"warmup" },
+    { sel:"#contact", n:"R7", en:"contact", de:"kontakt" }
+  ].map(z=>({ ...z, el:document.querySelector(z.sel) })).filter(z=>z.el);
+  const VW = 100, VH = 132, PAD = 5, GAP = 3.2;
+  const XS = [[24,52],[8,50],[42,50],[10,46],[44,48],[8,52],[40,52],[18,64]];   // zig-zag rooms → reads like a map
+  let rooms = [], tops = [], pageH = 1, sig = "";
   const NS = "http://www.w3.org/2000/svg";
-  const corridors = [...ROUTE.map(r=>"M"+r.map(p=>p.join(" ")).join(" L")), "M50 46 V84", "M78 66 V78 L68 86 H56"];
-  svg.innerHTML = `
-    <defs>
-      <radialGradient id="rgCone"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-      <radialGradient id="rgSmoke"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".7" stop-color="#f2f2ee" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-      <radialGradient id="rgFire"><stop offset="0" stop-color="#ffd27a" stop-opacity=".95"/><stop offset=".6" stop-color="#ff6a1f" stop-opacity=".8"/><stop offset="1" stop-color="#ff3b00" stop-opacity="0"/></radialGradient>
-      <pattern id="rgGrid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="#fff" stroke-opacity=".05" stroke-width=".4"/></pattern>
-    </defs>
-    <rect width="100" height="100" fill="url(#rgGrid)"/>
-    <g>
-      <path class="cr" d="${corridors.join(" ")}"/>
-      <rect class="fl" x="12" y="14" width="26" height="24" rx="3"/>
-      <rect class="fl" x="66" y="17" width="24" height="23" rx="3"/>
-      <rect class="fl" x="53" y="7" width="17" height="13" rx="3"/>
-      <rect class="fl" x="38" y="80" width="24" height="11" rx="3"/>
-      <rect class="fl" x="36" y="19" width="12" height="10" rx="2"/>
-    </g>
-    <text class="site" x="25" y="30">A</text><text class="site" x="78" y="32">B</text>
-    <text class="sp" x="61.5" y="12">CT</text><text class="sp" x="50" y="90">T</text>
-    <g id="rgHits">${Z.map((z,i)=>`<circle class="hit" data-i="${i}" cx="${z.c[0]}" cy="${z.c[1]}" r="9"><title>${z.en}</title></circle>`).join("")}</g>
-    <g id="rgNades"></g>
-    <g id="rgMe">
-      <path d="M0 0 L-12 -24 A27 27 0 0 1 12 -24 Z" fill="url(#rgCone)"/>
-      <path d="M0 -4.6 L3.6 3.6 L0 1.8 L-3.6 3.6 Z" fill="#f5c542" stroke="#111" stroke-width=".9" stroke-linejoin="round"/>
-    </g>
-    <circle cx="50" cy="50" r="49.3" fill="none" stroke="#fff" stroke-opacity=".08"/>`;
-  const me = $("rgMe"), nades = $("rgNades");
+  svg.setAttribute("viewBox", `0 0 ${VW} ${VH}`);
+  function layout(){
+    tops = SEC.map(z=>z.el.getBoundingClientRect().top + scrollY);
+    const ends = SEC.map((z,i)=>i < SEC.length-1 ? tops[i+1] : z.el.getBoundingClientRect().bottom + scrollY);
+    const hs = SEC.map((z,i)=>Math.max(1, ends[i] - tops[i])), total = hs.reduce((a,b)=>a+b,0);
+    const avail = VH - PAD*2 - GAP*(SEC.length-1);
+    let mins = hs.map(h=>Math.max(9, h/total*avail)), k = avail / mins.reduce((a,b)=>a+b,0);
+    let y = PAD;
+    rooms = SEC.map((z,i)=>{ const h = mins[i]*k, [x,w] = XS[i % XS.length], r = { x, y, w, h, top:tops[i], bot:ends[i], cx:x + w*.78 }; y += h + GAP; return r; });
+    pageH = ends[ends.length-1];
+    const nsig = rooms.map(r=>r.h.toFixed(1)).join(",");
+    if(nsig === sig) return; sig = nsig;
+    // corridors where neighbouring rooms overlap horizontally
+    let cors = "";
+    for(let i=0;i<rooms.length-1;i++){ const a = rooms[i], b = rooms[i+1], l = Math.max(a.x, b.x), r = Math.min(a.x+a.w, b.x+b.w), cx = (l + r)/2;
+      cors += `<rect class="cor" x="${cx-4}" y="${a.y + a.h - 1}" width="8" height="${GAP + 2}"/>`; }
+    svg.innerHTML = `
+      <defs>
+        <radialGradient id="rgCone"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        <radialGradient id="rgSmoke"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".7" stop-color="#f2f2ee" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        <radialGradient id="rgFire"><stop offset="0" stop-color="#ffd27a" stop-opacity=".95"/><stop offset=".6" stop-color="#ff6a1f" stop-opacity=".8"/><stop offset="1" stop-color="#ff3b00" stop-opacity="0"/></radialGradient>
+        <pattern id="rgGrid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="#fff" stroke-opacity=".045" stroke-width=".4"/></pattern>
+      </defs>
+      <rect width="${VW}" height="${VH}" fill="url(#rgGrid)"/>
+      ${cors}
+      ${rooms.map((r,i)=>`<rect class="rm" data-i="${i}" x="${r.x}" y="${r.y.toFixed(2)}" width="${r.w}" height="${r.h.toFixed(2)}" rx="2.5"><title>${SEC[i].n ? SEC[i].n+" · " : ""}${SEC[i].en}</title></rect>`).join("")}
+      ${rooms.map((r,i)=>`<text class="rn" data-l="${i}" x="${r.x+3}" y="${(r.y+7.4).toFixed(2)}">${SEC[i].n || "T"}</text><text class="lb" data-l="${i}" x="${r.x + (SEC[i].n ? 12.5 : 9)}" y="${(r.y+7).toFixed(2)}">${L(SEC[i].en, SEC[i].de)}</text>`).join("")}
+      <g id="rgNades"></g>
+      <g id="rgMe"><path d="M0 0 L-9 -18 A20 20 0 0 1 9 -18 Z" fill="url(#rgCone)"/><path d="M0 -4.2 L3.3 3.3 L0 1.7 L-3.3 3.3 Z" fill="#f5c542" stroke="#111" stroke-width=".8" stroke-linejoin="round"/></g>`;
+    last = -1;
+  }
+  // page point → radar point (exact: smokes land where they were thrown)
+  function map(px, py){
+    let i = 0; while(i < rooms.length-1 && py >= rooms[i+1].top) i++;
+    const r = rooms[i], t = Math.max(0, Math.min(1, (py - r.top) / Math.max(1, r.bot - r.top)));
+    const xn = Math.max(0, Math.min(1, px / innerWidth));
+    return { x:r.x + 3 + xn*(r.w - 6), y:r.y + 2 + t*(r.h - 4), i, t };
+  }
   svg.addEventListener("click", e=>{
     const i = e.target.dataset?.i; if(i == null) return;
-    const z = Z[+i]; tone(700,.05,.02,"triangle",1000);
-    if(z.sel === ".hero") scrollTo({ top:0, behavior:"smooth" }); else scopeTo(z.sel);
+    tone(700,.05,.02,"triangle",1000);
+    if(+i === 0) scrollTo({ top:0, behavior:"smooth" }); else scopeTo(SEC[+i].sel);
   });
-  // arc-length interpolation along a corridor polyline
-  function along(pts, t){
-    const seg = []; let L = 0;
-    for(let i=1;i<pts.length;i++){ const d = Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]); seg.push(d); L += d; }
-    let want = t*L;
-    for(let i=0;i<seg.length;i++){
-      if(want <= seg[i] || i === seg.length-1){ const k = seg[i] ? Math.min(1, want/seg[i]) : 0, a = pts[i], b = pts[i+1];
-        return { p:[a[0]+(b[0]-a[0])*k, a[1]+(b[1]-a[1])*k], dir:[b[0]-a[0], b[1]-a[1]] }; }
-      want -= seg[i];
-    }
-  }
-  let tops = [];
-  const measure = ()=>{ tops = Z.map(z=>z.el ? z.el.getBoundingClientRect().top + scrollY : 0); };
-  function posFor(py){
-    let i = 0; while(i < Z.length-1 && py >= tops[i+1]) i++;
-    if(i >= Z.length-1) return { ...along(ROUTE[ROUTE.length-1], 1), i };
-    const t = Math.max(0, Math.min(1, (py - tops[i]) / Math.max(1, tops[i+1] - tops[i])));
-    // stand in the zone for most of the section, walk to the next one near its end
-    const w = Math.max(0, (t - .55) / .45);
-    return { ...along(ROUTE[i], w), i:w > .5 ? i+1 : i };
-  }
-  let cur = [50,84], ang = 0, last = -1;
+  let cur = null, ang = 180, last = -1, lastY = scrollY, dirDown = true;
   function tick(){
-    if(!tops.length || Math.random() < .01) measure();
-    const { p, i, dir } = posFor(scrollY + innerHeight*.35);
-    cur = [cur[0] + (p[0]-cur[0])*.14, cur[1] + (p[1]-cur[1])*.14];
-    const target = Math.atan2(dir[0], -dir[1]) * 180/Math.PI, d = ((target - ang + 540) % 360) - 180; ang += d*.12;
-    me.setAttribute("transform", `translate(${cur[0].toFixed(2)} ${cur[1].toFixed(2)}) rotate(${ang.toFixed(1)})`);
-    if(i !== last){ last = i; $("radarLbl").textContent = Z[i].en; }
-    // thrown grenades on the radar, like in game
+    if(!rooms.length || Math.random() < .02) layout();
+    const ref = scrollY + innerHeight*.4, m = map(innerWidth/2, ref), r = rooms[m.i];
+    // walk the room centre, drift towards the next room's corridor near the bottom
+    let x = r.cx; if(m.i < rooms.length-1 && m.t > .7){ const n = rooms[m.i+1]; x = r.cx + (n.cx - r.cx)*(m.t - .7)/.3*.5; }
+    if(Math.abs(scrollY - lastY) > 2){ dirDown = scrollY > lastY; lastY = scrollY; }
+    cur = cur ? { x:cur.x + (x - cur.x)*.15, y:cur.y + (m.y - cur.y)*.15 } : { x, y:m.y };
+    const target = dirDown ? 180 : 0, d = ((target - ang + 540) % 360) - 180; ang += d*.1;
+    $("rgMe").setAttribute("transform", `translate(${cur.x.toFixed(2)} ${cur.y.toFixed(2)}) rotate(${ang.toFixed(1)})`);
+    if(m.i !== last){
+      last = m.i;
+      svg.querySelectorAll(".rm").forEach((e,j)=>e.classList.toggle("on", j === m.i));
+      svg.querySelectorAll("[data-l]").forEach(e=>e.classList.toggle("on", +e.dataset.l === m.i));
+      $("radarLbl").textContent = (SEC[m.i].n ? SEC[m.i].n + " · " : "") + L(SEC[m.i].en, SEC[m.i].de);
+    }
     let html = "";
-    const mark = (x, y, fill, r)=>{ const q = posFor(y).p, ox = (x/innerWidth - .5)*8; html += `<circle cx="${(q[0]+ox).toFixed(1)}" cy="${q[1].toFixed(1)}" r="${r}" fill="url(#${fill})"/>`; };
-    SMOKES.forEach(k=>{ if(!k.scale) mark(k.x, k.y, "rgSmoke", 6.5); });
-    FIRES.forEach(f=>mark(f.x, f.y, "rgFire", 5));
-    if(nades.innerHTML !== html) nades.innerHTML = html;
+    const mark = (px, py, g, rr)=>{ const q = map(px, py); html += `<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${rr}" fill="url(#${g})"/>`; };
+    SMOKES.forEach(k=>{ if(!k.scale) mark(k.x, k.y, "rgSmoke", 5.5); });
+    FIRES.forEach(f=>mark(f.x, f.y, "rgFire", 4.5));
+    const nd = $("rgNades"); if(nd.innerHTML !== html) nd.innerHTML = html;
     requestAnimationFrame(tick);
   }
-  addEventListener("resize", measure); addEventListener("load", measure);
-  if(FINE) requestAnimationFrame(tick);
+  addEventListener("resize", ()=>{ sig = ""; layout(); });
+  addEventListener("load", layout);
+  window.RADAR_RELABEL = ()=>{ sig = ""; if(rooms.length) layout(); };
+  if(FINE){ layout(); requestAnimationFrame(tick); }
 })();
 
 /* ---------- init ---------- */
