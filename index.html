@@ -524,7 +524,7 @@ html.xh .xhair.on{opacity:1}
     <h3 class="sub" data-i18n="r1.also">also playing</h3>
     <div class="grid g3">
       <div class="card game"><h4>Valorant</h4><p>peak · Ascendant 2</p></div>
-      <div class="card game"><h4>Krunker</h4><p id="krunkerLvl">FACEIT lvl 5</p></div>
+      <a class="card game" id="krunkerCard" href="#" target="_blank" rel="noopener"><h4>Krunker</h4><p>profile ↗</p></a>
       <div class="card game"><h4>Red Dead Redemption 2</h4><p data-i18n="g.rdr">the cozy one</p></div>
     </div>
 
@@ -1056,7 +1056,6 @@ function renderFaceit(d){
   if(d.hs) $("fHs").innerHTML = d.hs + "<small>%</small>";
   if(d.matches) $("fM").textContent = fmt(d.matches);
   if(d.recent && d.recent.length) $("fRecent").innerHTML = d.recent.slice(0,5).map(r=>String(r)==="1"?'<i class="w">W</i>':'<i class="l">L</i>').join("");
-  if(d.krunkerLevel) $("krunkerLvl").textContent = "FACEIT lvl " + d.krunkerLevel;
   $("fStats").style.opacity = d.matches ? 1 : .5;
 }
 api("/api/faceit").then(d=>{ if(d && d.level){ lastFaceit = d; renderFaceit(d); buildTicker(); renderGoals(); } }).catch(()=>{});
