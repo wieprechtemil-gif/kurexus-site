@@ -2173,7 +2173,7 @@ const music = (function(){
     document.querySelectorAll(".mu-tab").forEach(b=>b.classList.toggle("on", b.dataset.p === p));
     if(cache[p]) return render(cache[p]);
     $("muTracks").classList.add("mu-loading");
-    return api("/api/music?v=2&period=" + p).then(d=>{ if(d && d.tracks){ cache[p] = d; if(period === p) render(d); } })
+    return api("/api/music?v=3&period=" + p).then(d=>{ if(d && d.tracks){ cache[p] = d; if(period === p) render(d); } })
       .catch(()=>{ $("muTracks").innerHTML = `<li class="mu-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</li>`; })
       .finally(()=>$("muTracks").classList.remove("mu-loading"));
   }
@@ -2190,7 +2190,7 @@ const music = (function(){
   function week(d){
     wk = d; if(!d) return;
     const T = d.tracks.slice(0, 8);
-    $("mwK").textContent = L("top songs · this week", "top songs · diese woche");
+    $("mwK").textContent = d.monthFallback ? L("top songs · this month", "top songs · dieser monat") : L("top songs · this week", "top songs · diese woche");
     $("mwOpenT").textContent = L("full stats", "alle stats");
     $("mwList").innerHTML = T.length ? T.map((t,i)=>`
       <li class="mw-row${t.preview ? "" : " nopv"}${t.preview && player.isPlaying(t.preview) ? " playing" : ""}" data-i="${i}" data-url="${esc(t.preview||"")}">
@@ -2214,7 +2214,12 @@ const music = (function(){
     });
   });
   setTimeout(()=>{
-    api("/api/music?period=7day&v=2").then(d=>{ if(d && d.tracks){ cache["7day"] = d; week(d); } else throw 0; })
+    const get = (n=0)=>api("/api/music?period=7day&v=3").then(d=>{ if(d && d.tracks) return d; throw 0; }).catch(e=>{ if(n < 2) return new Promise(r=>setTimeout(r, 1500)).then(()=>get(n+1)); throw e; });
+    get().then(d=>{
+      // quiet week → show the last month instead of an empty list
+      if(!d.tracks.length) return api("/api/music?period=1month&v=3").then(m=>{ if(m && m.tracks && m.tracks.length){ m.monthFallback = true; week(m); } else week(d); });
+      cache["7day"] = d; week(d);
+    })
       .catch(()=>{ $("mwList").innerHTML = `<li class="mw-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</li>`; });
   }, 600);
   return { load:()=>load(period), rerender:()=>{ last && render(last); wk && week(wk); } };

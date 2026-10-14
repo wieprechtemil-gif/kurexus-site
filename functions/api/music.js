@@ -19,6 +19,8 @@ export const onRequestGet = ctx => {
         lf("user.getinfo"),
         lf("user.getrecenttracks", "&limit=10")
       ]);
+      // Last.fm hiccup (rate limit / error) → don't cache an empty answer
+      if (!tt?.toptracks || !rec?.recenttracks) return json({ error: "lastfm: " + (tt?.message || rec?.message || "no data") }, 500);
       const sp = await spotifyToken(ctx.env).catch(() => null);
       const spGet = async path => { if (!sp) return null; const r = await fetch("https://api.spotify.com/v1/" + path, { headers: { authorization: "Bearer " + sp } }); return r.ok ? r.json() : null; };
 
