@@ -1343,8 +1343,18 @@ const SFX = {
   copy(){ tone(1047,.14,.022,"sine"); after(70,()=>tone(1568,.2,.018,"sine")); },        // little chime = copied
   hit(){ tone(2200,.045,.045,"square",null,4200); after(38,()=>tone(1600,.055,.035,"square",null,4200)); },
   kill(){ tone(520,.07,.02,"triangle",760,2000); },
-  scopeIn(){ noise(.22,.06,600,3000); tone(180,.15,.025,"sine",90); },
-  scopeOut(){ noise(.25,.045,3000,500); },
+  // AWP-style zoom: hard metallic snap (click + ringing ping + body thud), then a short lens whir
+  scopeIn(){
+    noise(.018,.13,9000,6000,"highpass");                       // snap
+    tone(2350,.07,.035,"square",2100,5200); tone(3720,.05,.02,"triangle",3500);   // metal ping
+    tone(130,.06,.05,"sine",80);                                 // body thud
+    after(28, ()=>{ noise(.012,.08,7000,5000,"highpass"); tone(1900,.04,.02,"square",1700,4800); });   // second latch
+    after(55, ()=>noise(.13,.022,900,2600));                     // lens whir
+  },
+  scopeOut(){
+    noise(.015,.1,9500,7000,"highpass"); tone(2900,.05,.028,"square",3100,5600); tone(160,.04,.035,"sine",110);
+    after(35, ()=>noise(.1,.018,2600,900));
+  },
   toggle(){ tone(880,.05,.028,"sine"); after(50,()=>tone(1320,.06,.022,"sine")); },
   go(){ tone(1400,.09,.045,"sine"); },
   miss(){ tone(200,.14,.04,"triangle",130,900); },
