@@ -399,6 +399,25 @@ html.gw-lock{overflow:hidden}
 .mclips.four{grid-template-columns:repeat(2,1fr)}
 .mclip.empty{border-style:dashed;justify-content:center;align-items:center;color:var(--muted);font-family:var(--mono);font-size:11px;background:transparent}
 
+/* last played */
+.lp{display:flex;align-items:center;gap:12px;width:max-content;max-width:100%;margin:16px auto 0;padding:8px 16px 8px 8px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-align:left;transition:border-color .2s}
+.lp[hidden]{display:none}
+.lp:hover{border-color:var(--line-2)}
+.lp-art{position:relative;flex:none;width:52px;height:52px;border-radius:9px;overflow:hidden;background:var(--bg-2)}
+.lp-art img{width:100%;height:100%;object-fit:cover}
+.lp-play{position:absolute;inset:0;display:grid;place-items:center;border:0;background:rgba(0,0,0,.45);color:#fff;opacity:0;transition:opacity .2s}
+.lp:hover .lp-play,.lp.playing .lp-play,.lp-play:focus-visible{opacity:1}
+.lp-play svg{width:18px;height:18px;fill:currentColor}
+.lp-txt{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.lp-k{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.lp-k.now{color:#ff4d5e}
+.lp-txt b{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.lp-txt span:last-child{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.lp-eq{display:flex;gap:2px;align-items:flex-end;height:14px;margin-left:4px}
+.lp-eq i{width:3px;height:3px;background:var(--fg);border-radius:1px;opacity:.5}
+.lp.now .lp-eq i,.lp.playing .lp-eq i{opacity:1;animation:eq .9s ease-in-out infinite}
+.lp-eq i:nth-child(2){animation-delay:.25s}.lp-eq i:nth-child(3){animation-delay:.5s}
+
 /* contact */
 .ccard{display:flex;flex-direction:column;gap:12px}
 .ccard .who{font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -528,6 +547,11 @@ html.xh .xhair.on{opacity:1}
     <h1 id="name"><span data-t="kur">kur</span><em data-t="exus">exus</em></h1>
     <p class="aka" data-i18n="aka">aka kur — locked in, mostly</p>
     <div class="currently"><i></i><b data-i18n="cur.label">currently</b><span data-i18n="cur.text">grinding faceit · streaming almost daily · learning 中文</span></div>
+    <a class="lp" id="lp" target="_blank" rel="noopener" hidden>
+      <span class="lp-art"><img id="lpArt" alt=""><button class="lp-play" id="lpPlay" aria-label="play 30s preview"><svg viewBox="0 0 24 24" id="lpIcon"><path d="M7 4v16l13-8z"/></svg></button></span>
+      <span class="lp-txt"><span class="lp-k" id="lpK">last played</span><b id="lpTitle"></b><span id="lpArtist"></span></span>
+      <span class="lp-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+    </a>
     <div class="chips">
       <span class="chip">Emil</span>
       <span class="chip">19</span>
@@ -702,7 +726,6 @@ html.xh .xhair.on{opacity:1}
   <div>kurexus · germany · <span style="font-family:var(--mono);font-style:normal;font-size:11px" data-i18n="hint">press ^ for console</span></div>
 </footer>
 
-<audio id="audio" src="music.mp3" loop preload="none"></audio>
 <button class="music" id="sndBtn" aria-label="sound on/off">
   <span class="disc"><svg viewBox="0 0 24 24" id="sIcon"></svg></span>
   <span class="bars"><i></i><i></i><i></i><i></i></span>
@@ -857,7 +880,7 @@ const CFG = {
   crosshairCode: "CSNQ9Fpma3iHaxfTkYznX4FJtcRUp2N3XMS9p8Y9iKSaUT",
   crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00e4ff" },
   premier: 21199,                                    // dein Premier-Rating
-  krunkerProfile: "https://krunker.io/?profile=kodakosan",
+  krunkerProfile: "https://krunker.io/social.html?p=profile&q=kodakosan",
   clips: {                                           // Medal- oder Twitch-Clip-Links pro Spiel (title optional)
     cs2: [
       { url: "https://medal.tv/games/counter-strike-2/clips/nHiNEDSORxj7nhg6-", title: "clean 3 taps" },
@@ -930,7 +953,7 @@ function applyLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
   $("aimStart").textContent = aimPlayed ? L("again","nochmal") : "start";
-  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock(); if(typeof renderClips==="function" && $("gw")) try{ renderClips(); }catch(e){}
+  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock(); window.renderLastPlayed && renderLastPlayed(); if(typeof renderClips==="function" && $("gw")) try{ renderClips(); }catch(e){}
   $("aimName").placeholder = L("your name","dein name");
 }
 
@@ -1596,6 +1619,32 @@ if(CFG.krunkerProfile){ $("krunkerLink").href = CFG.krunkerProfile; } else { con
 renderClips();
 $("krVid").onclick = ()=>openPip(`https://www.youtube-nocookie.com/embed/${CFG.featuredVideo.id}?autoplay=1`, CFG.featuredVideo.title);
 if(GAMES[location.hash.slice(1)]) setTimeout(()=>openGame(location.hash.slice(1), false), 300);
+
+/* ---------- last played (Last.fm) + 30s preview ---------- */
+(function(){
+  const box = $("lp"), au = new Audio(); au.volume = .5; let data = null;
+  function setIcon(p){ $("lpIcon").innerHTML = p ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>'; }
+  function render(d){
+    data = d; box.hidden = false; box.href = d.url || "#";
+    box.classList.toggle("now", !!d.nowPlaying);
+    const k = $("lpK"); k.classList.toggle("now", !!d.nowPlaying);
+    k.textContent = d.nowPlaying ? L("listening now","hört gerade") : L("last played","zuletzt gehört");
+    $("lpTitle").textContent = d.title; $("lpArtist").textContent = d.artist + (d.album ? " · " + d.album : "");
+    if(d.art) $("lpArt").src = d.art;
+    $("lpPlay").style.display = d.preview ? "" : "none";
+    if(au.src && au.src !== d.preview){ au.pause(); box.classList.remove("playing"); setIcon(false); }
+  }
+  $("lpPlay").addEventListener("click", e=>{
+    e.preventDefault(); e.stopPropagation();
+    if(!data || !data.preview) return;
+    if(au.paused){ if(au.src !== data.preview) au.src = data.preview; au.play().then(()=>{ box.classList.add("playing"); setIcon(true); }).catch(()=>{}); }
+    else { au.pause(); box.classList.remove("playing"); setIcon(false); }
+  });
+  au.addEventListener("ended", ()=>{ box.classList.remove("playing"); setIcon(false); });
+  const load = ()=>api("/api/lastfm").then(d=>{ if(d && d.title) render(d); }).catch(()=>{});
+  load(); setInterval(load, 60000);
+  window.renderLastPlayed = ()=>data && render(data);
+})();
 
 /* ---------- reaction test ---------- */
 (function(){
