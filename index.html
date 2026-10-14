@@ -2134,7 +2134,7 @@ const drawSmokes = (function(){
   if(!FINE) return;
   const layer = $("decals"), SPRAY = [[0,0],[0,-6],[1,-14],[0,-24],[-2,-34],[-1,-44],[2,-52],[8,-58],[14,-62],[10,-66],[2,-68],[-8,-70],[-16,-71],[-10,-74],[0,-76],[10,-75],[18,-76],[22,-78],[14,-80],[4,-81],[-6,-82],[-14,-82],[-20,-83],[-12,-85],[0,-86],[10,-86],[16,-87],[20,-88],[24,-88],[18,-90]];
   // anything that isn't clickable/interactive counts as a wall you can shoot at
-  const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp-wrap,#aimBox,#rx,nav,.yt");
+  const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp,.lp-vol,#aimBox,#rx,nav,.yt");
   function hole(x, y){
     const h = document.createElement("i"); h.className = "hole";
     h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`;
