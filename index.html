@@ -1942,8 +1942,10 @@ document.querySelectorAll(".popt").forEach(b=>b.onclick = ()=>{
 
 /* ---------- visitor counter ---------- */
 (function(){
-  let first = true; try{ first = !sessionStorage.getItem("counted"); sessionStorage.setItem("counted","1"); }catch(e){}
-  api("/api/counter", {method: first ? "POST" : "GET"}).then(d=>{
+  let session = true, firstEver = false;
+  try{ session = !sessionStorage.getItem("counted"); sessionStorage.setItem("counted","1"); firstEver = !localStorage.getItem("seen"); localStorage.setItem("seen","1"); }catch(e){}
+  const post = session;
+  api("/api/counter", post ? { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ first:firstEver }) } : undefined).then(d=>{
     if(!d.count) return;
     $("vDigits").innerHTML = String(d.count).padStart(5,"0").split("").map(c=>`<i>${c}</i>`).join("");
     $("visits").style.display = "inline-flex";
@@ -1970,7 +1972,7 @@ function toggleCon(open){
   if(o){ if(!cout.children.length) cprint('kurexus console — type <span class="c">help</span>'); setTimeout(()=>inp.focus(), 50); } else inp.blur();
 }
 const CMDS = {
-  help:()=>"commands: status, faceit, setup, settings, socials, discord, stream, aim, theme, lang, flash, clear, quit",
+  help:()=>"commands: status, faceit, setup, settings, socials, discord, stream, aim, theme, lang, flash, stats, clear, quit",
   status:()=>`hostname: kurexus\nmap     : de_cache\nplayers : 1 human (you)\nstatus  : ${LIVE?"LIVE on twitch":"offline"}\nfaceit  : lvl ${lastFaceit.level} · ${fmt(lastFaceit.elo)} elo`,
   faceit:()=>`level ${lastFaceit.level} · ${fmt(lastFaceit.elo)} elo · ${fmt(Math.max(0,2001-lastFaceit.elo))} to lvl 10${lastFaceit.kd?` · K/D ${lastFaceit.kd}`:""}`,
   setup:()=>"7800X3D · RX 9070 XT White · 32GB DDR5-6000 · Lancool 216 White\nHitscan Hyperlight · Womier RD75 Pro · Cloud III Wireless · TONOR TD510",
@@ -1987,7 +1989,16 @@ const CMDS = {
   "sv_cheats 1":()=>{ document.body.classList.remove("shake"); void document.body.offsetWidth; document.body.classList.add("shake"); return ["e","nice try. VAC'd 🔨"]; },
   noclip:()=>["e","noclip requires sv_cheats 1"],
   kill:()=>{ kill(L("you","du"),"knife",L("yourself","dich selbst"),{me:true}); return "you died."; },
-  "fps_max 0":()=>"unlocked. your gpu is now screaming."
+  "fps_max 0":()=>"unlocked. your gpu is now screaming.",
+  stats:()=>{
+    api("/api/counter?stats=1").then(d=>{
+      const day = k=>new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Berlin",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(Date.now() - k*864e5));
+      const D = d.daily || {}, today = D[day(0)] || 0, week = Array.from({length:7},(_,k)=>D[day(k)] || 0).reduce((a,b)=>a+b,0);
+      const last = Array.from({length:14},(_,k)=>day(13-k)).map(k=>`${k.slice(5)} ${"█".repeat(Math.min(30, D[k] || 0))} ${D[k] || 0}`).join("\n");
+      cprint(esc(`visits total   : ${fmt(d.visits)}\nunique people  : ${fmt(d.uniq)} (since this update)\ntoday          : ${today}\nlast 7 days    : ${week}\n\n${last}`));
+    }).catch(()=>cprint("stats unavailable", "e"));
+    return "loading stats…";
+  }
 };
 $("conForm").onsubmit = e=>{
   e.preventDefault(); const raw = inp.value.trim(); inp.value = ""; if(!raw) return;
