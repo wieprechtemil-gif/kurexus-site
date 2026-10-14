@@ -759,6 +759,35 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 @media (max-width:760px){.kr-small{grid-template-columns:repeat(2,1fr)}}
 .kr-small div{background:var(--card-solid);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
 .kr-small b{font:700 18px var(--sans)}
+/* rdr2 window */
+.rd-top{display:grid;grid-template-columns:1fr 300px;gap:12px}
+@media (max-width:760px){.rd-top{grid-template-columns:1fr}}
+.rd-left{display:flex;flex-direction:column;gap:12px}
+.rd-time .k,.rd-ach .k{display:flex;justify-content:space-between;align-items:center}
+.rd-now{display:inline-flex;align-items:center;gap:6px;color:#7ee08a;text-transform:none;letter-spacing:.02em}
+.rd-now i{width:6px;height:6px;border-radius:50%;background:#7ee08a;animation:onl 2s infinite}
+.rd-hrs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--line)}
+.rd-hrs>div{background:var(--card-solid);padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.rd-hrs b{font:700 20px var(--sans)}
+.rd-hrs span{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rd-ach .k b{font:600 12px var(--mono);color:var(--fg);letter-spacing:0}
+.rd-bar{height:8px;border-radius:8px;background:color-mix(in srgb,var(--fg) 8%,transparent);overflow:hidden;margin-top:12px}
+.rd-bar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#b8442c,#d9573b);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.rd-last{margin-top:10px;font:500 11px var(--mono);color:var(--muted);line-height:1.5}
+.rd-last b{color:var(--fg);font-family:var(--sans);font-size:13px;font-weight:600}
+.wanted{position:relative;padding:22px 20px 18px;border-radius:6px;text-align:center;color:#3b2414;
+  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.35),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(120,70,30,.35),transparent 55%),linear-gradient(160deg,#e9d3a6,#d8b97f 55%,#c49a5c);
+  box-shadow:0 20px 50px -16px rgba(0,0,0,.8),inset 0 0 40px rgba(110,60,20,.45);transform:rotate(1.2deg);font-family:Georgia,"Times New Roman",serif;transition:transform .4s}
+.wanted:hover{transform:rotate(-.5deg) scale(1.01)}
+.wanted::before{content:"";position:absolute;left:50%;top:8px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#aaa,#444);box-shadow:0 1px 2px rgba(0,0,0,.6)}
+.w-top{font:900 46px/1 Georgia,serif;letter-spacing:.06em;margin-top:6px;text-shadow:1px 1px 0 rgba(255,255,255,.25)}
+.w-sub{font:italic 600 14px Georgia,serif;letter-spacing:.2em;text-transform:uppercase;margin-top:4px;border-top:2px solid #3b2414;border-bottom:2px solid #3b2414;padding:3px 0}
+.w-pic{font-size:40px;white-space:nowrap;letter-spacing:-4px;margin:14px auto 10px;width:150px;height:96px;display:grid;place-items:center;border:3px double #3b2414;background:rgba(255,255,255,.15);filter:sepia(.6) saturate(.8)}
+.w-for{font:italic 15px Georgia,serif}
+.w-cnt{font:13px Georgia,serif;margin-top:6px}.w-cnt b{font-size:22px}
+.w-rew{display:flex;flex-direction:column;margin-top:12px;font:700 12px Georgia,serif;letter-spacing:.3em;text-transform:uppercase}
+.w-rew b{font:900 32px/1.1 Georgia,serif;letter-spacing:.02em;color:#7a1d0f}
+.w-note{margin-top:10px;font:italic 12px Georgia,serif;opacity:.75}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -1287,16 +1316,32 @@ html.xh .xhair.on{opacity:1}
         <ol class="mu-recent" id="muRecent"></ol>
       </div>
       <div class="gw-page" data-page="rdr2">
-        <div class="grid g2">
-          <div class="card">
-            <div class="k" data-i18n="rdr.k">story mode</div>
-            <div class="v" style="font-size:30px" data-i18n="rdr.v">the cozy one</div>
-            <p class="gw-p" data-i18n="rdr.p">Slow nights, camp fires and way too much time in the menus.</p>
+        <div class="rd-top">
+          <div class="rd-left">
+            <div class="card rd-time">
+              <div class="k"><span data-i18n="rdr.k">story mode</span><span class="rd-now" id="rdNow" hidden><i></i><span id="rdNowT">in game now</span></span></div>
+              <div class="v" style="font-size:30px" data-i18n="rdr.v">the cozy one</div>
+              <p class="gw-p" data-i18n="rdr.p">Slow nights, camp fires and way too much time in the menus.</p>
+              <div class="rd-hrs" id="rdHrs" hidden>
+                <div><b id="rdH">—</b><span id="rdHL">hours played</span></div>
+                <div><b id="rdH2">—</b><span id="rdH2L">last 2 weeks</span></div>
+                <div id="rdOW"><b id="rdO">—</b><span>red dead online</span></div>
+              </div>
+            </div>
+            <div class="card rd-ach" id="rdAch" hidden>
+              <div class="k"><span id="rdAchK">achievements</span><b id="rdAchN"></b></div>
+              <div class="rd-bar"><i id="rdAchBar"></i></div>
+              <div class="rd-last" id="rdAchLast"></div>
+            </div>
           </div>
-          <div class="card">
-            <div class="k" data-i18n="rdr.horse.k">horses punched instead of saddled</div>
-            <div class="v" style="font-size:30px">👊🐎 4</div>
-            <p class="gw-p" data-i18n="rdr.horse.p">on accident. i swear.</p>
+          <div class="wanted" aria-label="wanted poster">
+            <div class="w-top">WANTED</div>
+            <div class="w-sub" id="wSub">dead or alive</div>
+            <div class="w-pic">👊🐎</div>
+            <div class="w-for" id="wFor">for crimes against horses</div>
+            <div class="w-cnt"><b>4</b> <span id="wCnt">counts of punching instead of saddling</span></div>
+            <div class="w-rew"><span id="wRew">reward</span><b>$150.00</b></div>
+            <div class="w-note" id="wNote">"on accident. i swear." — kur</div>
           </div>
         </div>
         <h3 class="sub" data-i18n="gw.c">clips</h3>
@@ -2125,7 +2170,7 @@ function renderClips(){
     const g = box.dataset.mclips, list = (CFG.clips[g]||[]).slice(0,6);
     box.style.setProperty("--gc", GAMES[g].color);
     box.classList.toggle("four", list.length === 4);
-    const slots = Math.max(3, list.length);
+    const slots = list.length;   // no empty "soon" placeholders
     box.innerHTML = Array.from({length:slots}, (_,i)=>{
       const c = list[i];
       if(!c) return `<div class="mclip empty">${L("clip slot · soon","clip-platz · bald")}</div>`;
@@ -2982,10 +3027,31 @@ const NADES = (function(){
     const on = !!d.playing; $("steamNow").hidden = !on;
     if(on) $("steamTxt").textContent = L(`in ${d.playing} right now`, `gerade in ${d.playing}`);
     if(d.cs2Hours){ $("tHours").textContent = fmt(d.cs2Hours) + "h"; $("fHours").textContent = fmt(d.cs2Hours); }
+    // rdr2 window
+    const R = d.rdr2;
+    $("rdNow").hidden = !(d.appid === 1174180 || d.appid === 1404210); $("rdNowT").textContent = L("in game right now","gerade im spiel");
+    if(R){
+      $("rdHrs").hidden = false; $("rdH").textContent = fmt(R.h) + "h"; $("rdH2").textContent = (R.h2w || 0) + "h";
+      $("rdHL").textContent = L("hours played","stunden gespielt"); $("rdH2L").textContent = L("last 2 weeks","letzte 2 wochen");
+      $("rdOW").hidden = !d.rdo; if(d.rdo) $("rdO").textContent = fmt(d.rdo.h) + "h";
+      if(R.ach){
+        $("rdAch").hidden = false; $("rdAchK").textContent = L("achievements","erfolge");
+        $("rdAchN").textContent = `${R.ach.got} / ${R.ach.total}`;
+        requestAnimationFrame(()=>$("rdAchBar").style.width = (R.ach.got / R.ach.total * 100).toFixed(1) + "%");
+        $("rdAchLast").innerHTML = R.ach.last ? `${L("latest","zuletzt")}: <b>${esc(R.ach.last.name)}</b>${R.ach.last.desc ? ` · ${esc(R.ach.last.desc)}` : ""}<br>${ago(new Date(R.ach.last.date).toISOString())}` : "";
+      }
+    }
+
   }
+  function wanted(){
+    $("wSub").textContent = L("dead or alive","tot oder lebendig"); $("wFor").textContent = L("for crimes against horses","für verbrechen an pferden");
+    $("wCnt").textContent = L("counts of punching instead of saddling","mal geschlagen statt gesattelt"); $("wRew").textContent = L("reward","belohnung");
+    $("wNote").textContent = L('"on accident. i swear." — kur','"aus versehen. ich schwöre." — kur');
+  }
+  wanted();
   const load = ()=>api("/api/steam").then(x=>{ if(x && !x.error){ d = x; render(); } }).catch(()=>{});
   load(); setInterval(()=>{ if(!document.hidden) load(); }, 60000);
-  window.renderSteam = render;
+  window.renderSteam = ()=>{ wanted(); render(); };
 })();
 // stream days heatmap (last 18 weeks, Monday first)
 (function(){
