@@ -1924,7 +1924,7 @@ function closeGame(){
   if(!gwCurrent) return;
   const g = gwCurrent; gwCurrent = null;
   gw.classList.remove("open"); gw.setAttribute("aria-hidden","true"); document.documentElement.classList.remove("gw-lock");
-  history.replaceState(null, "", "#games"); SFX.scopeOut();
+  history.replaceState(null, "", g === "music" ? "#music" : "#games"); SFX.scopeOut();
   const t = document.querySelector(`.gtile[data-game="${g}"]`); t && t.focus({preventScroll:true});
 }
 document.querySelectorAll(".gtile").forEach(t=>t.addEventListener("click", ()=>openGame(t.dataset.game)));
