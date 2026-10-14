@@ -137,7 +137,7 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .card:hover::before{opacity:1}
 .card h4.ch{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .card h4.ch b{color:var(--fg);font-weight:500}
-.grid{display:grid;gap:12px}
+.grid{display:grid;gap:12px}.grid>*{min-width:0}
 .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 .mt{margin-top:12px}
 .k{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
@@ -258,6 +258,23 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .aim-res{display:flex;gap:26px;justify-content:center;margin-bottom:18px}
 .aim-res div{text-align:center}.aim-res b{display:block;font-size:30px;letter-spacing:-.03em}.aim-res span{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 
+/* about */
+.about{grid-template-columns:1.5fr 1fr}
+.bio-t{font-size:clamp(19px,2.4vw,24px);line-height:1.45;letter-spacing:-.015em;font-weight:500}
+.bio-f{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+.bio-f span{font-family:var(--mono);font-size:11px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.score{white-space:nowrap}.score #kstat{color:var(--muted);text-transform:none;letter-spacing:0}
+
+/* reaction test */
+.rx{width:100%;height:220px;border-radius:16px;border:1px solid var(--line-2);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:background .08s,border-color .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none}
+.rx:hover{border-color:var(--fg)}
+.rx-m{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-.035em}
+.rx-s{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.rx[data-s="wait"]{background:var(--bg-2)}
+.rx[data-s="go"]{background:var(--fg);border-color:var(--fg)}
+.rx[data-s="go"] .rx-m,.rx[data-s="go"] .rx-s{color:var(--bg)}
+.rx[data-s="early"]{background:rgba(255,77,94,.12);border-color:rgba(255,77,94,.6)}
+
 /* goals */
 .goals{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .goal{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;border:1px dashed var(--line-2);font-size:15px;font-weight:500}
@@ -358,7 +375,7 @@ html.xh .xhair.on{opacity:1}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
 
-@media (max-width:900px){ .score{display:none} }
+@media (max-width:1060px){ .score{display:none} }
 @media (max-width:680px){
   .g2,.g3,.fc{grid-template-columns:1fr}
   .g4,.settings{grid-template-columns:repeat(2,1fr)}
@@ -369,6 +386,7 @@ html.xh .xhair.on{opacity:1}
   .aim,.aim-ui{min-height:300px}
   .poll-opts{grid-template-columns:1fr}
   .goals{grid-template-columns:1fr 1fr}
+  .about{grid-template-columns:1fr}
   .lb{grid-template-columns:1fr}
   #kf{top:66px;right:8px}.kill{font-size:11px}
   .langs .row{grid-template-columns:80px 1fr 50px}
@@ -382,14 +400,15 @@ html.xh .xhair.on{opacity:1}
 <nav>
   <div class="wrap">
     <a href="#top" class="logo" data-scope><span>k</span>kur</a>
-    <div class="score" aria-hidden="true"><span>ROUND <b id="rnd">1</b>/5</span><span class="t" id="rtime">1:55</span></div>
+    <div class="score" title="kur's local time (Germany)"><span class="t" id="ktime">--:--</span><span id="kstat"></span></div>
     <div class="nav-r">
       <div class="links">
-        <a href="#games" data-scope><i>R1</i><span data-i18n="nav.games">games</span></a>
-        <a href="#setup" data-scope><i>R2</i><span data-i18n="nav.setup">setup</span></a>
-        <a href="#stream" data-scope><i>R3</i><span data-i18n="nav.stream">stream</span></a>
-        <a href="#aim" data-scope><i>R4</i><span data-i18n="nav.aim">aim</span></a>
-        <a href="#contact" data-scope><i>R5</i><span data-i18n="nav.contact">contact</span></a>
+        <a href="#about" data-scope><i>R1</i><span data-i18n="nav.about">about</span></a>
+        <a href="#games" data-scope><i>R2</i><span data-i18n="nav.games">stats</span></a>
+        <a href="#setup" data-scope><i>R3</i><span data-i18n="nav.setup">setup</span></a>
+        <a href="#stream" data-scope><i>R4</i><span data-i18n="nav.stream">content</span></a>
+        <a href="#aim" data-scope><i>R5</i><span data-i18n="nav.aim">warmup</span></a>
+        <a href="#contact" data-scope><i>R6</i><span data-i18n="nav.contact">contact</span></a>
       </div>
       <button class="tog" id="langBtn" aria-label="Sprache / language">DE</button>
       <button class="tog" id="themeBtn" aria-label="Theme"><svg viewBox="0 0 24 24" id="themeIcon"></svg></button>
@@ -427,10 +446,32 @@ html.xh .xhair.on{opacity:1}
 
   <div class="ticker" aria-hidden="true"><div class="track" id="track"></div></div>
 
-  <!-- ROUND 1 -->
-  <section id="games" class="rv" data-round="1">
-    <div class="label"><b>R1</b><span data-i18n="r1.label">round one — games</span></div>
-    <h2 data-i18n="r1.title">what I <em>grind</em></h2>
+  <!-- ROUND 1: ABOUT -->
+  <section id="about" class="rv" data-round="1">
+    <div class="label"><b>R1</b><span data-i18n="r1.label">round one — about</span></div>
+    <h2 data-i18n="r1.title">who is <em>kur</em></h2>
+    <div class="grid about">
+      <div class="card bio">
+        <p class="bio-t" data-i18n="about.bio">19, from Germany. I stream CS2 almost every day, grind FACEIT and try to get a little better every match. Off stream I'm learning Chinese, finishing my all-white setup and figuring out the rest as I go.</p>
+        <div class="bio-f"><span>Emil</span><span>19</span><span data-i18n="germany">Germany</span><span>CS2 · FACEIT · Twitch</span></div>
+      </div>
+      <div class="card langs">
+        <h4 class="ch"><b data-i18n="l.title">languages</b><span>DE · EN · 中文</span></h4>
+        <div class="row"><span data-i18n="l.de">German</span><div class="bar"><i style="--w:100%"></i></div><span data-i18n="l.native">native</span></div>
+        <div class="row"><span data-i18n="l.en">English</span><div class="bar"><i style="--w:85%"></i></div><span data-i18n="l.fluent">fluent</span></div>
+        <div class="row"><span>中文</span><div class="bar"><i style="--w:15%"></i></div><span>A1</span></div>
+      </div>
+    </div>
+    <div class="card mt">
+      <h4 class="ch"><b data-i18n="goals.title">goals</b><span data-i18n="goals.sub">the roadmap</span></h4>
+      <div class="goals" id="goals"></div>
+    </div>
+  </section>
+
+  <!-- ROUND 2: STATS -->
+  <section id="games" class="rv" data-round="2">
+    <div class="label"><b>R2</b><span data-i18n="r2.label">round two — stats</span></div>
+    <h2 data-i18n="r2.title">what I <em>grind</em></h2>
 
     <div class="card main-game">
       <div class="mg-top"><h3>Counter-Strike 2</h3><span class="tag">MAIN</span></div>
@@ -452,6 +493,7 @@ html.xh .xhair.on{opacity:1}
       </div>
     </div>
 
+
     <div class="grid g4 mt">
       <div class="card fact"><div class="k">Premier</div><div class="premier" id="premier"></div></div>
       <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v">700<small> h</small></div></div>
@@ -466,13 +508,7 @@ html.xh .xhair.on{opacity:1}
       <div class="card game"><h4>Red Dead Redemption 2</h4><p data-i18n="g.rdr">the cozy one</p></div>
     </div>
 
-    <div class="grid g2 mt">
-      <div class="card langs">
-        <h4 class="ch"><b data-i18n="l.title">languages</b><span>DE · EN · 中文</span></h4>
-        <div class="row"><span data-i18n="l.de">German</span><div class="bar"><i style="--w:100%"></i></div><span data-i18n="l.native">native</span></div>
-        <div class="row"><span data-i18n="l.en">English</span><div class="bar"><i style="--w:85%"></i></div><span data-i18n="l.fluent">fluent</span></div>
-        <div class="row"><span>中文</span><div class="bar"><i style="--w:15%"></i></div><span>A1</span></div>
-      </div>
+    <div class="mt">
       <div class="card">
         <h4 class="ch"><b data-i18n="p.title">the bet</b><span data-i18n="p.vote">vote</span></h4>
         <div class="poll-q" data-i18n="p.q">Will kur hit <em>FACEIT 10</em> by end of 2026?</div>
@@ -483,16 +519,12 @@ html.xh .xhair.on{opacity:1}
         <div class="poll-n" id="pollN"></div>
       </div>
     </div>
-    <div class="card mt">
-      <h4 class="ch"><b data-i18n="goals.title">goals</b><span data-i18n="goals.sub">the roadmap</span></h4>
-      <div class="goals" id="goals"></div>
-    </div>
   </section>
 
-  <!-- ROUND 2 -->
-  <section id="setup" class="rv" data-round="2">
-    <div class="label"><b>R2</b><span data-i18n="r2.label">round two — setup</span></div>
-    <h2 data-i18n="r2.title">the <em>all-white</em> build</h2>
+  <!-- ROUND 3: SETUP -->
+  <section id="setup" class="rv" data-round="3">
+    <div class="label"><b>R3</b><span data-i18n="r3.label">round three — setup</span></div>
+    <h2 data-i18n="r3.title">the <em>all-white</em> build</h2>
     <div class="grid g2">
       <div class="card">
         <h4 class="ch"><b>PC</b><span>white edition</span></h4>
@@ -546,10 +578,10 @@ html.xh .xhair.on{opacity:1}
     </div>
   </section>
 
-  <!-- ROUND 3 -->
-  <section id="stream" class="rv" data-round="3">
-    <div class="label"><b>R3</b><span data-i18n="r3.label">round three — stream</span></div>
-    <h2 data-i18n="r3.title">catch me <em>live</em></h2>
+  <!-- ROUND 4: CONTENT -->
+  <section id="stream" class="rv" data-round="4">
+    <div class="label"><b>R4</b><span data-i18n="r4.label">round four — content</span></div>
+    <h2 data-i18n="r4.title">catch me <em>live</em></h2>
     <div class="player" id="player"></div>
     <div class="grid g2">
       <div class="card">
@@ -568,10 +600,10 @@ html.xh .xhair.on{opacity:1}
     <div class="clips" id="clips"><div class="empty" style="grid-column:1/-1" data-i18n="clips.none">clips are loading… or still being cooked.</div></div>
   </section>
 
-  <!-- ROUND 4 -->
-  <section id="aim" class="rv" data-round="4">
-    <div class="label"><b>R4</b><span data-i18n="r4.label">round four — warmup</span></div>
-    <h2 data-i18n="r4.title">beat my <em>aim</em></h2>
+  <!-- ROUND 5: WARMUP -->
+  <section id="aim" class="rv" data-round="5">
+    <div class="label"><b>R5</b><span data-i18n="r5.label">round five — warmup</span></div>
+    <h2 data-i18n="r5.title">beat my <em>aim</em></h2>
     <div class="aim" id="aimBox">
       <canvas id="aimCv"></canvas>
       <div class="aim-hud" id="aimHud" style="display:none"><span><span data-i18n="a.score">score</span> <b id="aScore">0</b></span><span><b id="aTime">30.0</b>s</span></div>
@@ -593,12 +625,14 @@ html.xh .xhair.on{opacity:1}
       <h4 class="ch"><b data-i18n="lb.title">leaderboard</b><span data-i18n="lb.sub">top 10 · 30s</span></h4>
       <ol class="lb" id="lb"><li class="lb-empty" data-i18n="lb.empty">no scores yet. be the first.</li></ol>
     </div>
+    <h3 class="sub" data-i18n="rx.title">reaction test</h3>
+    <button class="rx" id="rx" data-s="idle"><span class="rx-m" id="rxMsg" data-i18n="rx.start">click to start</span><span class="rx-s" id="rxSub" data-i18n="rx.hint">wait for white, then click as fast as you can · 5 tries</span></button>
   </section>
 
-  <!-- ROUND 5 -->
-  <section id="contact" class="rv" data-round="5">
-    <div class="label"><b>R5</b><span data-i18n="r5.label">round five — contact</span></div>
-    <h2 data-i18n="r5.title">say <em>hi</em></h2>
+  <!-- ROUND 6: CONTACT -->
+  <section id="contact" class="rv" data-round="6">
+    <div class="label"><b>R6</b><span data-i18n="r6.label">round six — contact</span></div>
+    <h2 data-i18n="r6.title">say <em>hi</em></h2>
     <div class="grid g2">
       <div class="card ccard">
         <div class="k" data-i18n="c.server.k">discord server · community</div>
@@ -623,10 +657,10 @@ html.xh .xhair.on{opacity:1}
 </footer>
 
 <audio id="audio" src="music.mp3" loop preload="none"></audio>
-<button class="music" id="music" aria-label="music">
-  <span class="disc"><svg viewBox="0 0 24 24" id="mIcon"><path d="M7 4v16l13-8z"/></svg></span>
+<button class="music" id="sndBtn" aria-label="sound on/off">
+  <span class="disc"><svg viewBox="0 0 24 24" id="sIcon"></svg></span>
   <span class="bars"><i></i><i></i><i></i><i></i></span>
-  <span class="lbl" id="mLabel">music off</span>
+  <span class="lbl" id="sLabel">sound on</span>
 </button>
 
 <div id="kf"></div>
@@ -658,36 +692,40 @@ const CFG = {
     { en: "visit China", de: "China besuchen" },
     { en: "do what I love", de: "das machen, was ich liebe", done: true }
   ],
-  kurAimBest: null                                   // dein Aim-Trainer Rekord, z.B. 47
+  kurAimBest: 53                                     // dein Aim-Trainer Rekord
 };
 
 /* ---------- i18n ---------- */
 const T = { en:{}, de:{
-  "nav.games":"games","nav.setup":"setup","nav.stream":"stream","nav.aim":"aim","nav.contact":"kontakt",
+  "nav.about":"about","nav.games":"stats","nav.setup":"setup","nav.stream":"content","nav.aim":"warmup","nav.contact":"kontakt",
+  "time.label":"kurs zeit",
   "status.off":"offline","status.live":"jetzt live auf twitch",
   "aka":"aka kur — locked in, meistens",
   "cur.label":"gerade","cur.text":"faceit grinden · fast täglich live · lerne 中文",
   "germany":"Deutschland","btn.server":"Discord-Server",
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
-  "r1.label":"runde eins — games","r1.title":"was ich <em>grinde</em>",
+  "r1.label":"runde eins — about","r1.title":"wer ist <em>kur</em>",
+  "about.bio":"19, aus Deutschland. Ich streame fast jeden Tag CS2, grinde FACEIT und versuche, mit jedem Match ein bisschen besser zu werden. Abseits vom Stream lerne ich Chinesisch, mache mein komplett weißes Setup fertig und finde den Rest unterwegs raus.",
+  "r2.label":"runde zwei — stats","r2.title":"was ich <em>grinde</em>",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
   "f.hours":"stunden","f.map":"lieblingsmap","f.weapon":"lieblingswaffe",
   "r1.also":"spiele ich auch","g.rdr":"das gemütliche",
   "l.title":"sprachen","l.de":"Deutsch","l.en":"Englisch","l.native":"muttersprache","l.fluent":"fließend",
   "p.title":"die wette","p.vote":"abstimmen","p.q":"Schafft kur <em>FACEIT 10</em> bis Ende 2026?","p.yes":"vertrau 🔥","p.no":"niemals 💀",
-  "r2.label":"runde zwei — setup","r2.title":"der <em>komplett weiße</em> build","s.periph":"Peripherie",
+  "r3.label":"runde drei — setup","r3.title":"der <em>komplett weiße</em> build","s.periph":"Peripherie",
   "copy":"kopieren",
-  "r3.label":"runde drei — stream","r3.title":"schau <em>live</em> vorbei","st.when":"wann",
+  "r4.label":"runde vier — content","r4.title":"schau <em>live</em> vorbei","st.when":"wann",
   "st.desc":"Fast jeden Tag live, irgendwann in dem Zeitfenster. Meistens CS2, manchmal worauf ich Bock hab.",
   "yt.title":"neuestes video","loadingtxt":"lädt…","clips.title":"top clips","clips.none":"clips laden… oder werden noch gekocht.",
-  "r4.label":"runde vier — warmup","r4.title":"schlag mein <em>aim</em>",
+  "r5.label":"runde fünf — warmup","r5.title":"schlag mein <em>aim</em>",
   "a.score":"score","a.h":"30 sekunden aim check","a.p":"Triff so viele Ziele wie möglich. Fehlschüsse senken deine Accuracy. Dein Rekord wird im Browser gespeichert.",
-  "r5.label":"runde fünf — kontakt","r5.title":"sag <em>hi</em>",
+  "r6.label":"runde sechs — kontakt","r6.title":"sag <em>hi</em>",
   "c.server.k":"discord server · community","c.server.p":"Komm auf den Server für Stream-Pings, 5-Stacks, Clips und Vibes. Offen für alle.",
   "c.join":"server beitreten","c.dm.k":"discord dm · nur ich","c.dm.p":"Für Collabs, Raids, Teams oder Business — adde mich und schreib eine DM.","c.copy":"tag kopieren",
   "visitor":"besucher","hint":"drück ^ für die konsole",
   "goals.title":"ziele","goals.sub":"die roadmap","a.submit":"eintragen",
-  "lb.title":"bestenliste","lb.sub":"top 10 · 30s","lb.empty":"noch keine scores. sei der erste."
+  "lb.title":"bestenliste","lb.sub":"top 10 · 30s","lb.empty":"noch keine scores. sei der erste.",
+  "rx.title":"reaktionstest","rx.start":"klick zum starten","rx.hint":"warte bis es weiß wird, dann so schnell wie möglich klicken · 5 versuche"
 }};
 let LANG = "en";
 document.querySelectorAll("[data-i18n]").forEach(el=>T.en[el.dataset.i18n] = el.innerHTML);
@@ -699,7 +737,7 @@ function applyLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
   $("aimStart").textContent = aimPlayed ? L("again","nochmal") : "start";
-  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb();
+  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock();
   $("aimName").placeholder = L("your name","dein name");
   store.set("lang", l);
 }
@@ -719,6 +757,54 @@ function copy(text, msg){
 async function api(path, opts){ const r = await fetch(path, opts); if(!r.ok) throw new Error(r.status); return r.json(); }
 async function txt(url){ const r = await fetch(url, {cache:"no-store"}); if(!r.ok) throw new Error(r.status); return (await r.text()).trim(); }
 let aimPlayed = false, LIVE = false, lastFaceit = CFG.faceitFallback, pollData = {yes:0,no:0}, lastStream = null;
+
+/* ---------- sound engine (synth, no files needed) ---------- */
+let AC, SOUND = store.get("sound") !== "off";
+function ac(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state === "suspended") AC.resume(); return AC; }catch(e){ return null; } }
+function tone(freq, dur, vol, type="square", glide){
+  if(!SOUND) return; const a = ac(); if(!a || a.state !== "running") return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+  o.type = type; o.frequency.setValueAtTime(freq, t); if(glide) o.frequency.exponentialRampToValueAtTime(glide, t+dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+.02);
+}
+function noise(dur, vol, from=4000, to=400){
+  if(!SOUND) return; const a = ac(); if(!a || a.state !== "running") return;
+  const len = Math.floor(a.sampleRate*dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * (1 - i/len);
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(), t = a.currentTime;
+  f.type = "bandpass"; f.Q.value = .8; f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t+dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  src.buffer = buf; src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
+}
+let lastHover = 0;
+const SFX = {
+  hover(){ const n = performance.now(); if(n - lastHover < 45) return; lastHover = n; tone(2600,.018,.012,"sine"); },
+  click(){ tone(900,.035,.035,"square",500); noise(.03,.03,6000,2000); },
+  hit(){ tone(2200,.04,.05,"square"); setTimeout(()=>tone(1600,.05,.04,"square"),38); },
+  kill(){ tone(520,.06,.025,"triangle",780); },
+  scopeIn(){ noise(.22,.08,600,3200); tone(180,.15,.03,"sine",90); },
+  scopeOut(){ noise(.25,.06,3200,500); },
+  toggle(){ tone(1200,.03,.04,"square"); setTimeout(()=>tone(1700,.04,.03,"square"),45); },
+  go(){ tone(1400,.08,.05,"sine"); },
+  miss(){ tone(220,.12,.05,"sawtooth",140); },
+  type(){ tone(3200,.012,.012,"square"); },
+  flash(){ noise(.12,.2,5000,1500); tone(3800,2.6,.018,"sine"); }
+};
+// unlock audio on first interaction (browser policy)
+["pointerdown","keydown"].forEach(ev=>addEventListener(ev, ()=>ac(), {once:true, capture:true}));
+// hover + click sounds on everything interactive
+document.addEventListener("pointerover", e=>{ if(e.pointerType === "mouse" && e.target.closest("a,button,.card,.clip,.popt") && !e.target.closest("#aimBox,#rx")){ const el = e.target.closest("a,button,.card,.clip,.popt"); if(el !== SFX._last){ SFX._last = el; SFX.hover(); } } });
+document.addEventListener("pointerdown", e=>{ if(e.target.closest("a,button") && !e.target.closest("#rx,#sndBtn")) SFX.click(); });
+function renderSound(){
+  $("sndBtn").classList.toggle("on", SOUND);
+  $("sLabel").textContent = SOUND ? L("sound on","sound an") : L("sound off","sound aus");
+  $("sIcon").innerHTML = SOUND
+    ? '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+    : '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+}
+$("sndBtn").onclick = ()=>{ SOUND = !SOUND; store.set("sound", SOUND ? "on" : "off"); renderSound(); SFX.toggle(); };
+renderSound();
 
 /* ---------- theme ---------- */
 function setTheme(th){
@@ -754,17 +840,18 @@ function kill(a, gun, b, opt={}){
   const kf = $("kf"), el = document.createElement("div");
   el.className = "kill" + (opt.me ? " me" : "");
   el.innerHTML = `<span class="a">${esc(a)}</span>${GUN[gun]||""}${opt.hs?HS:""}<span class="b">${esc(b)}</span>`;
-  kf.appendChild(el);
+  kf.appendChild(el); SFX.kill();
   while(kf.children.length > 4) kf.firstChild.remove();
   setTimeout(()=>{ el.classList.add("bye"); setTimeout(()=>el.remove(), 500); }, opt.ms || 5200);
 }
 function welcome(){ setTimeout(()=>kill("kurexus","ak", L("you","du"),{hs:true,me:true}), 300); }
 const ROUND_KILLS = {
   1:()=>["kurexus","ak",L("boredom","langeweile"),{hs:true}],
-  2:()=>["kurexus","awp",L("bad setups","schlechte setups"),{}],
-  3:()=>["kurexus","deagle",L("offline mode","offline-modus"),{hs:true}],
-  4:()=>[L("you","du"),"ak",L("your warmup","dein warmup"),{}],
-  5:()=>["kurexus","knife",L("shyness","schüchternheit"),{}]
+  2:()=>["kurexus","ak",L("elo hell","elo-hölle"),{hs:true}],
+  3:()=>["kurexus","awp",L("bad setups","schlechte setups"),{}],
+  4:()=>["kurexus","deagle",L("offline mode","offline-modus"),{hs:true}],
+  5:()=>[L("you","du"),"ak",L("your warmup","dein warmup"),{}],
+  6:()=>["kurexus","knife",L("shyness","schüchternheit"),{}]
 };
 
 /* ---------- loader ---------- */
@@ -785,27 +872,39 @@ const ROUND_KILLS = {
 const seenRound = {};
 const ro = new IntersectionObserver(es=>es.forEach(e=>{
   if(!e.isIntersecting) return;
-  const n = +e.target.dataset.round; $("rnd").textContent = n;
+  const n = +e.target.dataset.round;
   document.querySelectorAll(".links a").forEach(a=>a.classList.toggle("act", a.getAttribute("href") === "#"+e.target.id));
   if(!seenRound[n]){ seenRound[n] = 1; const k = ROUND_KILLS[n](); kill(...k); }
 }),{rootMargin:"-45% 0px -45% 0px"});
 document.querySelectorAll("[data-round]").forEach(s=>ro.observe(s));
-let rt = 115;
-setInterval(()=>{ rt = rt <= 0 ? 115 : rt-1; $("rtime").textContent = `${Math.floor(rt/60)}:${String(rt%60).padStart(2,"0")}`; }, 1000);
+/* ---------- kur's local time ---------- */
+function kurClock(){
+  try{
+    const now = new Date(), hm = new Intl.DateTimeFormat("de-DE",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Berlin"}).format(now);
+    const h = +hm.slice(0,2);
+    $("ktime").textContent = hm;
+    $("kstat").textContent = LIVE ? L("live now 🔴","gerade live 🔴")
+      : h < 7 ? L("asleep 💤","schläft 💤")
+      : h < 13 ? L("offline","offline")
+      : h < 23 ? L("stream window","stream-zeit")
+      : L("late grind 🌙","late grind 🌙");
+  }catch(e){}
+}
+setInterval(kurClock, 15000);
 
 /* ---------- scope transition ---------- */
 function scopeTo(hash){
   const target = hash === "#top" ? null : document.querySelector(hash);
   const jump = ()=> target ? target.scrollIntoView({behavior:"instant"}) : window.scrollTo({top:0,behavior:"instant"});
   if(REDUCED){ jump(); return; }
-  const sc = $("scope"); sc.classList.add("on");
+  const sc = $("scope"); sc.classList.add("on"); SFX.scopeIn();
   const big = Math.hypot(innerWidth, innerHeight)/2 + 20, small = Math.min(innerWidth, innerHeight)*0.22;
   const ease = x => 1 - Math.pow(1-x, 3);
   function anim(from, to, ms, done){
     const t0 = performance.now();
     (function f(now){ const p = Math.min(1,(now-t0)/ms); sc.style.setProperty("--r", (from+(to-from)*ease(p))+"px"); p<1 ? requestAnimationFrame(f) : done && done(); })(t0);
   }
-  anim(big, 0, 280, ()=>{ jump(); setTimeout(()=>anim(0, small, 160, ()=>setTimeout(()=>anim(small, big, 320, ()=>sc.classList.remove("on")), 140)), 60); });
+  anim(big, 0, 280, ()=>{ jump(); setTimeout(()=>anim(0, small, 160, ()=>setTimeout(()=>{ SFX.scopeOut(); anim(small, big, 320, ()=>sc.classList.remove("on")); }, 140)), 60); });
 }
 document.querySelectorAll("[data-scope]").forEach(a=>a.addEventListener("click", e=>{ e.preventDefault(); scopeTo(a.getAttribute("href")); history.replaceState(null,"",a.getAttribute("href")); }));
 
@@ -989,33 +1088,12 @@ document.querySelectorAll(".popt").forEach(b=>b.onclick = ()=>{
   }).catch(()=>{});
 })();
 
-/* ---------- sounds (only when music is on) ---------- */
-let AC;
-function tone(freq, dur, vol, type="square"){
-  try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    const o = AC.createOscillator(), g = AC.createGain();
-    o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(vol, AC.currentTime); g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime+dur);
-    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+dur);
-  }catch(e){}
-}
-const musicOn = ()=>$("music").classList.contains("on");
-$("avatar").onclick = ()=>{ if(musicOn()){ tone(2200,.04,.07); setTimeout(()=>tone(1600,.05,.05),40); } kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000}); };
-
-/* ---------- music ---------- */
-const audio = $("audio"); audio.volume = .35;
-$("music").onclick = ()=>{
-  const m = $("music");
-  if(audio.paused){
-    audio.play().then(()=>{ m.classList.add("on"); $("mLabel").textContent="music on"; $("mIcon").innerHTML='<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>'; })
-      .catch(()=>show(L("no song yet","noch kein song drin")));
-  } else { audio.pause(); m.classList.remove("on"); $("mLabel").textContent="music off"; $("mIcon").innerHTML='<path d="M7 4v16l13-8z"/>'; }
-};
+$("avatar").onclick = ()=>{ SFX.hit(); kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000}); };
 
 /* ---------- flashbang easter egg: type "kur" or konami ---------- */
 function flashbang(){
   const f = $("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
-  tone(3800, 2.6, .02, "sine");
+  SFX.flash();
   kill("kurexus","knife", L("your eyes","deine augen"),{me:true});
 }
 const KONAMI = "ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a";
@@ -1059,7 +1137,7 @@ $("conForm").onsubmit = e=>{
 addEventListener("keydown", e=>{
   if(e.code === "Backquote" || e.key === "^" || e.key === "`"){ e.preventDefault(); toggleCon(); return; }
   if(e.key === "Escape"){ toggleCon(false); closeModal(); return; }
-  if(document.activeElement === inp) return;
+  if(document.activeElement === inp){ SFX.type(); return; }
   keybuf.push(e.key.length===1 ? e.key.toLowerCase() : e.key); keybuf = keybuf.slice(-10);
   if(keybuf.slice(-3).join("") === "kur" || keybuf.join(",") === KONAMI){ keybuf = []; flashbang(); }
 });
@@ -1097,7 +1175,7 @@ addEventListener("keydown", e=>{
       const tg = targets[i], d = Math.hypot(x-tg.x,y-tg.y);
       if(d <= tg.r*1.05){
         targets.splice(i,1); hits++; score++; react.push(now-tg.born); fx.push({x:tg.x,y:tg.y,r:tg.r,a:1});
-        $("aScore").textContent = score; if(musicOn()) tone(2400,.03,.05);
+        $("aScore").textContent = score; SFX.hit();
         if(d <= tg.r*.3) kill(L("you","du"),"ak","target",{hs:true,me:true,ms:1600});
         return;
       }
@@ -1122,6 +1200,27 @@ addEventListener("keydown", e=>{
   }
   $("aimStart").onclick = start;
 })();
+/* ---------- reaction test ---------- */
+(function(){
+  const box = $("rx"); let state = "idle", t0 = 0, timer, tries = [];
+  function set(st, m, sub){ state = st; box.dataset.s = st; $("rxMsg").textContent = m; $("rxSub").textContent = sub || ""; }
+  function arm(){ set("wait", L("wait for white…","warte auf weiß…"), L(`try ${tries.length+1}/5`,`versuch ${tries.length+1}/5`)); timer = setTimeout(()=>{ set("go", L("CLICK!","KLICK!")); t0 = performance.now(); SFX.go(); }, 1300 + Math.random()*2700); }
+  box.addEventListener("pointerdown", e=>{
+    e.preventDefault();
+    if(state === "go"){
+      const ms = Math.round(performance.now() - t0); tries.push(ms); SFX.hit();
+      if(tries.length < 5){ set("result", ms + " ms", L(`try ${tries.length}/5 · click for the next one`,`versuch ${tries.length}/5 · klick für den nächsten`)); return; }
+      const avg = Math.round(tries.reduce((a,b)=>a+b,0)/tries.length), best = +store.get("rxBest") || 0, nb = best ? Math.min(best, avg) : avg;
+      store.set("rxBest", nb); tries = [];
+      set("done", L(`avg ${avg} ms`,`ø ${avg} ms`), L(`your best: ${nb} ms · click to play again`,`dein rekord: ${nb} ms · klick für nochmal`));
+      if(avg < 230) kill(L("you","du"),"awp",L("reaction time","reaktionszeit"),{hs:true,me:true});
+      return;
+    }
+    if(state === "wait"){ clearTimeout(timer); SFX.miss(); set("early", L("too soon!","zu früh!"), L("click to retry this try","klick, um es nochmal zu versuchen")); return; }
+    arm();
+  });
+})();
+
 function renderBest(){
   const b = +store.get("aimBest") || 0;
   $("aimBest").textContent = [CFG.kurAimBest ? L(`kur's best: ${CFG.kurAimBest}`,`kurs rekord: ${CFG.kurAimBest}`) : "", b ? L(`your best: ${b}`,`dein rekord: ${b}`) : ""].filter(Boolean).join("  ·  ");
