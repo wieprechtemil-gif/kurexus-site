@@ -703,6 +703,7 @@ html.xh .xhair.on{opacity:1}
 .xhair .t{left:13px;top:0;width:2px;height:8px}.xhair .bt{left:13px;bottom:0;width:2px;height:8px}
 .xhair .l{top:13px;left:0;width:8px;height:2px}.xhair .r{top:13px;right:0;width:8px;height:2px}
 .xhair i{left:13px;top:13px;width:2px;height:2px}
+.xhair .t{translate:0 calc(var(--bk,0px)*-1)}.xhair .bt{translate:0 var(--bk,0px)}.xhair .l{translate:calc(var(--bk,0px)*-1) 0}.xhair .r{translate:var(--bk,0px) 0}
 .xhair.wide .t{transform:translateY(-4px)}.xhair.wide .bt{transform:translateY(4px)}.xhair.wide .l{transform:translateX(-4px)}.xhair.wide .r{transform:translateX(4px)}
 .xhair.shoot .t{transform:translateY(-6px)}.xhair.shoot .bt{transform:translateY(6px)}.xhair.shoot .l{transform:translateX(-6px)}.xhair.shoot .r{transform:translateX(6px)}
 .xhair s{position:absolute;inset:0;opacity:0;transition:opacity .3s ease}
@@ -2230,6 +2231,7 @@ const AMBIENT = (function(){
 
 /* ---------- background canvas: smoke + particles + stars + thrown smokes ---------- */
 const SMOKES = [];
+const xhairEl = document.getElementById("xhair");
 // parallax target (-1..1) from mouse position or phone tilt
 const PAR = { x:0, y:0, tx:0, ty:0 }, glowEl = REDUCED ? null : document.querySelector(".glow");
 if(!REDUCED){
@@ -2358,6 +2360,7 @@ const drawSmokes = (function(){
     const vib = Math.max(A.beat, A.level*.6);
     if(Math.abs(vib - (A.vibSet||0)) > .01){ A.vibSet = vib; document.documentElement.style.setProperty("--beat", vib.toFixed(3)); }
     document.documentElement.classList.toggle("vibing", !!playing);
+    const kick = (A.beat*7).toFixed(1); if(kick !== A.kickSet){ A.kickSet = kick; xhairEl && xhairEl.style.setProperty("--bk", kick + "px"); }
     const boost = 1 + A.level*3 + A.beat*.9;
     const p = base.join(","), sc = smokeCol.join(",");
     ctx.clearRect(0,0,W,H);
@@ -2380,12 +2383,19 @@ const drawSmokes = (function(){
       const g = ctx.createRadialGradient(sx2,sy2,0,sx2,sy2,rr); g.addColorStop(0,`rgba(${sc},${a})`); g.addColorStop(.6,`rgba(${sc},${a*.45})`); g.addColorStop(1,`rgba(${sc},0)`);
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx2,sy2,rr,0,7); ctx.fill();
     }
-    // beat: a soft wash of the album colour from the edges + a ring rolling out of the centre
-    if(A.beat > .03){
-      const bc = (A.tintTarget ? tintNow : base).join(","), cx = W/2, cy = H*.45, R = Math.hypot(W,H)*.6;
-      const g = ctx.createRadialGradient(cx,cy,R*.35,cx,cy,R); g.addColorStop(0,`rgba(${bc},0)`); g.addColorStop(1,`rgba(${bc},${.13*A.beat})`);
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-      const rr = (1-A.beat)*R*.9 + 40; ctx.strokeStyle = `rgba(${bc},${.12*A.beat})`; ctx.lineWidth = 2 + 10*A.beat; ctx.beginPath(); ctx.arc(cx,cy,rr,0,7); ctx.stroke();
+    // music: a live spectrum hanging from the bottom edge of the nav, in the album colour
+    if(playing || A.specOn > .01){
+      A.specOn = (A.specOn || 0) + ((playing ? 1 : 0) - (A.specOn || 0))*.08;
+      const bc = (A.tintTarget ? tintNow : base).join(","), n = 72, bw = W/n, top = 58;
+      if(!A.spec) A.spec = new Float32Array(n);
+      for(let i=0;i<n;i++){
+        const bin = Math.floor(Math.pow(i/n, 1.6)*90) + 1, v = playing ? A.data[bin]/255 : 0;
+        A.spec[i] += (v - A.spec[i])*.35;
+        const h = Math.pow(A.spec[i], 1.25)*48*A.specOn;
+        if(h < .6) continue;
+        const g = ctx.createLinearGradient(0, top, 0, top + h); g.addColorStop(0,`rgba(${bc},${.7*A.specOn})`); g.addColorStop(1,`rgba(${bc},0)`);
+        ctx.fillStyle = g; ctx.fillRect(i*bw + 1, top, bw - 2, h);
+      }
     }
     // thrown smokes live on their own canvas above the content (#smokeFx), drawn here in the same frame
     drawSmokes(tt);
