@@ -881,12 +881,12 @@ $("langBtn").onclick = ()=>applyLang(LANG === "de" ? "en" : "de");
 
 /* ---------- ticker ---------- */
 function buildTicker(){
-  const f = lastFaceit, items = [
-    "<b>CS2</b> main", `faceit <b>lvl ${f.level}</b>`, `<b>${fmt(f.elo)}</b> elo`,
-    f.kd ? `k/d <b>${f.kd}</b>` : "", f.winrate ? `winrate <b>${f.winrate}%</b>` : "", f.hs ? `hs <b>${f.hs}%</b>` : "",
-    `premier <b>${fmt(CFG.premier)}</b>`, "<b>700h</b> cs2", "valorant peak <b>asc 2</b>",
-    "fav map <b>cache</b>", "fav gun <b>ak-47</b>", "sens <b>0.64</b> @ <b>800</b> dpi", "res <b>1440×1080</b>",
-    FOLLOWERS ? `<b>${FOLLOWERS}</b> followers` : "", `live <b>13–23</b> cet`
+  const items = [
+    "<b>emil</b>", L("<b>19</b> years old","<b>19</b> jahre"), L("from <b>germany</b>","aus <b>deutschland</b>"),
+    L("<b>cs2</b> main","<b>cs2</b> main"), L("streaming <b>almost daily</b>","streamt <b>fast täglich</b>"),
+    L("grinding <b>faceit</b>","grindet <b>faceit</b>"), L("learning <b>中文</b>","lernt <b>中文</b>"),
+    L("speaks <b>de · en</b>","spricht <b>de · en</b>"), L("<b>all-white</b> setup","<b>komplett weißes</b> setup"),
+    L("fav map <b>cache</b>","lieblingsmap <b>cache</b>"), L("next goal <b>faceit 10</b>","nächstes ziel <b>faceit 10</b>")
   ].filter(Boolean).map(s=>`<span>${s} ✦</span>`).join("");
   $("track").innerHTML = items + items;
 }
