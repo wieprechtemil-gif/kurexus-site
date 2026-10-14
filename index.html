@@ -2001,7 +2001,7 @@ const CMDS = {
   }
 };
 // German keyboards: ^ is a dead key and leaks into the field when the console opens → strip it
-inp.addEventListener("input", ()=>{ const v = inp.value.replace(/^[\^`´\s]+/, ""); if(v !== inp.value) inp.value = v; });
+inp.addEventListener("input", ()=>{ let v = inp.value.replace(/^[\^`´\s]+/, ""); v = v.replace(/^[âêîôûàèìòùáéíóú]/, c=>c.normalize("NFD")[0]); if(v !== inp.value) inp.value = v; });
 $("conForm").onsubmit = e=>{
   e.preventDefault(); const raw = inp.value.trim(); inp.value = ""; if(!raw) return;
   cprint("] " + esc(raw), "c");
