@@ -322,6 +322,50 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .lb li.me .nm{text-decoration:underline;text-underline-offset:3px}
 .lb li.lb-empty{display:block;grid-column:1/-1;font-family:var(--mono);font-size:12px;color:var(--muted);border:0}
 
+/* game tiles */
+.gtiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gtile{position:relative;overflow:hidden;text-align:left;min-height:170px;padding:22px;border-radius:18px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;justify-content:flex-end;gap:6px;transition:border-color .25s,transform .25s}
+.gtile.big{grid-column:1/-1;min-height:220px}
+.gtile::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at 85% 20%,color-mix(in srgb,var(--gc) 22%,transparent),transparent 65%);opacity:.7;transition:opacity .3s}
+.gtile:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.gtile:hover::before{opacity:1}
+.gt-bg{position:absolute;right:-6px;bottom:-30px;font-size:150px;font-weight:700;letter-spacing:-.06em;color:rgba(var(--p),.04);pointer-events:none;line-height:1;transition:transform .5s}
+.gtile.big .gt-bg{font-size:200px;bottom:-44px}
+.gtile:hover .gt-bg{transform:translateX(-10px)}
+.gt-top{position:absolute;top:18px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center}
+.gt-open{font-family:var(--mono);font-size:11px;color:var(--muted);transition:color .2s}
+.gtile:hover .gt-open{color:var(--fg)}
+.gt-name{position:relative;font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.gt-meta{position:relative;font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* game window */
+.gw{position:fixed;inset:0;z-index:110;display:none;align-items:flex-end;justify-content:center;padding:24px 16px 0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.gw.open{display:flex;animation:gwFade .25s ease}
+@keyframes gwFade{from{opacity:0}}
+.gw-panel{width:min(1000px,100%);max-height:calc(100vh - 24px);overflow-y:auto;overscroll-behavior:contain;background:var(--bg);border:1px solid var(--line-2);border-bottom:0;border-radius:22px 22px 0 0;box-shadow:0 -30px 80px -30px rgba(0,0,0,.8);animation:gwUp .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes gwUp{from{transform:translateY(40px);opacity:.4}}
+.gw-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.gw-head .k{margin-bottom:2px}
+.gw-head h3{font-size:clamp(24px,4vw,34px);letter-spacing:-.03em;line-height:1}
+.gw-x{width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);background:transparent;font-size:20px;line-height:1;transition:.2s}
+.gw-x:hover{background:var(--fg);color:var(--bg)}
+.gw-body{padding:22px 24px 40px}
+.gw-page{display:none}
+.gw-page.on{display:block}
+.gw-p{color:var(--muted);font-size:14px;margin-top:12px}
+html.gw-lock{overflow:hidden}
+
+/* medal clips */
+.mclips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mclip{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--gc,#fff) 18%,transparent),transparent 70%),var(--bg-2);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;text-align:left}
+.mclip .pl{position:absolute;inset:0;display:grid;place-items:center;opacity:.85;transition:opacity .2s,transform .2s}
+.mclip .pl i{width:44px;height:44px;border-radius:50%;background:rgba(245,245,242,.95);display:grid;place-items:center}
+.mclip .pl i::after{content:"";border-left:13px solid #0b0b0c;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
+.mclip:hover .pl{opacity:1;transform:scale(1.06)}
+.mclip .ttl{position:relative;font-size:13px;font-weight:500}
+.mclip .src{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.55);color:#fff;padding:2px 6px;border-radius:5px}
+.mclip.empty{border-style:dashed;justify-content:center;align-items:center;color:var(--muted);font-family:var(--mono);font-size:11px;background:transparent}
+
 /* contact */
 .ccard{display:flex;flex-direction:column;gap:12px}
 .ccard .who{font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -412,6 +456,9 @@ html.xh .xhair.on{opacity:1}
   .goals{grid-template-columns:1fr 1fr}
   .about{grid-template-columns:1fr}
   .lb{grid-template-columns:1fr}
+  .gtiles{grid-template-columns:1fr}.gtile{min-height:150px}.gtile.big{min-height:180px}
+  .mclips{grid-template-columns:1fr}.mclip.empty{aspect-ratio:auto;height:64px}
+  .gw{padding:10px 0 0}.gw-head{padding:14px 16px}.gw-body{padding:16px 16px 32px}
   #kf{top:66px;right:8px}.kill{font-size:11px}
   .langs .row{grid-template-columns:80px 1fr 50px}
 }
@@ -428,7 +475,7 @@ html.xh .xhair.on{opacity:1}
     <div class="nav-r">
       <div class="links">
         <a href="#about" data-scope><i>R1</i><span data-i18n="nav.about">about</span></a>
-        <a href="#games" data-scope><i>R2</i><span data-i18n="nav.games">stats</span></a>
+        <a href="#games" data-scope><i>R2</i><span data-i18n="nav.games">games</span></a>
         <a href="#setup" data-scope><i>R3</i><span data-i18n="nav.setup">setup</span></a>
         <a href="#stream" data-scope><i>R4</i><span data-i18n="nav.stream">content</span></a>
         <a href="#aim" data-scope><i>R5</i><span data-i18n="nav.aim">warmup</span></a>
@@ -488,56 +535,29 @@ html.xh .xhair.on{opacity:1}
     </div>
   </section>
 
-  <!-- ROUND 2: STATS -->
+  <!-- ROUND 2: GAMES -->
   <section id="games" class="rv" data-round="2">
-    <div class="label"><b>R2</b><span data-i18n="r2.label">round two — stats</span></div>
-    <h2 data-i18n="r2.title">what I <em>grind</em></h2>
-
-    <div class="card main-game">
-      <div class="mg-top"><h3>Counter-Strike 2</h3><span class="tag">AIMER</span></div>
-      <div class="fc">
-        <div>
-          <div class="k">FACEIT</div>
-          <div class="fc-head"><span class="lvlbadge" id="fLvlBadge"></span><div class="v" id="fLvl">Level 6</div></div>
-          <div class="lvl" id="fBar"></div>
-          <div class="elo-line"><span><b id="fElo">1,342</b> / 2,001 elo</span><span id="fToGo"></span></div>
-          <div class="loading"><span data-i18n="f.loading">lvl <b>10</b> loading</span><span class="dots"></span> <span data-i18n="f.trust">trust</span></div>
-        </div>
-        <div class="fstats" id="fStats">
-          <div><div class="k">K/D</div><div class="v" id="fKd">—</div></div>
-          <div><div class="k" data-i18n="f.wr">Winrate</div><div class="v" id="fWr">—</div></div>
-          <div><div class="k">HS %</div><div class="v" id="fHs">—</div></div>
-          <div><div class="k" data-i18n="f.matches">Matches</div><div class="v" id="fM">—</div></div>
-          <div style="grid-column:1/-1"><div class="k" data-i18n="f.last5">last 5</div><div class="recent" id="fRecent"><i class="n">?</i><i class="n">?</i><i class="n">?</i><i class="n">?</i><i class="n">?</i></div></div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="grid g4 mt">
-      <div class="card fact"><div class="k">Premier</div><div class="premier" id="premier"></div></div>
-      <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v">700<small> h</small></div></div>
-      <div class="card fact"><div class="k" data-i18n="f.map">fav map</div><div class="v">Cache</div></div>
-      <div class="card fact"><div class="k" data-i18n="f.weapon">fav weapon</div><div class="v">AK-47</div></div>
-    </div>
-
-    <h3 class="sub" data-i18n="r1.also">also playing</h3>
-    <div class="grid g3">
-      <div class="card game"><h4>Valorant</h4><p>peak · Ascendant 2</p></div>
-      <a class="card game" id="krunkerCard" href="#" target="_blank" rel="noopener"><h4>Krunker</h4><p>profile ↗</p></a>
-      <div class="card game"><h4>Red Dead Redemption 2</h4><p data-i18n="g.rdr">the cozy one</p></div>
-    </div>
-
-    <div class="mt">
-      <div class="card">
-        <h4 class="ch"><b data-i18n="p.title">the bet</b><span data-i18n="p.vote">vote</span></h4>
-        <div class="poll-q" data-i18n="p.q">Will kur hit <em>FACEIT 10</em> by end of 2026?</div>
-        <div class="poll-opts">
-          <button class="popt" data-v="yes"><i class="fill"></i><b data-i18n="p.yes">trust 🔥</b><span>—</span></button>
-          <button class="popt" data-v="no"><i class="fill"></i><b data-i18n="p.no">never 💀</b><span>—</span></button>
-        </div>
-        <div class="poll-n" id="pollN"></div>
-      </div>
+    <div class="label"><b>R2</b><span data-i18n="r2.label">round two — games</span></div>
+    <h2 data-i18n="r2.title">what I <em>play</em></h2>
+    <div class="gtiles">
+      <button class="gtile big" data-game="cs2" style="--gc:#e8a33a">
+        <span class="gt-bg">CS2</span>
+        <span class="gt-top"><span class="tag">AIMER</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
+        <span class="gt-name">Counter-Strike 2</span>
+        <span class="gt-meta" id="gtCs">FACEIT · premier · settings · clips</span>
+      </button>
+      <button class="gtile" data-game="krunker" style="--gc:#5ad0ff">
+        <span class="gt-bg">KR</span>
+        <span class="gt-top"><span class="tag" data-i18n="g.kr.tag">BROWSER FPS</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
+        <span class="gt-name">Krunker</span>
+        <span class="gt-meta" data-i18n="g.kr.meta">the fast one · profile · clips</span>
+      </button>
+      <button class="gtile" data-game="rdr2" style="--gc:#d9573b">
+        <span class="gt-bg">RDR2</span>
+        <span class="gt-top"><span class="tag" data-i18n="g.rdr.tag">STORY</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
+        <span class="gt-name">Red Dead Redemption 2</span>
+        <span class="gt-meta" data-i18n="g.rdr.meta">the cozy one · horse incidents · clips</span>
+      </button>
     </div>
   </section>
 
@@ -569,33 +589,6 @@ html.xh .xhair.on{opacity:1}
       </div>
     </div>
 
-    <div class="card mt">
-      <h4 class="ch"><b>CS2 settings</b><button class="mini" id="copySens" data-i18n="copy">copy</button></h4>
-      <div class="settings">
-        <div><div class="k">Sens</div><div class="v">0.64</div></div>
-        <div><div class="k">DPI</div><div class="v">800</div></div>
-        <div><div class="k">eDPI</div><div class="v">512</div></div>
-        <div><div class="k">Res</div><div class="v">1440×1080</div></div>
-      </div>
-    </div>
-
-    <div class="grid g2 mt">
-      <div class="card">
-        <h4 class="ch"><b>Crosshair</b><button class="mini" id="copyXhair" disabled>code soon</button></h4>
-        <div class="xpreview"><svg id="xsvg" width="80" height="80" viewBox="0 0 80 80"></svg></div>
-        <div class="cmd" id="xcode">CSGO-·····-·····-·····-·····-·····</div>
-      </div>
-      <div class="card">
-        <h4 class="ch"><b>Viewmodel</b><button class="mini" id="copyVm" data-i18n="copy">copy</button></h4>
-        <div class="settings" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
-          <div><div class="k">FOV</div><div class="v">68</div></div>
-          <div><div class="k">Preset</div><div class="v">2</div></div>
-          <div><div class="k">Offset X / Y</div><div class="v">2.5 / 0</div></div>
-          <div><div class="k">Offset Z</div><div class="v">-1.5</div></div>
-        </div>
-        <div class="cmd" id="vmcmd">viewmodel_fov 68; viewmodel_offset_x 2.5; viewmodel_offset_y 0; viewmodel_offset_z -1.5; viewmodel_presetpos 2;</div>
-      </div>
-    </div>
   </section>
 
   <!-- ROUND 4: CONTENT -->
@@ -683,6 +676,127 @@ html.xh .xhair.on{opacity:1}
   <span class="lbl" id="sLabel">sound on</span>
 </button>
 
+
+<!-- GAME WINDOW -->
+<div class="gw" id="gw" aria-hidden="true">
+  <div class="gw-panel" role="dialog" aria-modal="true" aria-labelledby="gwTitle">
+    <div class="gw-head">
+      <div><div class="k" id="gwKicker">game</div><h3 id="gwTitle"></h3></div>
+      <button class="gw-x" id="gwX" aria-label="close">×</button>
+    </div>
+    <div class="gw-body">
+      <div class="gw-page" data-page="cs2">
+    <div class="card main-game">
+      <div class="mg-top"><h3>FACEIT</h3><span class="tag">AIMER</span></div>
+      <div class="fc">
+        <div>
+          <div class="k">FACEIT</div>
+          <div class="fc-head"><span class="lvlbadge" id="fLvlBadge"></span><div class="v" id="fLvl">Level 6</div></div>
+          <div class="lvl" id="fBar"></div>
+          <div class="elo-line"><span><b id="fElo">1,342</b> / 2,001 elo</span><span id="fToGo"></span></div>
+          <div class="loading"><span data-i18n="f.loading">lvl <b>10</b> loading</span><span class="dots"></span> <span data-i18n="f.trust">trust</span></div>
+        </div>
+        <div class="fstats" id="fStats">
+          <div><div class="k">K/D</div><div class="v" id="fKd">—</div></div>
+          <div><div class="k" data-i18n="f.wr">Winrate</div><div class="v" id="fWr">—</div></div>
+          <div><div class="k">HS %</div><div class="v" id="fHs">—</div></div>
+          <div><div class="k" data-i18n="f.matches">Matches</div><div class="v" id="fM">—</div></div>
+          <div style="grid-column:1/-1"><div class="k" data-i18n="f.last5">last 5</div><div class="recent" id="fRecent"><i class="n">?</i><i class="n">?</i><i class="n">?</i><i class="n">?</i><i class="n">?</i></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid g4 mt">
+      <div class="card fact"><div class="k">Premier</div><div class="premier" id="premier"></div></div>
+      <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v">700<small> h</small></div></div>
+      <div class="card fact"><div class="k" data-i18n="f.map">fav map</div><div class="v">Cache</div></div>
+      <div class="card fact"><div class="k" data-i18n="f.weapon">fav weapon</div><div class="v">AK-47</div></div>
+    </div>
+        <div class="grid g2 mt">
+          <div class="card ccard">
+            <div class="k">links</div>
+            <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+              <a class="btn" href="https://www.faceit.com/en/players/Kurexus" target="_blank" rel="noopener"><img src="/img/faceit.png" alt="" width="17" height="17">FACEIT</a>
+              <a class="btn" href="https://steamcommunity.com/id/kodakosan/" target="_blank" rel="noopener">Steam</a>
+            </div>
+          </div>
+      <div class="card">
+        <h4 class="ch"><b data-i18n="p.title">the bet</b><span data-i18n="p.vote">vote</span></h4>
+        <div class="poll-q" data-i18n="p.q">Will kur hit <em>FACEIT 10</em> by end of 2026?</div>
+        <div class="poll-opts">
+          <button class="popt" data-v="yes"><i class="fill"></i><b data-i18n="p.yes">trust 🔥</b><span>—</span></button>
+          <button class="popt" data-v="no"><i class="fill"></i><b data-i18n="p.no">never 💀</b><span>—</span></button>
+        </div>
+        <div class="poll-n" id="pollN"></div>
+      </div>
+        </div>
+        <h3 class="sub" data-i18n="gw.settings">settings</h3>
+        <div class="card">
+          <h4 class="ch"><b>CS2 settings</b><button class="mini" id="copySens" data-i18n="copy">copy</button></h4>
+          <div class="settings">
+            <div><div class="k">Sens</div><div class="v">0.64</div></div>
+            <div><div class="k">DPI</div><div class="v">800</div></div>
+            <div><div class="k">eDPI</div><div class="v">512</div></div>
+            <div><div class="k">Res</div><div class="v">1440×1080</div></div>
+          </div>
+        </div>
+
+        <div class="grid g2 mt">
+          <div class="card">
+            <h4 class="ch"><b>Crosshair</b><button class="mini" id="copyXhair" disabled>code soon</button></h4>
+            <div class="xpreview"><svg id="xsvg" width="80" height="80" viewBox="0 0 80 80"></svg></div>
+            <div class="cmd" id="xcode">CSGO-·····-·····-·····-·····-·····</div>
+          </div>
+          <div class="card">
+            <h4 class="ch"><b>Viewmodel</b><button class="mini" id="copyVm" data-i18n="copy">copy</button></h4>
+            <div class="settings" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
+              <div><div class="k">FOV</div><div class="v">68</div></div>
+              <div><div class="k">Preset</div><div class="v">2</div></div>
+              <div><div class="k">Offset X / Y</div><div class="v">2.5 / 0</div></div>
+              <div><div class="k">Offset Z</div><div class="v">-1.5</div></div>
+            </div>
+            <div class="cmd" id="vmcmd">viewmodel_fov 68; viewmodel_offset_x 2.5; viewmodel_offset_y 0; viewmodel_offset_z -1.5; viewmodel_presetpos 2;</div>
+          </div>
+        </div>
+
+        <h3 class="sub" data-i18n="gw.clips">medal clips</h3>
+        <div class="mclips" data-mclips="cs2"></div>
+      </div>
+
+      <div class="gw-page" data-page="krunker">
+        <div class="grid g2">
+          <div class="card">
+            <div class="k" data-i18n="kr.k">browser fps</div>
+            <div class="v" style="font-size:30px" data-i18n="kr.v">the fast one</div>
+            <p class="gw-p" data-i18n="kr.p">Pure movement and flicks, straight in the browser. My warmup when CS isn't enough.</p>
+          </div>
+          <div class="card ccard">
+            <div class="k" data-i18n="kr.prof">profile</div>
+            <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener">krunker.io ↗</a>
+          </div>
+        </div>
+        <h3 class="sub" data-i18n="gw.clips">medal clips</h3>
+        <div class="mclips" data-mclips="krunker"></div>
+      </div>
+
+      <div class="gw-page" data-page="rdr2">
+        <div class="grid g2">
+          <div class="card">
+            <div class="k" data-i18n="rdr.k">story mode</div>
+            <div class="v" style="font-size:30px" data-i18n="rdr.v">the cozy one</div>
+            <p class="gw-p" data-i18n="rdr.p">Slow nights, camp fires and way too much time in the menus.</p>
+          </div>
+          <div class="card">
+            <div class="k" data-i18n="rdr.horse.k">horses punched instead of saddled</div>
+            <div class="v" style="font-size:30px">👊🐎 <span data-i18n="rdr.horse.v">too many</span></div>
+            <p class="gw-p" data-i18n="rdr.horse.p">Wrong button. Every. Single. Time.</p>
+          </div>
+        </div>
+        <h3 class="sub" data-i18n="gw.clips">medal clips</h3>
+        <div class="mclips" data-mclips="rdr2"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="kf"></div>
 <div id="scope"></div>
 <div id="flash"></div>
@@ -706,6 +820,10 @@ const CFG = {
   crosshairCode: "CSNQ9Fpma3iHaxfTkYznX4FJtcRUp2N3XMS9p8Y9iKSaUT",
   crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00e4ff" },
   premier: 21199,                                    // dein Premier-Rating
+  krunkerProfile: null,                              // z.B. "https://krunker.io/social.html?p=profile&q=Kurexus"
+  medal: {                                           // bis zu 3 Medal-Links pro Spiel: { url: "https://medal.tv/...", title: "..." }
+    cs2: [], krunker: [], rdr2: []
+  },
   featuredVideo: { id: "pm47XXnnRKA", title: "counter-krunk" },   // video in R4
   goals: [                                           // done: true = abgehakt
     { en: "FACEIT level 10", de: "FACEIT Level 10", auto: "faceit10" },
@@ -718,7 +836,7 @@ const CFG = {
 
 /* ---------- i18n ---------- */
 const T = { en:{}, de:{
-  "nav.about":"about","nav.games":"stats","nav.setup":"setup","nav.stream":"content","nav.aim":"warmup","nav.contact":"kontakt",
+  "nav.about":"about","nav.games":"games","nav.setup":"setup","nav.stream":"content","nav.aim":"warmup","nav.contact":"kontakt",
   "time.label":"kurs zeit",
   "status.off":"offline","status.live":"jetzt live auf twitch",
   "aka":"aka kur — locked in, meistens",
@@ -726,7 +844,12 @@ const T = { en:{}, de:{
   "germany":"Deutschland","btn.server":"Discord-Server",
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
   "r1.label":"runde eins — about","r1.title":"about",
-  "r2.label":"runde zwei — stats","r2.title":"was ich <em>grinde</em>",
+  "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
+  "g.open":"öffnen","g.kr.tag":"BROWSER FPS","g.kr.meta":"das schnelle · profil · clips","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · pferde-vorfälle · clips",
+  "gw.clips":"medal clips","gw.settings":"settings",
+  "kr.k":"browser fps","kr.v":"das schnelle","kr.p":"Pure Movement und Flicks, direkt im Browser. Mein Warmup, wenn CS nicht reicht.","kr.prof":"profil",
+  "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
+  "rdr.horse.k":"pferde geschlagen statt gesattelt","rdr.horse.v":"zu viele","rdr.horse.p":"Falscher Knopf. Jedes. Einzelne. Mal.",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
   "f.hours":"stunden","f.map":"lieblingsmap","f.weapon":"lieblingswaffe",
   "r1.also":"spiele ich auch","g.rdr":"das gemütliche",
@@ -757,7 +880,7 @@ function applyLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
   $("aimStart").textContent = aimPlayed ? L("again","nochmal") : "start";
-  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock();
+  buildTicker(); refreshLiveText(); renderBest(); renderFaceit(lastFaceit); renderPoll(pollData); renderLastLive(); renderGoals(); renderLb(); renderSound(); kurClock(); if(typeof renderClips==="function" && $("gw")) try{ renderClips(); }catch(e){}
   $("aimName").placeholder = L("your name","dein name");
 }
 
@@ -1057,6 +1180,7 @@ function renderFaceit(d){
   if(d.matches) $("fM").textContent = fmt(d.matches);
   if(d.recent && d.recent.length) $("fRecent").innerHTML = d.recent.slice(0,5).map(r=>String(r)==="1"?'<i class="w">W</i>':'<i class="l">L</i>').join("");
   $("fStats").style.opacity = d.matches ? 1 : .5;
+  $("gtCs").textContent = `FACEIT lvl ${lvl} · ${fmt(elo)} elo · premier ${fmt(CFG.premier)}`;
 }
 api("/api/faceit").then(d=>{ if(d && d.level){ lastFaceit = d; renderFaceit(d); buildTicker(); renderGoals(); } }).catch(()=>{});
 
@@ -1248,7 +1372,7 @@ $("conForm").onsubmit = e=>{
 };
 addEventListener("keydown", e=>{
   if(e.code === "Backquote" || e.key === "^" || e.key === "`"){ e.preventDefault(); toggleCon(); return; }
-  if(e.key === "Escape"){ toggleCon(false); closeModal(); return; }
+  if(e.key === "Escape"){ toggleCon(false); if(pip.classList.contains("open")) closeModal(); else closeGame(); return; }
   if(document.activeElement === inp){ SFX.type(); return; }
   keybuf.push(e.key.length===1 ? e.key.toLowerCase() : e.key); keybuf = keybuf.slice(-10);
   if(keybuf.slice(-3).join("") === "kur" || keybuf.join(",") === KONAMI){ keybuf = []; flashbang(); }
@@ -1312,6 +1436,63 @@ addEventListener("keydown", e=>{
   }
   $("aimStart").onclick = start;
 })();
+/* ---------- game windows ---------- */
+const GAMES = {
+  cs2:{ title:"Counter-Strike 2", kicker:"game · main", color:"#e8a33a" },
+  krunker:{ title:"Krunker", kicker:"game · browser fps", color:"#5ad0ff" },
+  rdr2:{ title:"Red Dead Redemption 2", kicker:"game · story", color:"#d9573b" }
+};
+const gw = $("gw"); let gwCurrent = null;
+function medalEmbed(u){
+  try{
+    const url = new URL(u);
+    if(!/(^|\.)medal\.tv$/.test(url.hostname)) return null;
+    url.pathname = url.pathname.replace("/clips/", "/clip/");
+    url.searchParams.set("autoplay","1"); url.searchParams.set("muted","0"); url.searchParams.set("loop","0");
+    return url.toString();
+  }catch(e){ return null; }
+}
+function renderClips(){
+  document.querySelectorAll("[data-mclips]").forEach(box=>{
+    const g = box.dataset.mclips, list = (CFG.medal[g]||[]).slice(0,3), col = GAMES[g].color;
+    box.style.setProperty("--gc", col);
+    box.innerHTML = [0,1,2].map(i=>{
+      const c = list[i];
+      if(!c) return `<div class="mclip empty">${L("clip slot · soon","clip-platz · bald")}</div>`;
+      return `<button class="mclip" data-i="${i}"><span class="src">medal</span><span class="pl"><i></i></span><span class="ttl">${esc(c.title||"clip "+(i+1))}</span></button>`;
+    }).join("");
+    box.querySelectorAll("button.mclip").forEach(b=>b.onclick = ()=>{
+      const c = list[+b.dataset.i], src = medalEmbed(c.url);
+      src ? openPip(src, c.title || "medal clip") : window.open(c.url, "_blank", "noopener");
+    });
+  });
+}
+function openGame(g, push=true){
+  if(!GAMES[g]) return;
+  gwCurrent = g;
+  document.querySelectorAll(".gw-page").forEach(p=>p.classList.toggle("on", p.dataset.page === g));
+  $("gwTitle").textContent = GAMES[g].title; $("gwKicker").textContent = GAMES[g].kicker;
+  gw.classList.add("open"); gw.setAttribute("aria-hidden","false"); document.documentElement.classList.add("gw-lock");
+  gw.querySelector(".gw-panel").scrollTop = 0;
+  if(push) history.replaceState(null, "", "#" + g);
+  SFX.scopeIn();
+  setTimeout(()=>$("gwX").focus({preventScroll:true}), 50);
+}
+function closeGame(){
+  if(!gwCurrent) return;
+  const g = gwCurrent; gwCurrent = null;
+  gw.classList.remove("open"); gw.setAttribute("aria-hidden","true"); document.documentElement.classList.remove("gw-lock");
+  history.replaceState(null, "", "#games"); SFX.scopeOut();
+  const t = document.querySelector(`.gtile[data-game="${g}"]`); t && t.focus({preventScroll:true});
+}
+document.querySelectorAll(".gtile").forEach(t=>t.addEventListener("click", ()=>openGame(t.dataset.game)));
+$("gwX").onclick = closeGame;
+gw.addEventListener("pointerdown", e=>{ if(e.target === gw) closeGame(); });
+addEventListener("hashchange", ()=>{ const g = location.hash.slice(1); GAMES[g] ? openGame(g, false) : closeGame(); });
+if(CFG.krunkerProfile){ $("krunkerLink").href = CFG.krunkerProfile; } else { const k = $("krunkerLink"); k.removeAttribute("href"); k.textContent = L("link coming soon","link kommt bald"); k.style.opacity = .5; }
+renderClips();
+if(GAMES[location.hash.slice(1)]) setTimeout(()=>openGame(location.hash.slice(1), false), 300);
+
 /* ---------- reaction test ---------- */
 (function(){
   const box = $("rx"); let state = "idle", t0 = 0, timer, tries = [];
