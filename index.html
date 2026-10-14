@@ -453,7 +453,7 @@ html.xh .xhair.on{opacity:1}
     </div>
 
     <div class="grid g4 mt">
-      <div class="card fact"><div class="k">Premier</div><div class="premier" style="--pc1:#c23cb0;--pc2:#ff6bd6">22<small>,000</small></div></div>
+      <div class="card fact"><div class="k">Premier</div><div class="premier" id="premier"></div></div>
       <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v">700<small> h</small></div></div>
       <div class="card fact"><div class="k" data-i18n="f.map">fav map</div><div class="v">Cache</div></div>
       <div class="card fact"><div class="k" data-i18n="f.weapon">fav weapon</div><div class="v">AK-47</div></div>
@@ -651,6 +651,7 @@ const CFG = {
   faceitFallback: { elo: 1342, level: 6 },          // falls live-Daten nicht laden
   crosshairCode: "CSGO-HHKf7-FhiKk-Ur7nE-jiZkt-Ey4tJ",
   crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00ffff" },
+  premier: 22000,                                    // dein Premier-Rating
   goals: [                                           // done: true = abgehakt
     { en: "FACEIT level 10", de: "FACEIT Level 10", auto: "faceit10" },
     { en: "Twitch Partner", de: "Twitch Partner" },
@@ -824,6 +825,15 @@ $("copyXhair").onclick = ()=>CFG.crosshairCode && copy(CFG.crosshairCode, L("cro
   if(c.dot) h += `<rect x="${cx-th/2}" y="${cx-th/2}" width="${th}" height="${th}" fill="${c.color}"/>`;
   $("xsvg").innerHTML = h;
   if(CFG.crosshairCode){ $("xcode").textContent = CFG.crosshairCode; const b = $("copyXhair"); b.disabled = false; b.dataset.i18n = "copy"; b.textContent = "copy"; }})();
+
+/* ---------- premier tier colors ---------- */
+(function(){
+  const r = CFG.premier, tiers = [[30000,"#c9a227","#ffd84d"],[25000,"#b3202b","#ff4a4a"],[20000,"#a3209a","#ff3bd8"],[15000,"#6d2bb3","#b56bff"],[10000,"#2f4fbf","#6f8fff"],[5000,"#3f86b8","#7cc4f2"],[0,"#5a6470","#b7c0c9"]];
+  const [, c1, c2] = tiers.find(t=>r >= t[0]);
+  const el = $("premier"); el.style.setProperty("--pc1", c1); el.style.setProperty("--pc2", c2);
+  const str = fmt(r), cut = str.indexOf(",");
+  el.innerHTML = cut > 0 ? `${str.slice(0,cut)}<small>${str.slice(cut)}</small>` : str;
+})();
 
 /* ---------- today ---------- */
 try{
