@@ -1,6 +1,6 @@
 // GET /api/clipmeta?u=<url>&u=<url>… — fresh thumbnails + titles for Medal and Twitch clips
 // (Medal thumbnail links expire, so we look them up live and let the CDN cache the result.)
-let token = null, tokenExp = 0;
+let token = null, tokenExp = 0, DEBUG = {};
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
@@ -39,10 +39,10 @@ async function twitchToken(id, secret) {
 
 async function twitchClips(slugs) {
   const id = (process.env.TWITCH_CLIENT_ID || "").trim(), secret = (process.env.TWITCH_CLIENT_SECRET || "").trim();
-  if (!id || !secret || !slugs.length) return {};
+  if (!id || !secret || !slugs.length) { DEBUG.skip = !id ? "no id" : !secret ? "no secret" : "no slugs"; return {}; }
   const tk = await twitchToken(id, secret);
   const r = await fetch("https://api.twitch.tv/helix/clips?" + slugs.map(s => "id=" + encodeURIComponent(s)).join("&"), { headers: { "Client-Id": id, Authorization: `Bearer ${tk}` } });
-  if (!r.ok) return {};
+  if (!r.ok) { DEBUG.helix = r.status + " " + (await r.text()).slice(0, 200); return {}; }
   const out = {};
   for (const c of (await r.json()).data || []) out[c.id] = { thumb: c.thumbnail_url, title: c.title, views: c.view_count };
   return out;
@@ -51,14 +51,16 @@ async function twitchClips(slugs) {
 const twitchSlug = u => { const m = u.match(/(?:clips\.twitch\.tv\/|twitch\.tv\/[^/]+\/clip\/)([\w-]+)/); return m ? m[1] : null; };
 
 export default async req => {
+  DEBUG = {};
   const urls = new URL(req.url).searchParams.getAll("u").slice(0, 20);
   const out = {};
   const slugs = urls.map(twitchSlug).filter(Boolean);
   const [tw] = await Promise.all([
-    twitchClips(slugs).catch(() => ({})),
+    twitchClips(slugs).catch(e => { DEBUG.err = String(e.message || e); return {}; }),
     ...urls.filter(u => /^https:\/\/(www\.)?medal\.tv\//.test(u)).map(u => medal(u).then(m => { out[u] = m; }).catch(() => {}))
   ]);
   for (const u of urls) { const s = twitchSlug(u); if (s && tw[s]) out[u] = tw[s]; }
+  if (new URL(req.url).searchParams.has("debug")) out._debug = { ...DEBUG, slugs };
   return json(out);
 };
 
