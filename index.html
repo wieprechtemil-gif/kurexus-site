@@ -567,6 +567,55 @@ html.vibing .glow{scale:calc(1 + var(--beat,0)*.18);opacity:calc(.75 + var(--bea
 html.vibing .avatar .ring{scale:calc(1 + var(--beat,0)*.12)}
 html.vibing .lp-art img{box-shadow:0 0 calc(var(--beat,0)*26px) rgba(var(--tint,255,255,255),.7)}
 html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,0)*.5))}
+/* R3 cover wall */
+.mwall{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:14px}
+.mw-head{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 12px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mw-src{color:var(--dim,var(--muted));opacity:.7}
+.mw-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.mw-t{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--card-solid);border:1px solid var(--line);padding:0;color:#fff;text-align:left}
+.mw-t.big{grid-column:span 2;grid-row:span 2;border-radius:14px}
+.mw-t.sk{background:linear-gradient(100deg,var(--card-solid) 30%,color-mix(in srgb,var(--fg) 6%,var(--card-solid)) 50%,var(--card-solid) 70%);background-size:300% 100%;animation:mwSk 1.4s linear infinite}
+@keyframes mwSk{to{background-position:-150% 0}}
+.mw-t img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.7,.3,1),filter .3s}
+.mw-t:hover img{transform:scale(1.06)}
+.mw-t .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.85));opacity:0;transition:opacity .25s}
+.mw-t:hover .ov,.mw-t.big .ov,.mw-t.playing .ov{opacity:1}
+.mw-t .rk{position:absolute;left:7px;top:7px;font:600 10px var(--mono);padding:2px 6px;border-radius:6px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff}
+.mw-t.big .rk{left:12px;top:12px;font-size:11px;padding:4px 8px}
+.mw-t .tx{position:absolute;left:9px;right:9px;bottom:8px;opacity:0;transform:translateY(6px);transition:.25s;line-height:1.25}
+.mw-t:hover .tx,.mw-t.big .tx,.mw-t.playing .tx{opacity:1;transform:none}
+.mw-t .tx b{display:block;font:600 12px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-t .tx span{display:block;font:500 10px var(--mono);color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-t.big .tx{left:16px;right:16px;bottom:14px}
+.mw-t.big .tx b{font-size:20px;letter-spacing:-.01em}
+.mw-t.big .tx span{font-size:11px;margin-top:3px}
+.mw-t .pl{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:#fff;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:.2s;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.mw-t.big .pl{width:54px;height:54px;margin:-27px 0 0 -27px}
+.mw-t .pl svg{width:16px;height:16px;fill:#000;margin-left:2px}
+.mw-t:hover .pl{opacity:1;transform:none}
+.mw-t .eq{position:absolute;right:8px;top:8px;display:none;gap:2px;align-items:flex-end;height:14px}
+.mw-t .eq i{width:3px;background:#fff;border-radius:1px;animation:eq .9s ease-in-out infinite}
+.mw-t .eq i:nth-child(2){animation-delay:.25s}.mw-t .eq i:nth-child(3){animation-delay:.5s}
+.mw-t.playing{border-color:rgba(255,255,255,.6)}
+.mw-t.playing .eq{display:flex}
+.mw-t.playing .pl{opacity:1;transform:none}
+.mw-t .sp{position:absolute;right:7px;bottom:7px;width:22px;height:22px;opacity:0;transition:.2s}
+.mw-t .sp svg{width:100%;height:100%;fill:#1ed760}
+.mw-t:hover .sp{opacity:1}
+.mw-t.big .sp{right:14px;bottom:14px;width:26px;height:26px}
+.mw-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 4px 2px}
+.mw-ars{display:flex;align-items:center;padding-left:8px}
+.mw-ar{position:relative;width:42px;height:42px;margin-left:-8px;border-radius:50%;border:2px solid var(--card-solid);background:var(--card-solid);overflow:visible;transition:transform .2s}
+.mw-ar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.mw-ar:hover{transform:translateY(-4px);z-index:2}
+.mw-ar::after{content:attr(data-n);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;font:500 10px var(--mono);padding:3px 7px;border-radius:6px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:.15s}
+.mw-ar:hover::after{opacity:1}
+.mw-ars .lbl{margin-left:12px;font:500 11px var(--mono);color:var(--muted);letter-spacing:.06em}
+.mw-st{display:flex;align-items:center;gap:14px;font:500 11px var(--mono);color:var(--muted)}
+.mw-st b{color:var(--fg);font-weight:600}
+.mw-open{padding:8px 12px;border-radius:9px;border:1px solid var(--line-2);background:transparent;color:var(--fg);font:500 11px var(--mono);transition:.2s}
+.mw-open:hover{background:var(--fg);color:var(--bg)}
+@media (max-width:700px){.mw-grid{grid-template-columns:repeat(3,1fr)}.mw-t.big .tx b{font-size:16px}.mw-t .tx{opacity:1;transform:none}.mw-t .ov{opacity:1}}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -794,13 +843,13 @@ html.xh .xhair.on{opacity:1}
   <section id="music" class="rv" data-round="3">
     <div class="label"><b>R3</b><span data-i18n="r3.label">round three — music</span></div>
     <h2 data-i18n="r3.title">what I <em>listen to</em></h2>
-    <div class="gtiles">
-      <button class="gtile wide big" data-game="music" style="--gc:#1ed760">
-        <span class="gt-art" data-art="music"></span>
-        <span class="gt-top"><span class="tag" data-i18n="g.mu.tag">MUSIC</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
-        <span class="gt-name" data-i18n="g.mu.name">top songs &amp; artists</span>
-        <span class="gt-meta" id="gtMu" data-i18n="g.mu.meta">top songs · top artists · on repeat</span>
-      </button>
+    <div class="mwall">
+      <div class="mw-head"><span class="mw-k" id="mwK">on repeat · last 30 days</span></div>
+      <div class="mw-grid" id="mwGrid"><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span></div>
+      <div class="mw-foot">
+        <div class="mw-ars" id="mwArs"></div>
+        <div class="mw-st"><span id="mwTot"></span><button class="mw-open" id="mwOpen"><span id="mwOpenT">full stats</span> ↗</button></div>
+      </div>
     </div>
   </section>
 
@@ -1786,7 +1835,7 @@ const GAMES = {
   cs2:{ title:"Counter-Strike 2", kicker:"game · main", color:"#e8a33a" },
   krunker:{ title:"Krunker", kicker:"game · movement fps", color:"#5ad0ff" },
   rdr2:{ title:"Red Dead Redemption 2", kicker:"game · story", color:"#d9573b" },
-  music:{ title:"what I listen to", kicker:"music · via last.fm", color:"#1ed760" }
+  music:{ title:"what I listen to", kicker:"music", color:"#1ed760" }
 };
 const gw = $("gw"); let gwCurrent = null;
 const twitchSlug = u => { const m = String(u).match(/(?:clips\.twitch\.tv\/|twitch\.tv\/[^/]+\/clip\/)([\w-]+)/); return m ? m[1] : null; };
@@ -1966,7 +2015,6 @@ const music = (function(){
         <span class="t">${esc(r.title)} <span>· ${esc(r.artist)}</span></span>
         <span class="when${r.nowPlaying ? " now" : ""}">${r.nowPlaying ? L("playing now","läuft gerade") : r.date ? ago(new Date(r.date).toISOString()) : ""}</span></li>`).join("");
     document.querySelectorAll(".mu-tab").forEach(b=>b.classList.toggle("on", b.dataset.p === period));
-    if(d.tracks[0]) $("gtMu").textContent = `${L("on repeat","on repeat")}: ${d.tracks[0].title} — ${d.tracks[0].artist}`;
   }
   function load(p){
     period = p; store.set("muPeriod", p);
@@ -1985,9 +2033,45 @@ const music = (function(){
       const svg = li.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
     });
   });
-  // preload the tile teaser in the background
-  setTimeout(()=>load(period), 1500);
-  return { load:()=>load(period), rerender:()=>last && render(last) };
+  // ---- R3 cover wall (always the last 30 days)
+  let wallD = null;
+  function wall(d){
+    wallD = d; if(!d) return;
+    const T = d.tracks.slice(0, 9);
+    $("mwK").textContent = L("on repeat · last 30 days", "on repeat · letzte 30 tage");
+    $("mwOpenT").textContent = L("full stats", "alle stats");
+    $("mwGrid").innerHTML = T.length ? T.map((t,i)=>`
+      <button class="mw-t${i === 0 ? " big" : ""}${t.preview && player.isPlaying(t.preview) ? " playing" : ""}" data-i="${i}" data-url="${esc(t.preview||"")}" aria-label="${esc(t.title)} — ${esc(t.artist)}">
+        ${t.art ? `<img loading="lazy" src="${esc(t.art)}" alt="">` : ""}
+        <span class="ov"></span><span class="rk">#${t.rank}${i === 0 ? ` · ${fmt(t.plays)} ${L("plays","plays")}` : ""}</span>
+        ${t.preview ? `<span class="pl"><svg viewBox="0 0 24 24">${player.isPlaying(t.preview) ? PAUSE_ICON : PLAY_ICON}</svg></span>` : ""}
+        <span class="eq"><i></i><i></i><i></i></span>
+        <span class="tx"><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></span>
+        <a class="sp" href="${esc(t.spotify)}" target="_blank" rel="noopener" aria-label="Spotify">${SP_ICON}</a>
+      </button>`).join("") : `<span class="mu-empty">${L("nothing played lately.","zuletzt nichts gehört.")}</span>`;
+    $("mwGrid").querySelectorAll(".mw-t").forEach(b=>b.addEventListener("click", e=>{
+      if(e.target.closest(".sp")) return;
+      const t = T[+b.dataset.i];
+      if(t.preview) player.toggle({ url:t.preview, title:t.title, artist:t.artist }); else window.open(t.spotify, "_blank", "noopener");
+    }));
+    $("mwArs").innerHTML = d.artists.slice(0, 6).map(a=>`<a class="mw-ar" data-n="${esc(a.name)}" href="${esc(a.spotify)}" target="_blank" rel="noopener">${a.image ? `<img loading="lazy" src="${esc(a.image)}" alt="${esc(a.name)}">` : ""}</a>`).join("")
+      + `<span class="lbl">${L("top artists","top artists")}</span>`;
+    $("mwTot").innerHTML = `<b>${fmt(d.totalScrobbles)}</b> ${L("songs played","songs gehört")}`;
+  }
+  $("mwOpen").addEventListener("click", ()=>openGame("music"));
+  player.on((cur, playing)=>{
+    document.querySelectorAll(".mw-t[data-url]").forEach(b=>{
+      const on = !!cur && playing && b.dataset.url === cur.url;
+      b.classList.toggle("playing", on);
+      const svg = b.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
+    });
+  });
+  setTimeout(()=>{
+    (cache["1month"] ? Promise.resolve(cache["1month"]) : api("/api/music?period=1month").then(d=>{ if(d && d.tracks) cache["1month"] = d; return d; }))
+      .then(d=>d && d.tracks && wall(d))
+      .catch(()=>{ $("mwGrid").innerHTML = `<span class="mu-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</span>`; });
+  }, 800);
+  return { load:()=>load(period), rerender:()=>{ last && render(last); wallD && wall(wallD); } };
 })();
 
 /* ---------- reaction test ---------- */
