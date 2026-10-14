@@ -567,55 +567,64 @@ html.vibing .glow{scale:calc(1 + var(--beat,0)*.18);opacity:calc(.75 + var(--bea
 html.vibing .avatar .ring{scale:calc(1 + var(--beat,0)*.12)}
 html.vibing .lp-art img{box-shadow:0 0 calc(var(--beat,0)*26px) rgba(var(--tint,255,255,255),.7)}
 html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,0)*.5))}
-/* R3 cover wall */
-.mwall{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:14px}
-.mw-head{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 12px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.mw-src{color:var(--dim,var(--muted));opacity:.7}
-.mw-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.mw-t{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--card-solid);border:1px solid var(--line);padding:0;color:#fff;text-align:left}
-.mw-t.big{grid-column:span 2;grid-row:span 2;border-radius:14px}
-.mw-t.sk{background:linear-gradient(100deg,var(--card-solid) 30%,color-mix(in srgb,var(--fg) 6%,var(--card-solid)) 50%,var(--card-solid) 70%);background-size:300% 100%;animation:mwSk 1.4s linear infinite}
-@keyframes mwSk{to{background-position:-150% 0}}
-.mw-t img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.7,.3,1),filter .3s}
-.mw-t:hover img{transform:scale(1.06)}
-.mw-t .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.85));opacity:0;transition:opacity .25s}
-.mw-t:hover .ov,.mw-t.big .ov,.mw-t.playing .ov{opacity:1}
-.mw-t .rk{position:absolute;left:7px;top:7px;font:600 10px var(--mono);padding:2px 6px;border-radius:6px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff}
-.mw-t.big .rk{left:12px;top:12px;font-size:11px;padding:4px 8px}
-.mw-t .tx{position:absolute;left:9px;right:9px;bottom:8px;opacity:0;transform:translateY(6px);transition:.25s;line-height:1.25}
-.mw-t:hover .tx,.mw-t.big .tx,.mw-t.playing .tx{opacity:1;transform:none}
-.mw-t .tx b{display:block;font:600 12px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mw-t .tx span{display:block;font:500 10px var(--mono);color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mw-t.big .tx{left:16px;right:16px;bottom:14px}
-.mw-t.big .tx b{font-size:20px;letter-spacing:-.01em}
-.mw-t.big .tx span{font-size:11px;margin-top:3px}
-.mw-t .pl{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:#fff;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:.2s;box-shadow:0 6px 20px rgba(0,0,0,.5)}
-.mw-t.big .pl{width:54px;height:54px;margin:-27px 0 0 -27px}
-.mw-t .pl svg{width:16px;height:16px;fill:#000;margin-left:2px}
-.mw-t:hover .pl{opacity:1;transform:none}
-.mw-t .eq{position:absolute;right:8px;top:8px;display:none;gap:2px;align-items:flex-end;height:14px}
-.mw-t .eq i{width:3px;background:#fff;border-radius:1px;animation:eq .9s ease-in-out infinite}
-.mw-t .eq i:nth-child(2){animation-delay:.25s}.mw-t .eq i:nth-child(3){animation-delay:.5s}
-.mw-t.playing{border-color:rgba(255,255,255,.6)}
-.mw-t.playing .eq{display:flex}
-.mw-t.playing .pl{opacity:1;transform:none}
-.mw-t .sp{position:absolute;right:7px;bottom:7px;width:22px;height:22px;opacity:0;transition:.2s}
-.mw-t .sp svg{width:100%;height:100%;fill:#1ed760}
-.mw-t:hover .sp{opacity:1}
-.mw-t.big .sp{right:14px;bottom:14px;width:26px;height:26px}
-.mw-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 4px 2px}
-.mw-ars{display:flex;align-items:center;padding-left:8px}
-.mw-ar{position:relative;width:42px;height:42px;margin-left:-8px;border-radius:50%;border:2px solid var(--card-solid);background:var(--card-solid);overflow:visible;transition:transform .2s}
-.mw-ar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
-.mw-ar:hover{transform:translateY(-4px);z-index:2}
-.mw-ar::after{content:attr(data-n);position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;font:500 10px var(--mono);padding:3px 7px;border-radius:6px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:.15s}
-.mw-ar:hover::after{opacity:1}
-.mw-ars .lbl{margin-left:12px;font:500 11px var(--mono);color:var(--muted);letter-spacing:.06em}
-.mw-st{display:flex;align-items:center;gap:14px;font:500 11px var(--mono);color:var(--muted)}
-.mw-st b{color:var(--fg);font-weight:600}
-.mw-open{padding:8px 12px;border-radius:9px;border:1px solid var(--line-2);background:transparent;color:var(--fg);font:500 11px var(--mono);transition:.2s}
+/* R3: top songs this week + popup player */
+.mw{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:16px 14px 10px}
+.mw-head{display:flex;justify-content:space-between;align-items:center;padding:0 6px 12px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mw-open{padding:7px 11px;border-radius:9px;border:1px solid var(--line-2);background:transparent;color:var(--fg);font:500 11px var(--mono);letter-spacing:.04em;text-transform:none;transition:.2s}
 .mw-open:hover{background:var(--fg);color:var(--bg)}
-@media (max-width:700px){.mw-grid{grid-template-columns:repeat(3,1fr)}.mw-t.big .tx b{font-size:16px}.mw-t .tx{opacity:1;transform:none}.mw-t .ov{opacity:1}}
+.mw-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,auto);grid-auto-flow:column;column-gap:14px}
+@media (max-width:760px){.mw-list{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}}
+.mw-row{display:grid;grid-template-columns:28px 52px 1fr auto;align-items:center;gap:12px;padding:8px 8px;border-radius:12px;cursor:pointer;transition:background .2s;border-top:1px solid var(--line)}
+.mw-list .mw-row:nth-child(1),.mw-list .mw-row:nth-child(5){border-top-color:transparent}
+@media (max-width:760px){.mw-list .mw-row:nth-child(5){border-top-color:var(--line)}}
+.mw-row:hover{background:color-mix(in srgb,var(--fg) 5%,transparent)}
+.mw-row .rk{font:600 13px var(--mono);color:var(--muted);text-align:center}
+.mw-row .cv{position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--card-solid);display:block}
+.mw-row .cv::before{content:"♪";position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:18px}
+.mw-row .cv img{position:relative;width:100%;height:100%;object-fit:cover;display:block}
+.mw-row .cv .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.5);opacity:0;transition:.2s}
+.mw-row .cv .pl svg{width:18px;height:18px;fill:#fff}
+.mw-row:hover .cv .pl,.mw-row.playing .cv .pl{opacity:1}
+.mw-row .t{min-width:0;line-height:1.3}
+.mw-row .t b{display:block;font:600 14px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-row .t span{display:block;font:500 11px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-row .pc{font:500 11px var(--mono);color:var(--muted);white-space:nowrap}
+.mw-row.playing .t b{color:var(--fg)}
+.mw-row.playing .rk{color:var(--fg)}
+.mw-row.playing .rk::before{content:"▶ ";font-size:9px}
+.mw-row.nopv .cv .pl svg{display:none}
+.mw-row.sk{pointer-events:none}
+.mw-row.sk .cv,.mw-row.sk .t b,.mw-row.sk .t span{background:linear-gradient(100deg,var(--card-solid) 30%,color-mix(in srgb,var(--fg) 7%,var(--card-solid)) 50%,var(--card-solid) 70%);background-size:300% 100%;animation:mwSk 1.4s linear infinite;border-radius:6px}
+.mw-row.sk .t b{height:12px;width:60%;margin-bottom:6px}.mw-row.sk .t span{height:9px;width:40%}
+@keyframes mwSk{to{background-position:-150% 0}}
+.mw-empty{padding:18px 8px;color:var(--muted);font:500 12px var(--mono)}
+#mpop{position:fixed;left:50%;bottom:20px;z-index:95;width:min(460px,calc(100vw - 24px));transform:translateX(-50%);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);color:#fff;animation:mpIn .3s cubic-bezier(.2,.8,.3,1)}
+#mpop[hidden]{display:none}
+@keyframes mpIn{from{opacity:0;transform:translate(-50%,20px) scale(.97)}}
+.mp-bg{position:absolute;inset:0;background:#111}
+.mp-bg img{width:100%;height:100%;object-fit:cover;filter:blur(28px) saturate(1.3);transform:scale(1.4);opacity:.75}
+.mp-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.7))}
+.mp-in{position:relative;display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;padding:14px 16px 14px 14px}
+.mp-cv{width:72px;height:72px;border-radius:10px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.5);background:#222}
+.mp-mid{min-width:0}
+.mp-k{font:600 9.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:3px}
+.mp-mid b{display:block;font:700 15px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-mid>span{display:block;font:500 11px var(--mono);color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-bar{margin-top:9px;height:4px;border-radius:4px;background:rgba(255,255,255,.2);cursor:pointer;position:relative}
+.mp-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:#fff}
+.mp-time{display:flex;justify-content:space-between;font:500 9.5px var(--mono);color:rgba(255,255,255,.55);margin-top:4px}
+.mp-ctl{display:flex;align-items:center;gap:4px;margin-right:18px}
+.mp-ctl button{width:32px;height:32px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:#fff;transition:.15s}
+.mp-ctl button:hover{background:rgba(255,255,255,.12)}
+.mp-ctl svg{width:15px;height:15px;fill:#fff}
+.mp-ctl .pp{width:42px;height:42px;background:#fff}
+.mp-ctl .pp:hover{background:#fff;transform:scale(1.06)}
+.mp-ctl .pp svg{fill:#000;width:17px;height:17px}
+.mp-sp{position:absolute;right:12px;bottom:10px;width:18px;height:18px;opacity:.85}
+.mp-sp svg{width:100%;height:100%;fill:#1ed760}
+.mp-x{position:absolute;right:8px;top:6px;width:24px;height:24px;border:0;background:transparent;color:rgba(255,255,255,.6);font-size:12px;border-radius:50%}
+.mp-x:hover{color:#fff;background:rgba(255,255,255,.12)}
+@media (max-width:520px){.mp-in{grid-template-columns:56px 1fr;}.mp-cv{width:56px;height:56px}.mp-ctl{grid-column:1/-1;justify-content:center;margin:0}}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -843,13 +852,9 @@ html.xh .xhair.on{opacity:1}
   <section id="music" class="rv" data-round="3">
     <div class="label"><b>R3</b><span data-i18n="r3.label">round three — music</span></div>
     <h2 data-i18n="r3.title">what I <em>listen to</em></h2>
-    <div class="mwall">
-      <div class="mw-head"><span class="mw-k" id="mwK">on repeat · last 30 days</span></div>
-      <div class="mw-grid" id="mwGrid"><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span><span class="mw-t sk"></span></div>
-      <div class="mw-foot">
-        <div class="mw-ars" id="mwArs"></div>
-        <div class="mw-st"><span id="mwTot"></span><button class="mw-open" id="mwOpen"><span id="mwOpenT">full stats</span> ↗</button></div>
-      </div>
+    <div class="mw">
+      <div class="mw-head"><span class="mw-k" id="mwK">top songs · this week</span><button class="mw-open" id="mwOpen"><span id="mwOpenT">full stats</span> ↗</button></div>
+      <ol class="mw-list" id="mwList"><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li><li class="mw-row sk"><span class="rk"></span><span class="cv"></span><span class="t"><b></b><span></span></span></li></ol>
     </div>
   </section>
 
@@ -1116,6 +1121,25 @@ html.xh .xhair.on{opacity:1}
   </div>
 </div>
 <div id="kf"></div>
+<div id="mpop" hidden>
+  <div class="mp-bg"><img id="mpBg" alt=""></div>
+  <div class="mp-in">
+    <img class="mp-cv" id="mpCv" alt="">
+    <div class="mp-mid">
+      <div class="mp-k" id="mpK">this week · #1</div>
+      <b id="mpT"></b><span id="mpA"></span>
+      <div class="mp-bar" id="mpBar"><i id="mpFill"></i></div>
+      <div class="mp-time"><span id="mpCur">0:00</span><span id="mpDur">0:30</span></div>
+    </div>
+    <div class="mp-ctl">
+      <button id="mpPrev" aria-label="previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button id="mpPlay" class="pp" aria-label="play/pause"><svg viewBox="0 0 24 24" id="mpIcon"></svg></button>
+      <button id="mpNext" aria-label="next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    </div>
+    <a class="mp-sp" id="mpSp" target="_blank" rel="noopener" aria-label="open on Spotify"></a>
+    <button class="mp-x" id="mpX" aria-label="close">✕</button>
+  </div>
+</div>
 <div id="hud">
   <div class="radar-w"><div class="radar" id="radar"><svg viewBox="0 0 100 100" id="radarSvg" aria-label="radar"></svg></div><span id="radarLbl">t spawn</span></div>
   <button class="nade-chip" id="nadeChip" aria-label="buy menu (B)"><img id="nadeIco" src="/img/kf/smoke.png" alt=""><span id="nadeName">smoke</span><kbd>B</kbd></button>
@@ -2021,7 +2045,7 @@ const music = (function(){
     document.querySelectorAll(".mu-tab").forEach(b=>b.classList.toggle("on", b.dataset.p === p));
     if(cache[p]) return render(cache[p]);
     $("muTracks").classList.add("mu-loading");
-    return api("/api/music?period=" + p).then(d=>{ if(d && d.tracks){ cache[p] = d; if(period === p) render(d); } })
+    return api("/api/music?v=2&period=" + p).then(d=>{ if(d && d.tracks){ cache[p] = d; if(period === p) render(d); } })
       .catch(()=>{ $("muTracks").innerHTML = `<li class="mu-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</li>`; })
       .finally(()=>$("muTracks").classList.remove("mu-loading"));
   }
@@ -2033,45 +2057,69 @@ const music = (function(){
       const svg = li.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
     });
   });
-  // ---- R3 cover wall (always the last 30 days)
-  let wallD = null;
-  function wall(d){
-    wallD = d; if(!d) return;
-    const T = d.tracks.slice(0, 9);
-    $("mwK").textContent = L("on repeat · last 30 days", "on repeat · letzte 30 tage");
+  // ---- R3: top songs this week + popup player
+  let wk = null, wkIdx = -1;
+  function week(d){
+    wk = d; if(!d) return;
+    const T = d.tracks.slice(0, 8);
+    $("mwK").textContent = L("top songs · this week", "top songs · diese woche");
     $("mwOpenT").textContent = L("full stats", "alle stats");
-    $("mwGrid").innerHTML = T.length ? T.map((t,i)=>`
-      <button class="mw-t${i === 0 ? " big" : ""}${t.preview && player.isPlaying(t.preview) ? " playing" : ""}" data-i="${i}" data-url="${esc(t.preview||"")}" aria-label="${esc(t.title)} — ${esc(t.artist)}">
-        ${t.art ? `<img loading="lazy" src="${esc(t.art)}" alt="">` : ""}
-        <span class="ov"></span><span class="rk">#${t.rank}${i === 0 ? ` · ${fmt(t.plays)} ${L("plays","plays")}` : ""}</span>
-        ${t.preview ? `<span class="pl"><svg viewBox="0 0 24 24">${player.isPlaying(t.preview) ? PAUSE_ICON : PLAY_ICON}</svg></span>` : ""}
-        <span class="eq"><i></i><i></i><i></i></span>
-        <span class="tx"><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></span>
-        <a class="sp" href="${esc(t.spotify)}" target="_blank" rel="noopener" aria-label="Spotify">${SP_ICON}</a>
-      </button>`).join("") : `<span class="mu-empty">${L("nothing played lately.","zuletzt nichts gehört.")}</span>`;
-    $("mwGrid").querySelectorAll(".mw-t").forEach(b=>b.addEventListener("click", e=>{
-      if(e.target.closest(".sp")) return;
-      const t = T[+b.dataset.i];
-      if(t.preview) player.toggle({ url:t.preview, title:t.title, artist:t.artist }); else window.open(t.spotify, "_blank", "noopener");
+    $("mwList").innerHTML = T.length ? T.map((t,i)=>`
+      <li class="mw-row${t.preview ? "" : " nopv"}${t.preview && player.isPlaying(t.preview) ? " playing" : ""}" data-i="${i}" data-url="${esc(t.preview||"")}">
+        <span class="rk">${t.rank}</span>
+        <span class="cv">${t.art ? `<img loading="lazy" src="${esc(t.art)}" alt="" onerror="this.remove()">` : ""}<span class="pl"><svg viewBox="0 0 24 24">${t.preview && player.isPlaying(t.preview) ? PAUSE_ICON : PLAY_ICON}</svg></span></span>
+        <span class="t"><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></span>
+        <span class="pc">${fmt(t.plays)}×</span>
+      </li>`).join("") : `<li class="mw-empty">${L("nothing played this week yet.","diese woche noch nichts gehört.")}</li>`;
+    $("mwList").querySelectorAll(".mw-row").forEach(li=>li.addEventListener("click", ()=>{
+      const i = +li.dataset.i, t = T[i];
+      if(!t.preview){ window.open(t.spotify, "_blank", "noopener"); return; }
+      playIdx(i);
     }));
-    $("mwArs").innerHTML = d.artists.slice(0, 6).map(a=>`<a class="mw-ar" data-n="${esc(a.name)}" href="${esc(a.spotify)}" target="_blank" rel="noopener">${a.image ? `<img loading="lazy" src="${esc(a.image)}" alt="${esc(a.name)}">` : ""}</a>`).join("")
-      + `<span class="lbl">${L("top artists","top artists")}</span>`;
-    $("mwTot").innerHTML = `<b>${fmt(d.totalScrobbles)}</b> ${L("songs played","songs gehört")}`;
   }
+  const wkTracks = ()=>(wk?.tracks || []).slice(0, 8);
+  function playIdx(i){
+    const T = wkTracks(); if(!T[i]) return;
+    const t = T[i];
+    if(!t.preview){ return playIdx(i + 1 < T.length ? i + 1 : -1); }
+    wkIdx = i; popFill(t, i);
+    player.toggle({ url:t.preview, title:t.title, artist:t.artist, from:"week" });
+  }
+  function popFill(t, i){
+    const pop = $("mpop"); pop.hidden = false;
+    $("mpCv").src = t.art || ""; $("mpBg").src = t.art || "";
+    $("mpT").textContent = t.title; $("mpA").textContent = t.artist;
+    $("mpK").textContent = `${L("this week","diese woche")} · #${t.rank} · ${fmt(t.plays)}×`;
+    $("mpSp").href = t.spotify; $("mpSp").innerHTML = SP_ICON;
+  }
+  const step = dir=>{ const T = wkTracks(); for(let j=1;j<=T.length;j++){ const k = (wkIdx + dir*j + T.length) % T.length; if(T[k].preview){ playIdx(k); return; } } };
+  $("mpPrev").onclick = ()=>step(-1);
+  $("mpNext").onclick = ()=>step(1);
+  $("mpPlay").onclick = ()=>{ const t = wkTracks()[wkIdx]; if(t) player.toggle({ url:t.preview, title:t.title, artist:t.artist, from:"week" }); };
+  $("mpX").onclick = ()=>{ $("mpop").hidden = true; if(player.current?.from === "week") player.stop(); };
+  const mm = s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`;
+  player.au.addEventListener("timeupdate", ()=>{
+    if(player.current?.from !== "week") return;
+    const d = player.au.duration || 30, c = player.au.currentTime || 0;
+    $("mpFill").style.width = (c/d*100).toFixed(1) + "%"; $("mpCur").textContent = mm(c); $("mpDur").textContent = mm(d);
+  });
+  player.au.addEventListener("ended", ()=>{ if(player.current?.from === "week" && !$("mpop").hidden) setTimeout(()=>step(1), 400); });
+  $("mpBar").addEventListener("click", e=>{ const r = e.currentTarget.getBoundingClientRect(), d = player.au.duration; if(d) player.au.currentTime = (e.clientX - r.left)/r.width*d; });
   $("mwOpen").addEventListener("click", ()=>openGame("music"));
   player.on((cur, playing)=>{
-    document.querySelectorAll(".mw-t[data-url]").forEach(b=>{
-      const on = !!cur && playing && b.dataset.url === cur.url;
-      b.classList.toggle("playing", on);
-      const svg = b.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
+    document.querySelectorAll(".mw-row[data-url]").forEach(li=>{
+      const on = !!cur && playing && li.dataset.url === cur.url;
+      li.classList.toggle("playing", on);
+      const svg = li.querySelector(".pl svg"); if(svg) svg.innerHTML = on ? PAUSE_ICON : PLAY_ICON;
     });
+    $("mpIcon").innerHTML = (cur && cur.from === "week" && playing) ? PAUSE_ICON : PLAY_ICON;
+    if(cur && cur.from !== "week") $("mpop").hidden = true;      // something else started playing
   });
   setTimeout(()=>{
-    (cache["1month"] ? Promise.resolve(cache["1month"]) : api("/api/music?period=1month").then(d=>{ if(d && d.tracks) cache["1month"] = d; return d; }))
-      .then(d=>d && d.tracks && wall(d))
-      .catch(()=>{ $("mwGrid").innerHTML = `<span class="mu-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</span>`; });
-  }, 800);
-  return { load:()=>load(period), rerender:()=>{ last && render(last); wallD && wall(wallD); } };
+    api("/api/music?period=7day&v=2").then(d=>{ if(d && d.tracks){ cache["7day"] = d; week(d); } else throw 0; })
+      .catch(()=>{ $("mwList").innerHTML = `<li class="mw-empty">${L("couldn't load music right now.","musik konnte gerade nicht geladen werden.")}</li>`; });
+  }, 600);
+  return { load:()=>load(period), rerender:()=>{ last && render(last); wk && week(wk); } };
 })();
 
 /* ---------- reaction test ---------- */
