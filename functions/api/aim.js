@@ -1,6 +1,7 @@
 import { json } from "../_shared.js";
 const RESERVED = ["kurexus", "kur", "kurexuss", "admin"];
 export async function onRequest({ request, env }) {
+  if (!env.KV) return json({ error: "missing KV binding (Settings → Bindings → KV namespace, name: KV)" }, 503);
   let board = JSON.parse(await env.KV.get("aim-board") || "[]");
   if (request.method === "POST") {
     let b = {}; try { b = await request.json(); } catch (e) {}

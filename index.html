@@ -9,10 +9,10 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="kurexus — locked in, mostly">
 <meta property="og:description" content="CS2 grinder & streamer from Germany. Live almost daily on Twitch.">
-<meta property="og:image" content="https://kurexus.netlify.app/og.png">
-<meta property="og:url" content="https://kurexus.netlify.app/">
+<meta property="og:image" content="https://kurexus-site.pages.dev/og.png">
+<meta property="og:url" content="https://kurexus-site.pages.dev/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kurexus.netlify.app/og.png">
+<meta name="twitter:image" content="https://kurexus-site.pages.dev/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2309090a'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23f5f5f2'%3Ek%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1149,7 +1149,7 @@ function randomKill(){
   const el = $("loader");
   let seen = false; try{ seen = sessionStorage.getItem("seen"); sessionStorage.setItem("seen","1"); }catch(e){}
   if(seen || REDUCED){ el.remove(); setTimeout(welcome, 400); return; }
-  const host = location.hostname || "kurexus.netlify.app";
+  const host = location.hostname || "kurexus-site.pages.dev";
   const lines = [`] connect ${host}`, `Connecting to ${host}...`, "Sending connection request...", "Loading map de_cache", `<span class="ok">Connected.</span>`];
   let i = 0, out = "";
   (function next(){
