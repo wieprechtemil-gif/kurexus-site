@@ -702,7 +702,7 @@ footer{position:relative;z-index:2;text-align:center;padding:40px 20px 120px;fon
 /* scope transition */
 #scope{position:fixed;inset:0;z-index:140;pointer-events:none;opacity:0;--r:150vmax;background:radial-gradient(circle at 50% 50%,transparent calc(var(--r) - 1px),#000 var(--r))}
 #scope.on{opacity:1}
-#scope::before,#scope::after{content:"";position:absolute;background:#000}
+#scope::before,#scope::after{content:"";position:absolute;background:#000;opacity:var(--lo,1)}
 #scope::before{left:0;right:0;top:50%;height:1.5px;margin-top:-.75px}
 #scope::after{top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px}
 
@@ -1521,11 +1521,15 @@ function scopeTo(hash){
   const sc = $("scope"); sc.classList.add("on"); SFX.scopeIn();
   const big = Math.hypot(innerWidth, innerHeight)/2 + 20, small = Math.min(innerWidth, innerHeight)*0.22;
   const ease = x => 1 - Math.pow(1-x, 3);
-  function anim(from, to, ms, done){
+  function anim(from, to, ms, done, step){
     const t0 = performance.now();
-    (function f(now){ const p = Math.min(1,(now-t0)/ms); sc.style.setProperty("--r", (from+(to-from)*ease(p))+"px"); p<1 ? requestAnimationFrame(f) : done && done(); })(t0);
+    (function f(now){ const p = Math.min(1,(now-t0)/ms); sc.style.setProperty("--r", (from+(to-from)*ease(p))+"px"); step && step(p); p<1 ? requestAnimationFrame(f) : done && done(); })(t0);
   }
-  anim(big, 0, 280, ()=>{ jump(); setTimeout(()=>anim(0, small, 160, ()=>setTimeout(()=>{ SFX.scopeOut(); anim(small, big, 320, ()=>sc.classList.remove("on")); }, 140)), 60); });
+  sc.style.setProperty("--lo", 1);
+  // the crosshair lines only live inside the scope: they fade out as it opens, so nothing is left over at the end
+  anim(big, 0, 280, ()=>{ jump(); setTimeout(()=>anim(0, small, 160, ()=>setTimeout(()=>{ SFX.scopeOut();
+    anim(small, big, 320, ()=>{ sc.classList.remove("on"); sc.style.setProperty("--lo", 1); }, p=>sc.style.setProperty("--lo", Math.max(0, 1 - p*3).toFixed(3)));
+  }, 140)), 60); }, p=>sc.style.setProperty("--lo", Math.min(1, p*3).toFixed(3)));
 }
 document.querySelectorAll("[data-scope]").forEach(a=>a.addEventListener("click", e=>{ e.preventDefault(); scopeTo(a.getAttribute("href")); history.replaceState(null,"",a.getAttribute("href")); }));
 
