@@ -29,7 +29,7 @@ export async function twitchToken(env) {
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({ client_id: id, client_secret: secret, grant_type: "client_credentials" })
   });
-  if (!r.ok) throw new Error("token " + r.status);
+  if (!r.ok) { let m = ""; try { m = (await r.json()).message || ""; } catch (e) {} throw new Error(`token ${r.status} ${m}`.trim()); }
   const d = await r.json(); twTok = d.access_token; twExp = Date.now() + (d.expires_in - 120) * 1000;
   return { id, tk: twTok };
 }
