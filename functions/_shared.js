@@ -33,3 +33,18 @@ export async function twitchToken(env) {
   const d = await r.json(); twTok = d.access_token; twExp = Date.now() + (d.expires_in - 120) * 1000;
   return { id, tk: twTok };
 }
+
+let spTok = null, spExp = 0;
+export async function spotifyToken(env) {
+  const id = (env.SPOTIFY_CLIENT_ID || "").trim(), sec = (env.SPOTIFY_CLIENT_SECRET || "").trim();
+  if (!id || !sec) return null;
+  if (spTok && Date.now() < spExp) return spTok;
+  const r = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", authorization: "Basic " + btoa(id + ":" + sec) },
+    body: "grant_type=client_credentials"
+  });
+  if (!r.ok) return null;
+  const d = await r.json(); spTok = d.access_token; spExp = Date.now() + (d.expires_in - 120) * 1000;
+  return spTok;
+}
