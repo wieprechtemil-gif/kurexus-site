@@ -578,6 +578,8 @@ html.is-live #liveFx{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,77,94,.35),in
 .knock{animation:knock .6s cubic-bezier(.2,.7,.3,1)}
 @keyframes knock{18%{translate:var(--kx) var(--ky)}100%{translate:0 0}}
 .scorch{position:absolute;width:280px;height:280px;margin:-140px 0 0 -140px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),rgba(0,0,0,.28) 60%,transparent);animation:scorch 9s forwards;pointer-events:none}
+.frag{position:absolute;height:2px;margin-top:-1px;border-radius:2px;background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,.75));transform-origin:0 50%;pointer-events:none;animation:scorch 7s forwards}
+[data-theme="light"] .frag{background:linear-gradient(90deg,rgba(40,30,20,0),rgba(40,30,20,.5))}
 .scorch.he{width:150px;height:150px;margin:-75px 0 0 -75px}
 [data-theme="light"] .scorch{background:radial-gradient(closest-side,rgba(40,30,20,.35),rgba(40,30,20,.15) 60%,transparent)}
 @keyframes scorch{0%{opacity:0}8%{opacity:1}75%{opacity:1}100%{opacity:0}}
@@ -2624,7 +2626,11 @@ const NADES = (function(){
         SMOKES.push({ x, y, t:performance.now(), r:30, col:"120,114,108", scale:.5, alpha:.24, life:5, puffs:puffs(6) });
         noise(.9,.16,900,50,"lowpass"); tone(58,.7,.09,"sine",28); noise(.25,.05,5000,1500);
         scorch(x, y, "he");
-        for(let i=0;i<9;i++){ const a = Math.random()*6.283, d = 40+Math.random()*150; HOLE(x+Math.cos(a)*d, y+Math.sin(a)*d, true); }
+        // shrapnel: small dark scratches pointing away from the blast (no bullet holes)
+        for(let i=0;i<26;i++){ const a = Math.random()*6.283, d = 50 + Math.random()*170, m = document.createElement("i");
+          m.className = "frag"; m.style.left = (x + Math.cos(a)*d) + "px"; m.style.top = (y + Math.sin(a)*d) + "px";
+          m.style.width = (4 + Math.random()*9) + "px"; m.style.transform = `rotate(${a}rad)`;
+          $("decals").appendChild(m); setTimeout(()=>m.remove(), 7000); }
         if(!REDUCED){
           const m = $("top"); m.classList.remove("shake"); void m.offsetWidth; m.classList.add("shake"); after(450, ()=>m.classList.remove("shake"));
           document.querySelectorAll(".card,.gtile,.btn,.chip,.clip,.avatar,.lp,section h2,.tstats>div").forEach(el=>{
