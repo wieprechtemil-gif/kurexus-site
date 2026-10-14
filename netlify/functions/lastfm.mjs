@@ -21,6 +21,16 @@ export default async () => { const ctx = { env: process.env };
       const hit = res.find(x => norm(x.trackName).includes(norm(out.title)) && norm(x.artistName).includes(norm(out.artist))) || null;
       if (hit) { out.preview = hit.previewUrl; if (!out.art || /2a96cbd8b46e442fc41c2b86b821562f/.test(out.art)) out.art = hit.artworkUrl100?.replace("100x100", "300x300"); }
     } catch (e) {}
+    if (!out.preview) {
+      try {
+        const q = `artist:"${out.artist}" track:"${out.title}"`;
+        const dz = await fetch(`https://api.deezer.com/search?limit=5&q=${encodeURIComponent(q)}`);
+        const list = (await dz.json()).data || [];
+        const norm = x => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+        const hit = list.find(x => x.preview && norm(x.title).includes(norm(out.title))) || list.find(x => x.preview);
+        if (hit) { out.preview = hit.preview; if (!out.art) out.art = hit.album?.cover_medium || null; }
+      } catch (e) {}
+    }
     return json(out);
   } catch (e) { return json({ error: String(e.message || e) }, 502); }
 };
