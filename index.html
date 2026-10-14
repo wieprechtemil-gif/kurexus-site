@@ -360,6 +360,8 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 @keyframes krKey{0%{fill:rgba(90,208,255,.3)}40%{fill:transparent}}
 .art-rd .shoe{transition:transform 1.6s cubic-bezier(.3,.6,.2,1)}
 .gtile:hover .art-rd .shoe{transform:translate(18px,-12px)}
+.gtile:hover .art-rd .bounty rect{animation:bty 1s ease-in-out infinite}
+@keyframes bty{50%{fill:rgba(217,87,59,.22)}}
 @keyframes krDraw{from{stroke-dashoffset:900}}
 .art-kr .ping,.art-rd .ping{opacity:0;transition:opacity .3s}
 .gtile:hover .art-kr .ping,.gtile:hover .art-rd .ping{opacity:1;animation:ping 1.6s ease-out infinite}
@@ -1896,9 +1898,9 @@ const ART = {
     <g class="wp"><path d="M520 72 l9 9 -9 9 -9 -9 z" fill="none" stroke="#d9573b" stroke-width="2"/><circle cx="520" cy="81" r="2.4" fill="#d9573b"/></g>
     <circle class="ping" cx="520" cy="81" r="3" fill="none" stroke="#d9573b" stroke-width="2"/>
     <g class="shoe"><g transform="translate(338 222) rotate(-20)"><path d="M-6 6 V-1 A6 6 0 0 1 6 -1 V6" fill="none" stroke="#f5f5f2" stroke-width="2.6" stroke-linecap="round"/><g fill="#141414"><circle cx="-6" cy="3" r=".8"/><circle cx="-5" cy="-3" r=".8"/><circle cx="6" cy="3" r=".8"/><circle cx="5" cy="-3" r=".8"/></g></g></g>
-    <text x="436" y="226" font-family="Instrument Serif,Georgia,serif" font-style="italic" font-size="19" fill="#f3d9cf" fill-opacity=".62" letter-spacing="1.5">Blackwater</text>
-    <path d="M436 232 h96" stroke="#f3d9cf" stroke-opacity=".25"/>
-    <g><rect x="578" y="196" width="26" height="26" rx="5" fill="none" stroke="#d9573b" stroke-opacity=".7"/><path d="M591.0 202.0 L592.6 206.2 L597.1 205.5 L594.2 209.0 L597.1 212.5 L592.6 211.8 L591.0 216.0 L589.4 211.8 L584.9 212.5 L587.8 209.0 L584.9 205.5 L589.4 206.2Z" fill="#d9573b" fill-opacity=".9"/></g>
+    <text x="420" y="226" font-family="Instrument Serif,Georgia,serif" font-style="italic" font-size="19" fill="#f3d9cf" fill-opacity=".62" letter-spacing="1.5">Blackwater</text>
+    <path d="M420 232 h96" stroke="#f3d9cf" stroke-opacity=".25"/>
+    <g class="bounty" font-family="JetBrains Mono,monospace" text-anchor="middle"><rect x="530" y="188" width="80" height="36" rx="5" fill="none" stroke="#d9573b" stroke-opacity=".7"/><text x="570" y="202" font-size="8" font-weight="700" letter-spacing="2" fill="#d9573b" fill-opacity=".85">BOUNTY</text><text class="bty" x="570" y="217" font-size="12" font-weight="700" fill="#f3d9cf" fill-opacity=".9">$150.00</text></g>
   </svg>`
 };
 document.querySelectorAll("[data-art]").forEach(el=>{ el.innerHTML = ART[el.dataset.art] || ""; });
