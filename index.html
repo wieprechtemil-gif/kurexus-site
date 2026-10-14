@@ -517,6 +517,9 @@ html.tinted .glow{background:radial-gradient(ellipse 55% 60% at 50% 0%,rgba(var(
 html.is-live #liveFx{opacity:1;box-shadow:inset 0 0 0 1px rgba(255,77,94,.35),inset 0 0 120px -30px rgba(255,77,94,.45);animation:livePulse 3.2s ease-in-out infinite;
   background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
 @keyframes livePulse{50%{box-shadow:inset 0 0 0 1px rgba(255,77,94,.55),inset 0 0 180px -30px rgba(255,77,94,.6)}}
+.spray-tag{position:absolute;transform:translateX(-50%);font:600 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--fg);background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--line);padding:4px 7px;border-radius:6px;white-space:nowrap;animation:tagUp 3s ease-out forwards}
+@keyframes tagUp{0%{opacity:0;margin-top:6px}12%{opacity:1;margin-top:0}75%{opacity:1}100%{opacity:0;margin-top:-8px}}
+#smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
   background:radial-gradient(circle,#000 0 28%,rgba(0,0,0,.85) 34%,rgba(var(--p),.35) 40%,rgba(var(--p),.08) 58%,transparent 70%);
@@ -631,7 +634,7 @@ html.xh .xhair.on{opacity:1}
 </head>
 <body>
 <div id="loader" aria-hidden="true"><pre id="loadtxt"></pre></div>
-<div id="sky" aria-hidden="true"></div><canvas id="bg"></canvas><div class="glow"></div><div class="grain"></div><div id="liveFx" aria-hidden="true"></div><div id="decals" aria-hidden="true"></div>
+<div id="sky" aria-hidden="true"></div><canvas id="bg"></canvas><div class="glow"></div><div class="grain"></div><div id="liveFx" aria-hidden="true"></div><div id="decals" aria-hidden="true"></div><canvas id="smokeFx" aria-hidden="true"></canvas>
 
 <nav>
   <div class="wrap">
@@ -2036,6 +2039,30 @@ const AMBIENT = (function(){
 
 /* ---------- background canvas: smoke + particles + stars + thrown smokes ---------- */
 const SMOKES = [];
+const drawSmokes = (function(){
+  const cv = $("smokeFx"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio||1,2);
+  let W = 0, H = 0, had = false;
+  const resize = ()=>{ W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+  resize(); addEventListener("resize", resize);
+  return tt=>{
+    if(!SMOKES.length){ if(had){ ctx.clearRect(0,0,W,H); had = false; } return; }
+    had = true; ctx.clearRect(0,0,W,H);
+    const now = performance.now();
+    for(let i=SMOKES.length-1;i>=0;i--){
+      const k = SMOKES[i], age = (now - k.t)/1000;
+      if(age > 11){ SMOKES.splice(i,1); continue; }
+      const grow = Math.min(1, age/1.3), fade = age > 8 ? 1-(age-8)/3 : 1, x = k.x - scrollX, y = k.y - scrollY;
+      k.r = 40 + 150*(1-Math.pow(1-grow,3));
+      for(const pf of k.puffs){
+        const px = x + pf.dx*k.r, py = y + pf.dy*k.r - age*3, pr = k.r*pf.s*(1+.04*Math.sin(tt+pf.ph));
+        if(py + pr < 0 || py - pr > H) continue;
+        const g = ctx.createRadialGradient(px,py,0,px,py,pr); const al = .34*fade*pf.a;
+        g.addColorStop(0,`rgba(${k.col},${al})`); g.addColorStop(.7,`rgba(${k.col},${al*.6})`); g.addColorStop(1,`rgba(${k.col},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill();
+      }
+    }
+  };
+})();
 (function(){
   const cv = $("bg"), ctx = cv.getContext("2d");
   let W, H, P = [], S = [], STARS = [], dpr = Math.min(devicePixelRatio||1,2), tt = 0;
@@ -2077,20 +2104,8 @@ const SMOKES = [];
       const g = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,rr); g.addColorStop(0,`rgba(${sc},${a})`); g.addColorStop(.6,`rgba(${sc},${a*.45})`); g.addColorStop(1,`rgba(${sc},0)`);
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,7); ctx.fill();
     }
-    // thrown smokes (page coordinates → follow the page while scrolling)
-    const now = performance.now();
-    for(let i=SMOKES.length-1;i>=0;i--){
-      const k = SMOKES[i], age = (now - k.t)/1000;
-      if(age > 11){ SMOKES.splice(i,1); continue; }
-      const grow = Math.min(1, age/1.3), fade = age > 8 ? 1-(age-8)/3 : 1, x = k.x - scrollX, y = k.y - scrollY;
-      k.r = 40 + 150*(1-Math.pow(1-grow,3));
-      for(const pf of k.puffs){
-        const px = x + pf.dx*k.r, py = y + pf.dy*k.r - age*3, pr = k.r*pf.s*(1+.04*Math.sin(tt+pf.ph));
-        const g = ctx.createRadialGradient(px,py,0,px,py,pr); const al = .3*fade*pf.a;
-        g.addColorStop(0,`rgba(${k.col},${al})`); g.addColorStop(.7,`rgba(${k.col},${al*.6})`); g.addColorStop(1,`rgba(${k.col},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill();
-      }
-    }
+    // thrown smokes live on their own canvas above the content (#smokeFx), drawn here in the same frame
+    drawSmokes(tt);
     // cursor spotlight
     if(mouse.in){
       mouse.sx += (mouse.x-mouse.sx)*.08; mouse.sy += (mouse.y-mouse.sy)*.08; if(mouse.sx < -900){ mouse.sx=mouse.x; mouse.sy=mouse.y; }
@@ -2118,7 +2133,8 @@ const SMOKES = [];
 (function(){
   if(!FINE) return;
   const layer = $("decals"), SPRAY = [[0,0],[0,-6],[1,-14],[0,-24],[-2,-34],[-1,-44],[2,-52],[8,-58],[14,-62],[10,-66],[2,-68],[-8,-70],[-16,-71],[-10,-74],[0,-76],[10,-75],[18,-76],[22,-78],[14,-80],[4,-81],[-6,-82],[-14,-82],[-20,-83],[-12,-85],[0,-86],[10,-86],[16,-87],[20,-88],[24,-88],[18,-90]];
-  const empty = t => !t.closest("a,button,input,label,.card,.gtile,.clip,.mclip,.gw,.pip,#con,.snd-panel,.lp-wrap,#aimBox,#rx,nav,.music,.ticker,.chip,.btns,h1,h2,h3,p,.lb,.yt");
+  // anything that isn't clickable/interactive counts as a wall you can shoot at
+  const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp-wrap,#aimBox,#rx,nav,.yt");
   function hole(x, y){
     const h = document.createElement("i"); h.className = "hole";
     h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`;
@@ -2126,22 +2142,44 @@ const SMOKES = [];
     setTimeout(()=>h.remove(), 6600);
     tone(1700,.03,.025,"square",900,3000); noise(.04,.03,3500,900);
   }
-  let spray = null, shot = 0, sx = 0, sy = 0;
+  // aim = where the crosshair is right now; each bullet lands at aim + recoil offset,
+  // so pulling the mouse down against the pattern keeps the spray tight (like in-game)
+  let spray = null, shot = 0, ax = 0, ay = 0, hits = [];
+  const aim = e=>{ ax = e.clientX; ay = e.clientY; };
+  const fire = ()=>{
+    const [dx, dy] = SPRAY[shot], x = ax + scrollX + dx*1.6 + (Math.random()-.5)*4, y = ay + scrollY + dy*1.6 + (Math.random()-.5)*4;
+    hole(x, y); hits.push([x, y]);
+  };
+  addEventListener("mousedown", e=>{ if(e.button === 0 && empty(e.target)) e.preventDefault(); });   // no text selection while spraying
   addEventListener("pointerdown", e=>{
     if(e.pointerType !== "mouse" || e.button !== 0 || !empty(e.target)) return;
-    sx = e.pageX; sy = e.pageY; shot = 0; hole(sx, sy);
+    aim(e); shot = 0; hits = []; fire();
     clearInterval(spray);
     spray = setInterval(()=>{
-      shot++; if(shot >= SPRAY.length){ clearInterval(spray); return; }
-      const [dx, dy] = SPRAY[shot]; hole(sx + dx*1.4 + (Math.random()-.5)*4, sy + dy*1.4 + (Math.random()-.5)*4);
+      shot++; if(shot >= SPRAY.length){ stop(); return; }
+      fire();
     }, 100);
   });
-  const stop = ()=>clearInterval(spray);
+  addEventListener("pointermove", e=>{ if(spray) aim(e); }, true);
+  function stop(){
+    if(!spray) return;
+    clearInterval(spray); spray = null;
+    // grade the spray when it was a real one (10+ bullets): average distance from the group's centre
+    if(hits.length >= 10){
+      const cx = hits.reduce((s,h)=>s+h[0],0)/hits.length, cy = hits.reduce((s,h)=>s+h[1],0)/hits.length;
+      const spread = hits.reduce((s,h)=>s+Math.hypot(h[0]-cx,h[1]-cy),0)/hits.length;
+      const grade = spread < 14 ? ["laser", "s1mple?"] : spread < 26 ? ["clean", "sauber"] : spread < 45 ? ["okay", "geht so"] : ["spray & pray", "spray & pray"];
+      const tag = document.createElement("i"); tag.className = "spray-tag";
+      tag.textContent = `${hits.length} ${L("shots","schuss")} · ${L(grade[0], grade[1])}`;
+      tag.style.left = cx + "px"; tag.style.top = (Math.min(...hits.map(h=>h[1])) - 18) + "px";
+      layer.appendChild(tag); setTimeout(()=>tag.remove(), 3000);
+    }
+  }
   addEventListener("pointerup", stop); addEventListener("pointercancel", stop); addEventListener("blur", stop);
   // smoke grenade
   addEventListener("dblclick", e=>{
     if(!empty(e.target)) return;
-    stop();
+    stop(); getSelection()?.removeAllRanges();
     const col = (getComputedStyle(document.documentElement).getPropertyValue("--p").trim() === "0,0,0") ? "130,130,130" : "190,190,186";
     SMOKES.push({ x:e.pageX, y:e.pageY, t:performance.now(), r:40, col, puffs:Array.from({length:9}, (_,i)=>({ dx:Math.cos(i/9*6.28)*.45*(i?1:0), dy:Math.sin(i/9*6.28)*.3*(i?1:0), s:i ? .55+Math.random()*.25 : .8, a:.6+Math.random()*.4, ph:Math.random()*6 })) });
     while(SMOKES.length > 4) SMOKES.shift();
