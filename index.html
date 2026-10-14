@@ -1913,7 +1913,7 @@ function openGame(g, push=true){
   document.querySelectorAll(".gw-page").forEach(p=>p.classList.toggle("on", p.dataset.page === g));
   $("gwTitle").textContent = GAMES[g].title; $("gwKicker").textContent = GAMES[g].kicker;
   if(g === "music") music.load();
-  $("gwBanner").innerHTML = g === "krunker" ? '<img src="/img/krunker.png" alt="" class="gw-logo">' : bannerArt(g);
+  $("gwBanner").innerHTML = g === "krunker" ? "" : bannerArt(g);
   gw.classList.add("open"); gw.setAttribute("aria-hidden","false"); document.documentElement.classList.add("gw-lock");
   gw.querySelector(".gw-panel").scrollTop = 0;
   if(push) history.replaceState(null, "", "#" + g);
