@@ -154,7 +154,7 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .mg-top h3{font-size:28px;letter-spacing:-.03em}
 .tag{font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--fg);padding:3px 8px;border-radius:6px}
 .fc{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;position:relative;z-index:1}
-.lvlbadge{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;font-weight:700;font-size:20px;border:3px solid var(--lc,#f5f5f2);color:var(--lc,#f5f5f2);margin-right:14px;flex:none}
+.lvlbadge{display:inline-block;width:48px;height:48px;margin-right:14px;flex:none}.lvlbadge svg{display:block}
 .fc-head{display:flex;align-items:center}
 .lvl{display:flex;gap:4px;margin-top:16px}
 .lvl span{flex:1;height:6px;border-radius:3px;background:var(--fg);transition:background .4s}
@@ -309,7 +309,7 @@ footer{position:relative;z-index:2;text-align:center;padding:40px 20px 120px;fon
 .kill.me{border-color:#c9273b;background:rgba(20,0,4,.6)}
 .kill.bye{opacity:0;transform:translateX(20px)}
 .kill .a{color:#9cc6f2}.kill .b{color:#e8c66a}
-.kill svg{height:14px;fill:#e9e9e6}
+.kill svg{height:14px;fill:#e9e9e6}.kill img{height:16px;width:auto}
 @keyframes kin{from{opacity:0;transform:translateX(30px)}}
 
 /* scope transition */
@@ -413,7 +413,7 @@ html.xh .xhair.on{opacity:1}
       <a class="btn" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M23.5 6.5a3 3 0 0 0-2.1-2.1C19.5 4 12 4 12 4s-7.5 0-9.4.4A3 3 0 0 0 .5 6.5 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.5 3 3 0 0 0 2.1 2.1c1.9.4 9.4.4 9.4.4s7.5 0 9.4-.4a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.5ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>YouTube</a>
       <a class="btn" href="https://discord.gg/hAapyYWbvE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.3 18.3 0 0 0-5.5 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.5 9.1-.3 13.7.1 18.2A19.9 19.9 0 0 0 6.1 21l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1L18 21a19.8 19.8 0 0 0 6-2.9c.5-5.2-.9-9.8-3.7-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg><span data-i18n="btn.server">Discord server</span></a>
       <a class="btn" href="https://steamcommunity.com/id/kodakosan/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 0 0-12 11l6.4 2.7a3.4 3.4 0 0 1 2-.6l2.9-4.1V9a4.5 4.5 0 1 1 4.5 4.5h-.1l-4.1 3v.1a3.4 3.4 0 0 1-6.7.7L.4 15.5A12 12 0 1 0 12 0ZM7.5 18.2l-1.5-.6a2.5 2.5 0 1 0 1.4-3.4l1.5.6a1.9 1.9 0 1 1-1.4 3.4Zm11.3-9.2a3 3 0 1 0-3 3 3 3 0 0 0 3-3Zm-5.3 0a2.3 2.3 0 1 1 2.3 2.3 2.3 2.3 0 0 1-2.3-2.3Z"/></svg>Steam</a>
-      <a class="btn" href="https://www.faceit.com/en/players/Kurexus" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M3 21 21 3v18H3Z" opacity=".35"/><path d="M3 21 21 3l-6 18H3Z"/></svg>FACEIT</a>
+      <a class="btn" href="https://www.faceit.com/en/players/Kurexus" target="_blank" rel="noopener"><img src="/img/faceit.png" alt="" width="17" height="17">FACEIT</a>
     </div>
     <div class="tstats">
       <div><b id="tFollow">—</b><span data-i18n="t.followers">followers</span></div>
@@ -435,7 +435,7 @@ html.xh .xhair.on{opacity:1}
       <div class="fc">
         <div>
           <div class="k">FACEIT</div>
-          <div class="fc-head"><span class="lvlbadge" id="fLvlBadge">6</span><div class="v" id="fLvl">Level 6</div></div>
+          <div class="fc-head"><span class="lvlbadge" id="fLvlBadge"></span><div class="v" id="fLvl">Level 6</div></div>
           <div class="lvl" id="fBar"></div>
           <div class="elo-line"><span><b id="fElo">1,342</b> / 2,001 elo</span><span id="fToGo"></span></div>
           <div class="loading"><span data-i18n="f.loading">lvl <b>10</b> loading</span><span class="dots"></span> <span data-i18n="f.trust">trust</span></div>
@@ -741,7 +741,7 @@ function buildTicker(){
 
 /* ---------- killfeed ---------- */
 const GUN = {
-  ak:'<svg viewBox="0 0 64 16"><path d="M1 6h30l2-2h8v2h22v3H44l-3 2-6 1-2 4h-5l1-4h-6l-3 3h-6l2-4H1z"/></svg>',
+  ak:'<img src="/img/ak.png" alt="AK-47">',
   awp:'<svg viewBox="0 0 72 16"><path d="M1 7h22l1-3h14v2h33v2H40l-4 2h-8l-2 5h-5l1-5h-6l-2 3H9l2-3H1z"/></svg>',
   deagle:'<svg viewBox="0 0 34 18"><path d="M2 3h28v5H14l-2 9H5l2-9H2z"/></svg>',
   knife:'<svg viewBox="0 0 48 14"><path d="M1 6h14l2-2h4v6h-4l-2-2H1zM21 4l26 2-8 4H21z"/></svg>'
@@ -830,11 +830,18 @@ try{
 }catch(e){}
 
 /* ---------- FACEIT ---------- */
-const LVC = {1:"#eeeeee",2:"#1ce400",3:"#1ce400",4:"#ffc800",5:"#ffc800",6:"#ffc800",7:"#ffc800",8:"#ff6309",9:"#ff6309",10:"#fe1f00"};
+const LVC = {1:"#eeeeee",2:"#1ce400",3:"#1ce400",4:"#ffc800",5:"#ffc800",6:"#ffc800",7:"#ffc800",8:"#fe1f00",9:"#fe1f00",10:"#fe1f00"};
+function lvlRing(lvl){
+  const c = LVC[lvl] || "#f5f5f2", r = 19, C = 2*Math.PI*r, track = C*.75, fill = track*Math.min(1,lvl/10);
+  return `<svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="22" fill="#1b1b1e"/>
+    <circle cx="24" cy="24" r="${r}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${track} ${C}" transform="rotate(135 24 24)"/>
+    <circle cx="24" cy="24" r="${r}" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${fill} ${C}" transform="rotate(135 24 24)"/>
+    <text x="24" y="25" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-weight="700" font-size="${lvl>=10?15:18}">${lvl}</text></svg>`;
+}
 function renderFaceit(d){
   const lvl = d.level, elo = d.elo;
   $("fLvl").textContent = "Level " + lvl;
-  const b = $("fLvlBadge"); b.textContent = lvl; b.style.setProperty("--lc", LVC[lvl] || "#f5f5f2");
+  $("fLvlBadge").innerHTML = lvlRing(lvl);
   $("fBar").innerHTML = Array.from({length:10},(_,i)=>`<span class="${i<lvl?"":"off"}"></span>`).join("");
   $("fElo").textContent = fmt(elo);
   const togo = Math.max(0, 2001 - elo);
