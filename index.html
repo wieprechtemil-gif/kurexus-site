@@ -718,6 +718,36 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 .srv-grid b{display:block;font:700 20px var(--sans);letter-spacing:-.02em;transition:color .3s}
 .srv-grid b.bump{color:#7ee08a}
 .srv-grid span{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* krunker tab */
+.kr-head{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.kr-id{display:flex;align-items:center;gap:18px;flex:1;min-width:260px}
+.kr-lvl{width:68px;height:68px;border-radius:16px;display:grid;place-items:center;align-content:center;background:linear-gradient(140deg,rgba(90,208,255,.22),rgba(90,208,255,.05));border:1px solid rgba(90,208,255,.45);flex:none}
+.kr-lvl b{font:700 26px/1 var(--sans);color:#9be6ff}.kr-lvl span{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#5ad0ff}
+.kr-head .who{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.kr-head .who .verified{width:20px;height:20px;vertical-align:-3px;margin-right:7px;filter:drop-shadow(0 2px 6px rgba(69,189,245,.35))}
+.kr-clan{font:600 13px var(--mono);color:var(--muted);margin-left:4px}
+.kr-sub{display:flex;gap:8px;flex-wrap:wrap;font:500 11px var(--mono);color:var(--muted);margin:4px 0 10px}
+.kr-xp{height:6px;border-radius:6px;background:color-mix(in srgb,var(--fg) 8%,transparent);overflow:hidden;max-width:420px}
+.kr-xp i{display:block;height:100%;background:linear-gradient(90deg,#5ad0ff,#9be6ff);border-radius:6px}
+.kr-xpt{display:flex;justify-content:space-between;max-width:420px;font:500 10px var(--mono);color:var(--muted);margin-top:5px}
+.kr-big{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+@media (max-width:760px){.kr-big{grid-template-columns:repeat(2,1fr)}}
+.kr-big .card{display:flex;flex-direction:column;gap:4px}
+.kr-big .k,.kr-small .k{font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kr-big b{font:700 34px/1.05 var(--sans);letter-spacing:-.03em}
+.kr-big b small{font-size:18px;color:var(--muted);margin-left:1px}
+.kr-big .s{font:500 10.5px var(--mono);color:var(--muted)}
+.kr-shots{margin-top:12px}
+.kr-bar{display:flex;height:12px;border-radius:8px;overflow:hidden;margin-top:12px;gap:2px}
+.kr-bar i{display:block;height:100%}
+.kr-bar .hs,.kr-leg i.hs{background:#9be6ff}.kr-bar .bd,.kr-leg i.bd{background:#2f9fd6}.kr-bar .ms,.kr-leg i.ms{background:color-mix(in srgb,var(--fg) 12%,transparent)}
+.kr-leg{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font:500 11px var(--mono);color:var(--muted)}
+.kr-leg>span{display:inline-flex;align-items:center;gap:6px}
+.kr-leg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.kr-small{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--line)}
+@media (max-width:760px){.kr-small{grid-template-columns:repeat(2,1fr)}}
+.kr-small div{background:var(--card-solid);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.kr-small b{font:700 18px var(--sans)}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -1189,17 +1219,38 @@ html.xh .xhair.on{opacity:1}
       </div>
 
       <div class="gw-page" data-page="krunker">
-        <div class="grid g2">
-          <div class="card">
-            <div class="k" data-i18n="kr.k">movement fps</div>
-            <div class="v" style="font-size:30px" data-i18n="kr.v">the fast one</div>
-            <p class="gw-p" data-i18n="kr.p">best movement shooter out there.</p>
+        <div class="card kr-head">
+          <div class="kr-id">
+            <div class="kr-lvl"><b>78</b><span>lvl</span></div>
+            <div>
+              <div class="who"><svg class="verified" viewBox="0 0 24 24" aria-label="verified"><circle cx="12" cy="12" r="11" fill="#45bdf5"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1d8fc8" stroke-width="1"/><path d="M6.6 12.6l3.6 3.5 7.4-8" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>kodakosan <span class="kr-clan">[24/7]</span></div>
+              <div class="kr-sub"><span>186 <span data-i18n="kr.fol">followers</span></span><span>·</span><span>KR 448</span><span>·</span><span data-i18n="kr.v">the fast one</span></div>
+              <div class="kr-xp"><i style="width:9.5%"></i></div>
+              <div class="kr-xpt"><span>16,607 / 174,444 xp</span><span data-i18n="kr.next">to lvl 79</span></div>
+            </div>
           </div>
-          <div class="card ccard">
-            <div class="k" data-i18n="kr.prof">profile</div>
-            <div class="who"><svg class="verified" viewBox="0 0 24 24" aria-label="verified"><circle cx="12" cy="12" r="11" fill="#45bdf5"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1d8fc8" stroke-width="1"/><path d="M6.6 12.6l3.6 3.5 7.4-8" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>kodakosan</div>
-            <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener" style="align-self:flex-start">krunker.io ↗</a>
-          </div>
+          <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener">krunker.io ↗</a>
+        </div>
+        <div class="kr-big">
+          <div class="card"><span class="k">K/D</span><b>4.05</b><span class="s">30,517 <span data-i18n="kr.kills">kills</span> · 7,542 <span data-i18n="kr.deaths">deaths</span></span></div>
+          <div class="card"><span class="k" data-i18n="kr.hsk">headshot kills</span><b>52.6<small>%</small></b><span class="s">16,057 <span data-i18n="kr.hs">headshots</span></span></div>
+          <div class="card"><span class="k" data-i18n="kr.acc">accuracy</span><b>45.8<small>%</small></b><span class="s">104,807 / 229,050 <span data-i18n="kr.shots">shots</span></span></div>
+          <div class="card"><span class="k" data-i18n="kr.kpg">kills / game</span><b>7.08</b><span class="s">4,309 <span data-i18n="kr.games">games</span></span></div>
+        </div>
+        <div class="card kr-shots">
+          <h4 class="ch"><b data-i18n="kr.where">where the 229k shots went</b><span>229,050</span></h4>
+          <div class="kr-bar"><i class="hs" style="width:7.01%" title="headshots"></i><i class="bd" style="width:38.75%" title="other hits"></i><i class="ms" style="width:54.24%" title="misses"></i></div>
+          <div class="kr-leg"><span><i class="hs"></i><span data-i18n="kr.l1">headshots</span> 16,057</span><span><i class="bd"></i><span data-i18n="kr.l2">body &amp; legs</span> 88,750</span><span><i class="ms"></i><span data-i18n="kr.l3">missed</span> 124,243</span></div>
+        </div>
+        <div class="kr-small">
+          <div><span class="k" data-i18n="kr.time">time played</span><b>190h</b></div>
+          <div><span class="k" data-i18n="kr.wins">wins</span><b>1,072</b></div>
+          <div><span class="k">score</span><b>6.84M</b></div>
+          <div><span class="k" data-i18n="kr.spk">score / kill</span><b>224</b></div>
+          <div><span class="k">wallbangs</span><b>297</b></div>
+          <div><span class="k">bullseyes</span><b>120</b></div>
+          <div><span class="k" data-i18n="kr.melee">melee kills</span><b>69</b></div>
+          <div><span class="k">assists</span><b>2,836</b></div>
         </div>
         <h3 class="sub" data-i18n="kr.vid">mostly in here</h3>
         <button class="yt" id="krVid" style="max-width:640px"><img loading="lazy" src="https://i.ytimg.com/vi/pm47XXnnRKA/hqdefault.jpg" alt=""><span class="play"><i></i></span><span class="ttl">counter-krunk</span></button>
@@ -1335,7 +1386,7 @@ const T = { en:{}, de:{
   "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
   "g.open":"öffnen","g.mu.tag":"MUSIK","g.mu.name":"top songs &amp; artists","g.mu.meta":"top songs · top artists · on repeat","mu.days":"tage","mu.month":"monat","mu.all":"all time","mu.tracks":"top songs","mu.artists":"top artists","mu.recent":"zuletzt gehört","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"best movement shooter out there","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
   "gw.clips":"medal clips","gw.og":"og clips","gw.c":"clips","gw.settings":"settings",
-  "kr.k":"movement fps","kr.v":"das schnelle","kr.p":"best movement shooter out there.","kr.prof":"profil","kr.vid":"meistens hier drin",
+  "kr.k":"movement fps","kr.v":"das schnelle","kr.fol":"follower","kr.next":"bis lvl 79","kr.kills":"kills","kr.deaths":"tode","kr.hsk":"headshot-kills","kr.hs":"headshots","kr.acc":"genauigkeit","kr.shots":"schüsse","kr.kpg":"kills / game","kr.games":"games","kr.where":"wo die 229k schüsse hingingen","kr.l1":"headshots","kr.l2":"körper &amp; beine","kr.l3":"daneben","kr.time":"spielzeit","kr.wins":"siege","kr.spk":"score / kill","kr.melee":"melee-kills","kr.p":"best movement shooter out there.","kr.prof":"profil","kr.vid":"meistens hier drin",
   "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
   "rdr.horse.k":"pferde geschlagen statt gesattelt","rdr.horse.p":"aus versehen. ich schwör.",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
@@ -2900,7 +2951,7 @@ const NADES = (function(){
     $("ltRating").textContent = r == null ? "—" : (r > 0 ? "+" : "") + r.toFixed(2);
     $("ltK").textContent = L("leetify rating", "leetify rating");
     $("ltSub").textContent = [d.matches ? `${fmt(d.matches)} ${L("matches","matches")}` : "", d.winrate != null ? `${Math.round(d.winrate)}% ${L("wins","siege")}` : ""].filter(Boolean).join(" · ");
-    const B = [["aim","aim"],["positioning","positioning"],["utility","utility"],["opening","opening"],["clutch","clutch"]].filter(([k])=>d.rating && d.rating[k] != null);
+    const B = [["aim","aim"],["positioning","positioning"],["utility","utility"]].filter(([k])=>d.rating && d.rating[k] != null);
     $("ltBars").innerHTML = B.map(([k,label])=>{ const v = d.rating[k]; return `<div class="lt-bar"><span>${label}</span><span class="tr"><i data-w="${Math.max(2, Math.min(100, v))}"></i></span><b>${Math.round(v)}</b></div>`; }).join("");
     requestAnimationFrame(()=>$("ltBars").querySelectorAll("i").forEach(i=>i.style.width = i.dataset.w + "%"));
     const S = d.stats || {}, items = [
