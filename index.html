@@ -242,12 +242,14 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .modal .x{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:20px}
 
 /* aim trainer */
-.aim{position:relative;height:340px;border-radius:16px;border:1px solid var(--line-2);overflow:hidden;background:
+.aim{position:relative;min-height:340px;border-radius:16px;border:1px solid var(--line-2);overflow:hidden;background:
   radial-gradient(circle at 50% 50%,rgba(var(--p),.05),transparent 70%),
   linear-gradient(rgba(var(--p),.04) 1px,transparent 1px) 0 0/34px 34px,
   linear-gradient(90deg,rgba(var(--p),.04) 1px,transparent 1px) 0 0/34px 34px;touch-action:manipulation}
 .aim canvas{position:absolute;inset:0;width:100%;height:100%}
-.aim-ui{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px}
+.aim-ui{position:relative;z-index:1;min-height:340px;display:grid;place-items:center;text-align:center;padding:28px 20px}
+.aim-ui.played .aim-desc{display:none}
+.aim-best{margin:14px 0 0;font-family:var(--mono);font-size:12px;color:var(--soft)}
 .aim-ui.hide{display:none}
 .aim-ui h4{font-size:28px;letter-spacing:-.03em;margin-bottom:6px}
 .aim-ui p{color:var(--muted);font-size:14px;margin:0 auto 18px;max-width:340px}
@@ -364,7 +366,7 @@ html.xh .xhair.on{opacity:1}
   .links{display:none}
   .v{font-size:32px}
   .music .lbl{display:none}.music{padding:8px}
-  .aim{height:300px}
+  .aim,.aim-ui{min-height:300px}
   .poll-opts{grid-template-columns:1fr}
   .goals{grid-template-columns:1fr 1fr}
   .lb{grid-template-columns:1fr}
@@ -576,14 +578,14 @@ html.xh .xhair.on{opacity:1}
       <div class="aim-ui" id="aimUi">
         <div>
           <h4 data-i18n="a.h">30 second aim check</h4>
-          <p data-i18n="a.p">Hit as many targets as you can. Misses lower your accuracy. Your best is saved in your browser.</p>
+          <p class="aim-desc" data-i18n="a.p">Hit as many targets as you can. Misses lower your accuracy. Your best is saved in your browser.</p>
           <div class="aim-res" id="aimRes" style="display:none"></div>
           <form class="aim-sub" id="aimSub" style="display:none" autocomplete="off">
             <input id="aimName" maxlength="16" placeholder="your name" aria-label="name">
             <button class="btn" type="submit" data-i18n="a.submit">submit</button>
           </form>
           <button class="btn primary" id="aimStart">start</button>
-          <p style="margin:14px 0 0;font-family:var(--mono);font-size:11px" id="aimBest"></p>
+          <p class="aim-best" id="aimBest"></p>
         </div>
       </div>
     </div>
@@ -1103,7 +1105,7 @@ addEventListener("keydown", e=>{
     $("aimRes").style.display = "flex";
     $("aimRes").innerHTML = `<div><b>${score}</b><span>score</span></div><div><b>${acc}%</b><span>accuracy</span></div><div><b>${avg}ms</b><span>${L("reaction","reaktion")}</span></div>`;
     $("aimStart").textContent = L("again","nochmal");
-    renderBest(); ui.classList.remove("hide");
+    renderBest(); ui.classList.add("played"); ui.classList.remove("hide");
     lastScore = {score, acc};
     if(score > 0){ $("aimSub").style.display = "flex"; $("aimName").value = store.get("aimName") || ""; }
     if(CFG.kurAimBest && score > CFG.kurAimBest) kill(L("you","du"),"awp","kurexus",{hs:true,me:true});
