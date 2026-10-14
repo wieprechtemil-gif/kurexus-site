@@ -355,9 +355,8 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .gtile:hover .art-kr .streaks path{opacity:1;animation:krStreak .7s linear infinite}
 .gtile:hover .art-kr .streaks path:nth-child(2n){animation-duration:.55s}
 @keyframes krStreak{to{stroke-dashoffset:-244}}
-.gtile:hover .art-kr .key.shift rect{fill:rgba(90,208,255,.18)}
-.gtile:hover .art-kr .key.space rect{animation:krKey .44s steps(1) infinite}
-@keyframes krKey{0%{fill:rgba(90,208,255,.3)}40%{fill:transparent}}
+.art-kr .key rect{transition:fill .06s}
+.art-kr .key.on rect{fill:rgba(90,208,255,.32)}
 .art-rd .shoe{transition:transform 1.6s cubic-bezier(.3,.6,.2,1)}
 .gtile:hover .art-rd .shoe{transform:translate(18px,-12px)}
 .gtile:hover .art-rd .bounty rect{animation:bty 1s ease-in-out infinite}
@@ -1909,15 +1908,22 @@ document.querySelectorAll("[data-art]").forEach(el=>{ el.innerHTML = ART[el.data
 (function(){
   const tile = document.querySelector('.gtile[data-game="krunker"]'); if(!tile || REDUCED) return;
   const path = tile.querySelector("#krPath"), me = tile.querySelector(".me"), spd = tile.querySelector(".spd"); if(!path || !me) return;
-  const L = path.getTotalLength(), rest = me.getAttribute("transform"); let raf = 0, t0 = 0;
+  const L = path.getTotalLength(), rest = me.getAttribute("transform"), shift = tile.querySelector(".key.shift"), space = tile.querySelector(".key.space");
+  let raf = 0, t0 = 0, wasGround = false, spaceUntil = 0;
   function run(now){
     const k = ((now - t0) / 2200) % 1, e = k*k*.35 + k*.65;
     const pt = path.getPointAtLength(e*L); me.setAttribute("transform", `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+    // landing → tap SHIFT (slide), leaving the ground → SPACE (jump); never both at once
+    const ahead = path.getPointAtLength(Math.min(L, e*L + 14)), ground = pt.y > 199 || ahead.y > 201;
+    if(wasGround && !ground) spaceUntil = now + 140;
+    wasGround = ground;
+    const sp = now < spaceUntil;
+    space.classList.toggle("on", sp); shift.classList.toggle("on", ground && !sp);
     if(spd) spd.textContent = Math.round(280 + e*190) + " u/s";
     raf = requestAnimationFrame(run);
   }
   tile.addEventListener("mouseenter", ()=>{ t0 = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(run); });
-  tile.addEventListener("mouseleave", ()=>{ cancelAnimationFrame(raf); me.setAttribute("transform", rest); if(spd) spd.textContent = "412 u/s"; });
+  tile.addEventListener("mouseleave", ()=>{ cancelAnimationFrame(raf); me.setAttribute("transform", rest); shift.classList.remove("on"); space.classList.remove("on"); if(spd) spd.textContent = "412 u/s"; });
 })();
 const bannerArt = g => ART[g].replace(/id="(\w+)"/g,'id="b$1"').replace(/url\(#(\w+)\)/g,'url(#b$1)');
 
