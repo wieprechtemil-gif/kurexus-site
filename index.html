@@ -364,6 +364,13 @@ html.gw-lock{overflow:hidden}
 .mclip:hover .pl{opacity:1;transform:scale(1.06)}
 .mclip .ttl{position:relative;font-size:13px;font-weight:500}
 .mclip .src{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.55);color:#fff;padding:2px 6px;border-radius:5px}
+.mclip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s,filter .3s}
+.mclip:hover img{transform:scale(1.05);filter:brightness(.8)}
+.mclip .ttl{text-shadow:0 1px 8px rgba(0,0,0,.8);color:#f5f5f2}
+.mclip:has(img)::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 55%);pointer-events:none}
+.mclip .ttl,.mclip .src,.mclip .pl{z-index:1}
+.mclip .src.twitch{background:#7b3fe4}.mclip .src.medal{background:rgba(0,0,0,.6)}
+.mclips.four{grid-template-columns:repeat(2,1fr)}
 .mclip.empty{border-style:dashed;justify-content:center;align-items:center;color:var(--muted);font-family:var(--mono);font-size:11px;background:transparent}
 
 /* contact */
@@ -771,9 +778,12 @@ html.xh .xhair.on{opacity:1}
           </div>
           <div class="card ccard">
             <div class="k" data-i18n="kr.prof">profile</div>
-            <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener">krunker.io ↗</a>
+            <div class="who">kodakosan</div>
+            <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener" style="align-self:flex-start">krunker.io ↗</a>
           </div>
         </div>
+        <h3 class="sub" data-i18n="kr.vid">mostly in here</h3>
+        <button class="yt" id="krVid" style="max-width:640px"><img loading="lazy" src="https://i.ytimg.com/vi/pm47XXnnRKA/hqdefault.jpg" alt=""><span class="play"><i></i></span><span class="ttl">counter-krunk</span></button>
         <h3 class="sub" data-i18n="gw.clips">medal clips</h3>
         <div class="mclips" data-mclips="krunker"></div>
       </div>
@@ -820,9 +830,22 @@ const CFG = {
   crosshairCode: "CSNQ9Fpma3iHaxfTkYznX4FJtcRUp2N3XMS9p8Y9iKSaUT",
   crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00e4ff" },
   premier: 21199,                                    // dein Premier-Rating
-  krunkerProfile: null,                              // z.B. "https://krunker.io/social.html?p=profile&q=Kurexus"
-  medal: {                                           // bis zu 3 Medal-Links pro Spiel: { url: "https://medal.tv/...", title: "..." }
-    cs2: [], krunker: [], rdr2: []
+  krunkerProfile: "https://krunker.io/?profile=kodakosan",
+  clips: {                                           // Medal- oder Twitch-Clip-Links pro Spiel (title optional)
+    cs2: [
+      { url: "https://medal.tv/games/counter-strike-2/clips/nHiNEDSORxj7nhg6-", title: "clean 3 taps" },
+      { url: "https://medal.tv/games/counter-strike-2/clips/nGqADvtfzrbqwooPc", title: "clean deagle" },
+      { url: "https://medal.tv/games/counter-strike-2/clips/nEO3jX35vwW5A9rNC", title: "1v5 rip" },
+      { url: "https://medal.tv/games/counter-strike-2/clips/nIUCiVI9w0A_RcNr2", title: "" }
+    ],
+    krunker: [
+      { url: "https://www.twitch.tv/kurexus/clip/TiredAcceptableVampireSaltBae-HcDSvY8zbLT8A4WW" },
+      { url: "https://medal.tv/games/krunker/clips/4MFU68MwS-PUM", title: "krunker throwback · 2021" }
+    ],
+    rdr2: [
+      { url: "https://www.twitch.tv/kurexus/clip/BoringWanderingPepperoniBigBrother-sGUrrVPQN9Q5059M" },
+      { url: "https://www.twitch.tv/kurexus/clip/HyperPopularKleeTakeNRG-S6wEN39Ns_tylYwV" }
+    ]
   },
   featuredVideo: { id: "pm47XXnnRKA", title: "counter-krunk" },   // video in R4
   goals: [                                           // done: true = abgehakt
@@ -847,7 +870,7 @@ const T = { en:{}, de:{
   "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
   "g.open":"öffnen","g.kr.tag":"BROWSER FPS","g.kr.meta":"das schnelle · profil · clips","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · pferde-vorfälle · clips",
   "gw.clips":"medal clips","gw.settings":"settings",
-  "kr.k":"browser fps","kr.v":"das schnelle","kr.p":"Pure Movement und Flicks, direkt im Browser. Mein Warmup, wenn CS nicht reicht.","kr.prof":"profil",
+  "kr.k":"browser fps","kr.v":"das schnelle","kr.p":"Pure Movement und Flicks, direkt im Browser. Mein Warmup, wenn CS nicht reicht.","kr.prof":"profil","kr.vid":"meistens hier drin",
   "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
   "rdr.horse.k":"pferde geschlagen statt gesattelt","rdr.horse.v":"zu viele","rdr.horse.p":"Falscher Knopf. Jedes. Einzelne. Mal.",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
@@ -1443,30 +1466,43 @@ const GAMES = {
   rdr2:{ title:"Red Dead Redemption 2", kicker:"game · story", color:"#d9573b" }
 };
 const gw = $("gw"); let gwCurrent = null;
-function medalEmbed(u){
+const twitchSlug = u => { const m = String(u).match(/(?:clips\.twitch\.tv\/|twitch\.tv\/[^/]+\/clip\/)([\w-]+)/); return m ? m[1] : null; };
+function clipEmbed(u){
+  const slug = twitchSlug(u);
+  if(slug) return `https://clips.twitch.tv/embed?clip=${encodeURIComponent(slug)}&parent=${location.hostname || "localhost"}&autoplay=true&muted=false`;
   try{
     const url = new URL(u);
     if(!/(^|\.)medal\.tv$/.test(url.hostname)) return null;
-    url.pathname = url.pathname.replace("/clips/", "/clip/");
+    url.pathname = url.pathname.replace("/clips/", "/clip/"); url.search = "";
     url.searchParams.set("autoplay","1"); url.searchParams.set("muted","0"); url.searchParams.set("loop","0");
     return url.toString();
   }catch(e){ return null; }
 }
+let clipMeta = {};
 function renderClips(){
   document.querySelectorAll("[data-mclips]").forEach(box=>{
-    const g = box.dataset.mclips, list = (CFG.medal[g]||[]).slice(0,3), col = GAMES[g].color;
-    box.style.setProperty("--gc", col);
-    box.innerHTML = [0,1,2].map(i=>{
+    const g = box.dataset.mclips, list = (CFG.clips[g]||[]).slice(0,6);
+    box.style.setProperty("--gc", GAMES[g].color);
+    box.classList.toggle("four", list.length === 4);
+    const slots = Math.max(3, list.length);
+    box.innerHTML = Array.from({length:slots}, (_,i)=>{
       const c = list[i];
       if(!c) return `<div class="mclip empty">${L("clip slot · soon","clip-platz · bald")}</div>`;
-      return `<button class="mclip" data-i="${i}"><span class="src">medal</span><span class="pl"><i></i></span><span class="ttl">${esc(c.title||"clip "+(i+1))}</span></button>`;
+      const m = clipMeta[c.url] || {}, src = twitchSlug(c.url) ? "twitch" : "medal";
+      const title = c.title || (m.title && !/^untitled$/i.test(m.title) ? m.title : "") || (src === "twitch" ? "twitch clip" : "clip " + (i+1));
+      return `<button class="mclip" data-i="${i}">${m.thumb ? `<img loading="lazy" src="${esc(m.thumb)}" alt="">` : ""}<span class="src ${src}">${src}</span><span class="pl"><i></i></span><span class="ttl">${esc(title)}</span></button>`;
     }).join("");
     box.querySelectorAll("button.mclip").forEach(b=>b.onclick = ()=>{
-      const c = list[+b.dataset.i], src = medalEmbed(c.url);
-      src ? openPip(src, c.title || "medal clip") : window.open(c.url, "_blank", "noopener");
+      const c = list[+b.dataset.i], src = clipEmbed(c.url), m = clipMeta[c.url] || {};
+      src ? openPip(src, c.title || m.title || "clip") : window.open(c.url, "_blank", "noopener");
     });
   });
 }
+(function(){
+  const all = Object.values(CFG.clips).flat().map(c=>c.url);
+  if(!all.length) return;
+  api("/api/clipmeta?" + all.map(u=>"u="+encodeURIComponent(u)).join("&")).then(d=>{ clipMeta = d || {}; renderClips(); }).catch(()=>{});
+})();
 function openGame(g, push=true){
   if(!GAMES[g]) return;
   gwCurrent = g;
@@ -1491,6 +1527,7 @@ gw.addEventListener("pointerdown", e=>{ if(e.target === gw) closeGame(); });
 addEventListener("hashchange", ()=>{ const g = location.hash.slice(1); GAMES[g] ? openGame(g, false) : closeGame(); });
 if(CFG.krunkerProfile){ $("krunkerLink").href = CFG.krunkerProfile; } else { const k = $("krunkerLink"); k.removeAttribute("href"); k.textContent = L("link coming soon","link kommt bald"); k.style.opacity = .5; }
 renderClips();
+$("krVid").onclick = ()=>openPip(`https://www.youtube-nocookie.com/embed/${CFG.featuredVideo.id}?autoplay=1`, CFG.featuredVideo.title);
 if(GAMES[location.hash.slice(1)]) setTimeout(()=>openGame(location.hash.slice(1), false), 300);
 
 /* ---------- reaction test ---------- */
