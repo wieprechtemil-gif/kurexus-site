@@ -286,10 +286,7 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .aim-res div{text-align:center}.aim-res b{display:block;font-size:30px;letter-spacing:-.03em}.aim-res span{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 
 /* about */
-.about{grid-template-columns:1.5fr 1fr}
-.bio-t{font-size:clamp(19px,2.4vw,24px);line-height:1.45;letter-spacing:-.015em;font-weight:500}
-.bio-f{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
-.bio-f span{font-family:var(--mono);font-size:11px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.about{grid-template-columns:1fr 1.5fr}.about .goals{grid-template-columns:1fr 1fr}
 .score{white-space:nowrap}.score #kstat{color:var(--muted);text-transform:none;letter-spacing:0}
 
 /* reaction test */
@@ -476,22 +473,18 @@ html.xh .xhair.on{opacity:1}
   <!-- ROUND 1: ABOUT -->
   <section id="about" class="rv" data-round="1">
     <div class="label"><b>R1</b><span data-i18n="r1.label">round one — about</span></div>
-    <h2 data-i18n="r1.title">who is <em>kur</em></h2>
+    <h2 data-i18n="r1.title">about</h2>
     <div class="grid about">
-      <div class="card bio">
-        <p class="bio-t" data-i18n="about.bio">19, from Germany. I stream CS2 almost every day, grind FACEIT and try to get a little better every match. Off stream I'm learning Chinese, finishing my all-white setup and figuring out the rest as I go.</p>
-        <div class="bio-f"><span>Emil</span><span>19</span><span data-i18n="germany">Germany</span><span>CS2 · FACEIT · Twitch</span></div>
-      </div>
       <div class="card langs">
         <h4 class="ch"><b data-i18n="l.title">languages</b><span>DE · EN · 中文</span></h4>
         <div class="row"><span data-i18n="l.de">German</span><div class="bar"><i style="--w:100%"></i></div><span data-i18n="l.native">native</span></div>
         <div class="row"><span data-i18n="l.en">English</span><div class="bar"><i style="--w:85%"></i></div><span data-i18n="l.fluent">fluent</span></div>
         <div class="row"><span>中文</span><div class="bar"><i style="--w:15%"></i></div><span>A1</span></div>
       </div>
-    </div>
-    <div class="card mt">
-      <h4 class="ch"><b data-i18n="goals.title">goals</b><span data-i18n="goals.sub">the roadmap</span></h4>
-      <div class="goals" id="goals"></div>
+      <div class="card">
+        <h4 class="ch"><b data-i18n="goals.title">goals</b><span data-i18n="goals.sub">the roadmap</span></h4>
+        <div class="goals" id="goals"></div>
+      </div>
     </div>
   </section>
 
@@ -619,7 +612,7 @@ html.xh .xhair.on{opacity:1}
         <div class="lastlive" id="lastLive"></div>
       </div>
       <div class="card">
-        <h4 class="ch"><b data-i18n="yt.title">featured video</b><a class="mini" href="https://www.youtube.com/@kurexus" target="_blank" rel="noopener">YouTube ↗</a></h4>
+        <h4 class="ch"><b data-i18n="yt.title">featured video</b><a class="mini" id="ytLink" href="https://www.youtube.com/watch?v=pm47XXnnRKA" target="_blank" rel="noopener">YouTube ↗</a></h4>
         <div id="ytBox"><div class="empty" data-i18n="loadingtxt">loading…</div></div>
       </div>
     </div>
@@ -680,7 +673,7 @@ html.xh .xhair.on{opacity:1}
 
 <footer>
   <div class="visits" id="visits" style="display:none"><span data-i18n="visitor">visitor</span><span class="digits" id="vDigits"></span></div>
-  <div>kurexus · made locked in · <span style="font-family:var(--mono);font-style:normal;font-size:11px" data-i18n="hint">press ^ for console</span></div>
+  <div>kurexus · germany · <span style="font-family:var(--mono);font-style:normal;font-size:11px" data-i18n="hint">press ^ for console</span></div>
 </footer>
 
 <audio id="audio" src="music.mp3" loop preload="none"></audio>
@@ -710,8 +703,8 @@ const CFG = {
   twitch: "kurexus",
   youtubeChannelId: "UC8g56Ya8gibDCxCJYtxpNKA",
   faceitFallback: { elo: 1342, level: 6 },          // falls live-Daten nicht laden
-  crosshairCode: "CSGO-HHKf7-FhiKk-Ur7nE-jiZkt-Ey4tJ",
-  crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00ffff" },
+  crosshairCode: "CSNQ9Fpma3iHaxfTkYznX4FJtcRUp2N3XMS9p8Y9iKSaUT",
+  crosshair: { size: 2, gap: 1, thickness: 2, dot: false, outline: false, color: "#00e4ff" },
   premier: 21199,                                    // dein Premier-Rating
   featuredVideo: { id: "pm47XXnnRKA", title: "counter-krunk" },   // video in R4
   goals: [                                           // done: true = abgehakt
@@ -732,8 +725,7 @@ const T = { en:{}, de:{
   "cur.label":"gerade","cur.text":"faceit grinden · fast täglich live · lerne 中文",
   "germany":"Deutschland","btn.server":"Discord-Server",
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
-  "r1.label":"runde eins — about","r1.title":"wer ist <em>kur</em>",
-  "about.bio":"19, aus Deutschland. Ich streame fast jeden Tag CS2, grinde FACEIT und versuche, mit jedem Match ein bisschen besser zu werden. Abseits vom Stream lerne ich Chinesisch, mache mein komplett weißes Setup fertig und finde den Rest unterwegs raus.",
+  "r1.label":"runde eins — about","r1.title":"about",
   "r2.label":"runde zwei — stats","r2.title":"was ich <em>grinde</em>",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
   "f.hours":"stunden","f.map":"lieblingsmap","f.weapon":"lieblingswaffe",
@@ -780,50 +772,90 @@ const store = { get(k){ try{return localStorage.getItem(k);}catch(e){return null
 function show(msg){ const el=$("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(show.t); show.t = setTimeout(()=>el.classList.remove("show"), 1800); }
 function copy(text, msg){
   (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-    .then(()=>show(msg)).catch(()=>{ const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); show(msg);}catch(e){} ta.remove(); });
+    .then(()=>{ show(msg); SFX.copy(); }).catch(()=>{ const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); show(msg);}catch(e){} ta.remove(); });
 }
 async function api(path, opts){ const r = await fetch(path, opts); if(!r.ok) throw new Error(r.status); return r.json(); }
 async function txt(url){ const r = await fetch(url, {cache:"no-store"}); if(!r.ok) throw new Error(r.status); return (await r.text()).trim(); }
-let aimPlayed = false, LIVE = false, lastFaceit = CFG.faceitFallback, pollData = {yes:0,no:0}, lastStream = null;
+let FOLLOWERS = "", aimPlayed = false, LIVE = false, lastFaceit = CFG.faceitFallback, pollData = {yes:0,no:0}, lastStream = null;
 
-/* ---------- sound engine (synth, no files needed) ---------- */
-let AC, SOUND = store.get("sound") !== "off";
-function ac(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state === "suspended") AC.resume(); return AC; }catch(e){ return null; } }
-function tone(freq, dur, vol, type="square", glide){
-  if(!SOUND) return; const a = ac(); if(!a || a.state !== "running") return;
+/* ---------- sound engine (synth, no files needed, lo-fi) ---------- */
+let AC, MASTER, SOUND = store.get("sound") !== "off";
+function ac(){
+  try{
+    if(!AC){
+      AC = new (window.AudioContext||window.webkitAudioContext)();
+      const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 5200; lp.Q.value = .4;   // warm, a bit lo-fi
+      MASTER = AC.createGain(); MASTER.gain.value = .9; MASTER.connect(lp); lp.connect(AC.destination);
+    }
+    if(AC.state === "suspended") AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+const ready = ()=>{ if(!SOUND) return null; const a = ac(); return a && a.state === "running" ? a : null; };
+// smooth envelope = no harsh clicks
+function tone(freq, dur, vol, type="sine", glide, lp){
+  const a = ready(); if(!a) return;
   const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
   o.type = type; o.frequency.setValueAtTime(freq, t); if(glide) o.frequency.exponentialRampToValueAtTime(glide, t+dur);
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
-  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+.02);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t+.006); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  let out = o; if(lp){ const f = a.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = lp; o.connect(f); out = f; }
+  out.connect(g); g.connect(MASTER); o.start(t); o.stop(t+dur+.03);
 }
-function noise(dur, vol, from=4000, to=400){
-  if(!SOUND) return; const a = ac(); if(!a || a.state !== "running") return;
+function noise(dur, vol, from=4000, to=400, kind="bandpass"){
+  const a = ready(); if(!a) return;
   const len = Math.floor(a.sampleRate*dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
   for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * (1 - i/len);
   const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(), t = a.currentTime;
-  f.type = "bandpass"; f.Q.value = .8; f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t+dur);
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
-  src.buffer = buf; src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
+  f.type = kind; f.Q.value = .7; f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t+dur);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t+.008); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  src.buffer = buf; src.connect(f); f.connect(g); g.connect(MASTER); src.start(t);
 }
-let lastHover = 0;
+const after = (ms, fn)=>setTimeout(fn, ms);
 const SFX = {
-  hover(){ const n = performance.now(); if(n - lastHover < 45) return; lastHover = n; tone(2600,.018,.012,"sine"); },
-  click(){ tone(900,.035,.035,"square",500); noise(.03,.03,6000,2000); },
-  hit(){ tone(2200,.04,.05,"square"); setTimeout(()=>tone(1600,.05,.04,"square"),38); },
-  kill(){ tone(520,.06,.025,"triangle",780); },
-  scopeIn(){ noise(.22,.08,600,3200); tone(180,.15,.03,"sine",90); },
-  scopeOut(){ noise(.25,.06,3200,500); },
-  toggle(){ tone(1200,.03,.04,"square"); setTimeout(()=>tone(1700,.04,.03,"square"),45); },
-  go(){ tone(1400,.08,.05,"sine"); },
-  miss(){ tone(220,.12,.05,"sawtooth",140); },
-  type(){ tone(3200,.012,.012,"square"); },
-  flash(){ noise(.12,.2,5000,1500); tone(3800,2.6,.018,"sine"); }
+  // hover: interactive things get a soft round "tuk", plain cards just a tiny breath of air
+  hoverLink(){ tone(780,.07,.018,"sine",720,1800); },
+  hoverCard(){ noise(.06,.012,700,400,"lowpass"); },
+  // clicks: different per type so you can "hear" what something does
+  clickEmpty(){ tone(150,.11,.04,"sine",90,600); noise(.05,.01,500,250,"lowpass"); },   // soft lo-fi thump
+  clickCard(){ tone(320,.08,.028,"triangle",250,1200); },                                // dull tap, nothing happens
+  clickLink(){ tone(620,.07,.026,"sine",null,2600); after(55,()=>tone(930,.09,.022,"sine",null,2600)); }, // rising pop = goes somewhere
+  clickButton(){ tone(540,.06,.03,"triangle",640,2200); },
+  copy(){ tone(1047,.14,.022,"sine"); after(70,()=>tone(1568,.2,.018,"sine")); },        // little chime = copied
+  hit(){ tone(2200,.045,.045,"square",null,4200); after(38,()=>tone(1600,.055,.035,"square",null,4200)); },
+  kill(){ tone(520,.07,.02,"triangle",760,2000); },
+  scopeIn(){ noise(.22,.06,600,3000); tone(180,.15,.025,"sine",90); },
+  scopeOut(){ noise(.25,.045,3000,500); },
+  toggle(){ tone(880,.05,.028,"sine"); after(50,()=>tone(1320,.06,.022,"sine")); },
+  go(){ tone(1400,.09,.045,"sine"); },
+  miss(){ tone(200,.14,.04,"triangle",130,900); },
+  type(){ tone(1900,.018,.01,"triangle",null,2500); },
+  flash(){ noise(.14,.16,5000,1500); tone(3800,2.6,.014,"sine"); }
 };
 // unlock audio on first interaction (browser policy)
 ["pointerdown","keydown"].forEach(ev=>addEventListener(ev, ()=>ac(), {once:true, capture:true}));
-// hover + click sounds on everything interactive
-document.addEventListener("pointerover", e=>{ if(e.pointerType === "mouse" && e.target.closest("a,button,.card,.clip,.popt") && !e.target.closest("#aimBox,#rx")){ const el = e.target.closest("a,button,.card,.clip,.popt"); if(el !== SFX._last){ SFX._last = el; SFX.hover(); } } });
-document.addEventListener("pointerdown", e=>{ if(e.target.closest("a,button") && !e.target.closest("#rx,#sndBtn")) SFX.click(); });
+// hover sounds: only when you enter a new element
+const OWN = "#rx,#sndBtn,#aimBox,.pip,#con";
+let lastEl = null, lastHoverT = 0;
+document.addEventListener("pointerover", e=>{
+  if(e.pointerType !== "mouse" || e.target.closest(OWN)) return;
+  const el = e.target.closest("a,button,.card");
+  if(!el || el === lastEl) { if(!el) lastEl = null; return; }
+  lastEl = el; const n = performance.now(); if(n - lastHoverT < 70) return; lastHoverT = n;
+  el.matches("a,button") ? SFX.hoverLink() : SFX.hoverCard();
+});
+// click sounds by type
+const COPY_IDS = ["copyDc","copySens","copyVm","copyXhair"];
+document.addEventListener("pointerdown", e=>{
+  if(e.button > 0 || e.target.closest(OWN)) return;
+  const btn = e.target.closest("a,button");
+  if(btn){
+    if(COPY_IDS.includes(btn.id) || btn.hasAttribute("data-scope")) return;   // own sounds (chime / scope)
+    return btn.matches("a[href]") ? SFX.clickLink() : SFX.clickButton();
+  }
+  if(e.target.closest(".card,.clip,.chip,.goal")) return SFX.clickCard();
+  if(e.target.closest("input")) return;
+  SFX.clickEmpty();
+});
 function renderSound(){
   $("sndBtn").classList.toggle("on", SOUND);
   $("sLabel").textContent = SOUND ? L("sound on","sound an") : L("sound off","sound aus");
@@ -849,10 +881,13 @@ $("langBtn").onclick = ()=>applyLang(LANG === "de" ? "en" : "de");
 
 /* ---------- ticker ---------- */
 function buildTicker(){
-  const items = [
-    "<b>CS2</b> main", `faceit <b>lvl ${lastFaceit.level}</b>`, `<b>${fmt(lastFaceit.elo)}</b> elo`, "premier <b>22k</b>", "<b>700h</b> cs2",
-    "valorant peak <b>asc 2</b>", "live <b>13–23</b> cet", `<em>${L("locked in","locked in, meistens")}</em>`, "fav map <b>cache</b>"
-  ].map(s=>`<span>${s} ✦</span>`).join("");
+  const f = lastFaceit, items = [
+    "<b>CS2</b> main", `faceit <b>lvl ${f.level}</b>`, `<b>${fmt(f.elo)}</b> elo`,
+    f.kd ? `k/d <b>${f.kd}</b>` : "", f.winrate ? `winrate <b>${f.winrate}%</b>` : "", f.hs ? `hs <b>${f.hs}%</b>` : "",
+    `premier <b>${fmt(CFG.premier)}</b>`, "<b>700h</b> cs2", "valorant peak <b>asc 2</b>",
+    "fav map <b>cache</b>", "fav gun <b>ak-47</b>", "sens <b>0.64</b> @ <b>800</b> dpi", "res <b>1440×1080</b>",
+    FOLLOWERS ? `<b>${FOLLOWERS}</b> followers` : "", `live <b>13–23</b> cet`
+  ].filter(Boolean).map(s=>`<span>${s} ✦</span>`).join("");
   $("track").innerHTML = items + items;
 }
 
@@ -1034,7 +1069,7 @@ $("aimSub").onsubmit = e=>{
 txt(`https://decapi.me/twitch/avatar/${CFG.twitch}`).then(u=>{
   if(/^https:\/\/static-cdn\.jtvnw\.net\//.test(u)){ const img = new Image(); img.alt = "kurexus"; img.onload = ()=>{ $("pic").textContent=""; $("pic").appendChild(img); }; img.src = u; }
 }).catch(()=>{});
-txt(`https://decapi.me/twitch/followcount/${CFG.twitch}`).then(n=>{ if(/^\d+$/.test(n)) $("tFollow").textContent = fmt(n); }).catch(()=>{});
+txt(`https://decapi.me/twitch/followcount/${CFG.twitch}`).then(n=>{ if(/^\d+$/.test(n)){ $("tFollow").textContent = FOLLOWERS = fmt(n); buildTicker(); } }).catch(()=>{});
 txt(`https://decapi.me/twitch/subcount/${CFG.twitch}`).then(n=>{ if(/^\d+$/.test(n)){ $("tSubs").textContent = fmt(n); $("tSubWrap").style.display=""; } }).catch(()=>{});
 function refreshLiveText(){ $("status").querySelector("span").textContent = LIVE ? t("status.live") : t("status.off"); }
 async function checkLive(){
