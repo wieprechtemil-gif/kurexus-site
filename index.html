@@ -360,6 +360,8 @@ h3.sub{font-size:13px;font-family:var(--mono);font-weight:400;color:var(--muted)
 .gw-banner{position:absolute;inset:0;z-index:-1;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent 15%,#000 70%);mask-image:linear-gradient(90deg,transparent 15%,#000 70%);pointer-events:none;overflow:hidden}
 .gw-banner svg{position:absolute;right:0;top:50%;transform:translateY(-50%);width:70%;height:auto;min-height:100%}
 .gw-head{isolation:isolate;overflow:hidden}
+.gw-banner .gw-logo{position:absolute;right:76px;top:50%;transform:translateY(-50%);height:64px;width:auto;opacity:1}
+.gw-banner:has(.gw-logo){opacity:.9;-webkit-mask-image:none;mask-image:none}
 @media (prefers-reduced-motion:reduce){.gtile:hover .art-cs .sweep,.gtile:hover .art-kr .cubes,.gtile:hover .art-rd .sun,.gtile:hover .art-rd .far{transform:none}}
 
 /* game window */
@@ -581,7 +583,7 @@ html.xh .xhair.on{opacity:1}
         <span class="gt-art" data-art="krunker"></span>
         <span class="gt-top"><span class="tag" data-i18n="g.kr.tag">MOVEMENT FPS</span><span class="gt-open"><span data-i18n="g.open">open</span> ↗</span></span>
         <span class="gt-name">Krunker</span>
-        <span class="gt-meta" data-i18n="g.kr.meta">the fast one · profile · og clips</span>
+        <span class="gt-meta" data-i18n="g.kr.meta">best movement shooter out there</span>
       </button>
       <button class="gtile" data-game="rdr2" style="--gc:#d9573b">
         <span class="gt-art" data-art="rdr2"></span>
@@ -799,7 +801,7 @@ html.xh .xhair.on{opacity:1}
           <div class="card">
             <div class="k" data-i18n="kr.k">movement fps</div>
             <div class="v" style="font-size:30px" data-i18n="kr.v">the fast one</div>
-            <p class="gw-p" data-i18n="kr.p">Bhops, slides and flicks. Pure movement, my warmup when CS isn't fast enough.</p>
+            <p class="gw-p" data-i18n="kr.p">best movement shooter out there.</p>
           </div>
           <div class="card ccard">
             <div class="k" data-i18n="kr.prof">profile</div>
@@ -893,9 +895,9 @@ const T = { en:{}, de:{
   "t.followers":"follower","t.subs":"subs","t.hours":"in cs2",
   "r1.label":"runde eins — about","r1.title":"about",
   "r2.label":"runde zwei — games","r2.title":"was ich <em>zocke</em>",
-  "g.open":"öffnen","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"das schnelle · profil · og clips","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
+  "g.open":"öffnen","g.kr.tag":"MOVEMENT FPS","g.kr.meta":"best movement shooter out there","g.rdr.tag":"STORY","g.rdr.meta":"das gemütliche · clips",
   "gw.clips":"medal clips","gw.og":"og clips","gw.c":"clips","gw.settings":"settings",
-  "kr.k":"movement fps","kr.v":"das schnelle","kr.p":"Bhops, Slides und Flicks. Pure Movement, mein Warmup, wenn CS nicht schnell genug ist.","kr.prof":"profil","kr.vid":"meistens hier drin",
+  "kr.k":"movement fps","kr.v":"das schnelle","kr.p":"best movement shooter out there.","kr.prof":"profil","kr.vid":"meistens hier drin",
   "rdr.k":"story-modus","rdr.v":"das gemütliche","rdr.p":"Ruhige Nächte, Lagerfeuer und viel zu viel Zeit in Menüs.",
   "rdr.horse.k":"pferde geschlagen statt gesattelt","rdr.horse.v":"zu viele","rdr.horse.p":"Falscher Knopf. Jedes. Einzelne. Mal.",
   "f.loading":"lvl <b>10</b> lädt","f.trust":"vertrau","f.wr":"Winrate","f.matches":"Matches","f.last5":"letzte 5",
@@ -1505,11 +1507,7 @@ const ART = {
   krunker: `<svg class="art-kr" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="krT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9be6ff"/><stop offset="1" stop-color="#5ad0ff"/></linearGradient></defs>
     <g class="speed" stroke="#5ad0ff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round">${[[220,70],[180,120],[250,170],[200,215]].map(([x,y])=>`<line x1="${x}" y1="${y}" x2="${x+260}" y2="${y}"/>`).join("")}</g>
-    <g class="cubes">${[[430,120,46],[510,70,30],[520,175,38],[370,190,22],[580,120,24],[460,40,18]].map(([x,y,r])=>{
-      const h=r*.58; return `<g transform="translate(${x} ${y})" opacity=".92">
-      <path d="M0 ${-r}L${r*.87} ${-h}L0 ${-h+h}L${-r*.87} ${-h}Z" fill="url(#krT)" fill-opacity=".85"/>
-      <path d="M${-r*.87} ${-h}L0 0V${r}L${-r*.87} ${r-h}Z" fill="#2f8fb8" fill-opacity=".8"/>
-      <path d="M${r*.87} ${-h}L0 0V${r}L${r*.87} ${r-h}Z" fill="#1d5f7c" fill-opacity=".85"/></g>`;}).join("")}</g>
+    <g class="cubes"><image href="/img/krunker.png" x="392" y="96" width="210" height="94" preserveAspectRatio="xMidYMid meet"/></g>
   </svg>`,
   rdr2: `<svg class="art-rd" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="rdSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9573b" stop-opacity="0"/><stop offset="1" stop-color="#d9573b" stop-opacity=".28"/></linearGradient>
@@ -1576,7 +1574,7 @@ function openGame(g, push=true){
   gwCurrent = g;
   document.querySelectorAll(".gw-page").forEach(p=>p.classList.toggle("on", p.dataset.page === g));
   $("gwTitle").textContent = GAMES[g].title; $("gwKicker").textContent = GAMES[g].kicker;
-  $("gwBanner").innerHTML = bannerArt(g);
+  $("gwBanner").innerHTML = g === "krunker" ? '<img src="/img/krunker.png" alt="" class="gw-logo">' : bannerArt(g);
   gw.classList.add("open"); gw.setAttribute("aria-hidden","false"); document.documentElement.classList.add("gw-lock");
   gw.querySelector(".gw-panel").scrollTop = 0;
   if(push) history.replaceState(null, "", "#" + g);
