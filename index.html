@@ -1572,7 +1572,7 @@ document.querySelectorAll(".popt").forEach(b=>b.onclick = ()=>{
   }).catch(()=>{});
 })();
 
-$("avatar").onclick = ()=>{ SFX.hit(); kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000}); };
+$("avatar").onclick = e=>{ SFX.hit(); kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000,smoke:inSmoke(e.pageX,e.pageY)}); };
 
 /* ---------- flashbang easter egg: type "kur" or konami ---------- */
 function flashbang(){
@@ -2039,6 +2039,8 @@ const AMBIENT = (function(){
 
 /* ---------- background canvas: smoke + particles + stars + thrown smokes ---------- */
 const SMOKES = [];
+// is a page point inside a smoke that's still thick?
+const inSmoke = (x, y)=>{ const now = performance.now(); return SMOKES.some(k=>{ const age = (now-k.t)/1000; return age < 9 && Math.hypot(x-k.x, y-k.y) < k.r*.9; }); };
 const drawSmokes = (function(){
   const cv = $("smokeFx"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio||1,2);
   let W = 0, H = 0, had = false;
@@ -2188,9 +2190,7 @@ const drawSmokes = (function(){
   // clicking a link from inside a smoke → killfeed with the smoke icon
   addEventListener("pointerdown", e=>{
     const el = e.target.closest("a,button"); if(!el || !SMOKES.length) return;
-    const now = performance.now();
-    const inside = SMOKES.some(k=>{ const age = (now-k.t)/1000; return age < 9 && Math.hypot(e.pageX-k.x, e.pageY-k.y) < k.r*.9; });
-    if(inside){ const label = (el.textContent || el.getAttribute("aria-label") || "link").trim().split("\n")[0].slice(0,18) || "link"; kill(L("you","du"),"ak",label.toLowerCase(),{smoke:true,me:true}); }
+    if(el.id !== "avatar" && !el.closest("#avatar") && inSmoke(e.pageX, e.pageY)){ const label = (el.textContent || el.getAttribute("aria-label") || "link").trim().split("\n")[0].slice(0,18) || "link"; kill(L("you","du"),"ak",label.toLowerCase(),{smoke:true,me:true}); }
   }, true);
 })();
 
