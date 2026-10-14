@@ -789,6 +789,19 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 .w-rew b{font:900 32px/1.1 Georgia,serif;letter-spacing:.02em;color:#7a1d0f}
 .w-note{margin-top:10px;font:italic 12px Georgia,serif;opacity:.75}
 [hidden]{display:none!important}
+/* 3d setup */
+.s3d{position:relative;height:clamp(340px,52vw,520px);padding:0;overflow:hidden;background:radial-gradient(ellipse 80% 70% at 50% 40%,#1b1c22,#0b0b0d)}
+[data-theme="light"] .s3d{background:radial-gradient(ellipse 80% 70% at 50% 40%,#f4f4f2,#dcdcd8)}
+.s3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.s3d canvas.drag{cursor:grabbing}
+.s3d-tip{position:absolute;z-index:2;pointer-events:none;transform:translate(-50%,calc(-100% - 14px));padding:9px 12px;border-radius:10px;background:color-mix(in srgb,var(--card-solid) 92%,transparent);border:1px solid var(--line-2);backdrop-filter:blur(8px);white-space:nowrap;display:flex;flex-direction:column;gap:2px;box-shadow:0 12px 30px -10px rgba(0,0,0,.6);animation:hmTip .12s ease-out}
+.s3d-tip .k{font:500 9.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.s3d-tip b{font:600 14px var(--sans)}
+.s3d-hint{position:absolute;left:16px;bottom:14px;font:500 10.5px var(--mono);color:var(--muted);letter-spacing:.06em;pointer-events:none;transition:opacity .6s}
+.s3d-load{position:absolute;inset:0;display:grid;place-items:center;font:500 11px var(--mono);color:var(--muted)}
+.spec[data-k]{cursor:default;transition:background .15s,padding .15s;border-radius:6px}
+.spec[data-k].hot{background:color-mix(in srgb,var(--fg) 7%,transparent);padding-left:8px;padding-right:8px}
+.spec[data-k].hot .sv{color:var(--fg)}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -1028,27 +1041,33 @@ html.xh .xhair.on{opacity:1}
   <section id="setup" class="rv" data-round="4">
     <div class="label"><b>R4</b><span data-i18n="r4.label">round four — setup</span></div>
     <h2 data-i18n="r4.title">the <em>all-white</em> build</h2>
-    <div class="grid g2">
+    <div class="card s3d" id="s3d">
+      <canvas id="s3dCv"></canvas>
+      <div class="s3d-tip" id="s3dTip" hidden><span class="k" id="s3dK"></span><b id="s3dV"></b></div>
+      <div class="s3d-hint" id="s3dHint">drag to look around · hover the gear</div>
+      <div class="s3d-load" id="s3dLoad">loading setup…</div>
+    </div>
+    <div class="grid g2 mt">
       <div class="card">
         <h4 class="ch"><b>PC</b><span>white edition</span></h4>
-        <div class="spec"><span class="sk">CPU</span><span class="sv">AMD Ryzen 7 7800X3D</span></div>
-        <div class="spec"><span class="sk">GPU</span><span class="sv">Radeon RX 9070 XT White</span></div>
-        <div class="spec"><span class="sk">Board</span><span class="sv">B850 AORUS Ice</span></div>
-        <div class="spec"><span class="sk">RAM</span><span class="sv">32 GB DDR5-6000</span></div>
-        <div class="spec"><span class="sk">SSD</span><span class="sv">2 TB Kingston NV3</span></div>
-        <div class="spec"><span class="sk">Cooler</span><span class="sv">360 mm AIO</span></div>
-        <div class="spec"><span class="sk">PSU</span><span class="sv">Corsair RM750e White</span></div>
-        <div class="spec"><span class="sk">Case</span><span class="sv">Lian Li Lancool 216 White</span></div>
+        <div class="spec" data-k="cpu"><span class="sk">CPU</span><span class="sv">AMD Ryzen 7 7800X3D</span></div>
+        <div class="spec" data-k="gpu"><span class="sk">GPU</span><span class="sv">Radeon RX 9070 XT White</span></div>
+        <div class="spec" data-k="board"><span class="sk">Board</span><span class="sv">B850 AORUS Ice</span></div>
+        <div class="spec" data-k="ram"><span class="sk">RAM</span><span class="sv">32 GB DDR5-6000</span></div>
+        <div class="spec" data-k="ssd"><span class="sk">SSD</span><span class="sv">2 TB Kingston NV3</span></div>
+        <div class="spec" data-k="cooler"><span class="sk">Cooler</span><span class="sv">360 mm AIO</span></div>
+        <div class="spec" data-k="psu"><span class="sk">PSU</span><span class="sv">Corsair RM750e White</span></div>
+        <div class="spec" data-k="case"><span class="sk">Case</span><span class="sv">Lian Li Lancool 216 White</span></div>
       </div>
       <div class="card">
         <h4 class="ch"><b data-i18n="s.periph">Peripherals</b><span>desk</span></h4>
-        <div class="spec"><span class="sk">Mouse</span><span class="sv">Hitscan Hyperlight</span></div>
-        <div class="spec"><span class="sk">Keyboard</span><span class="sv">Womier RD75 Pro</span></div>
-        <div class="spec"><span class="sk">Pad</span><span class="sv">Nyfter Nyfpad 3XL Liquid</span></div>
-        <div class="spec"><span class="sk">Headset</span><span class="sv">HyperX Cloud III Wireless</span></div>
-        <div class="spec"><span class="sk">Mic</span><span class="sv">TONOR TD510</span></div>
-        <div class="spec"><span class="sk">Main</span><span class="sv">24" · 240 Hz</span></div>
-        <div class="spec"><span class="sk">Second</span><span class="sv">24" · 144 Hz</span></div>
+        <div class="spec" data-k="mouse"><span class="sk">Mouse</span><span class="sv">Hitscan Hyperlight</span></div>
+        <div class="spec" data-k="keyboard"><span class="sk">Keyboard</span><span class="sv">Womier RD75 Pro</span></div>
+        <div class="spec" data-k="pad"><span class="sk">Pad</span><span class="sv">Nyfter Nyfpad 3XL Liquid</span></div>
+        <div class="spec" data-k="headset"><span class="sk">Headset</span><span class="sv">HyperX Cloud III Wireless</span></div>
+        <div class="spec" data-k="mic"><span class="sk">Mic</span><span class="sv">TONOR TD510</span></div>
+        <div class="spec" data-k="main"><span class="sk">Main</span><span class="sv">24" · 240 Hz</span></div>
+        <div class="spec" data-k="second"><span class="sk">Second</span><span class="sv">24" · 144 Hz</span></div>
       </div>
     </div>
 
@@ -2743,7 +2762,7 @@ const drawSmokes = (function(){
   if(!FINE) return;
   const layer = $("decals"), SPRAY = [[0,0],[0,-6],[1,-14],[0,-24],[-2,-34],[-1,-44],[2,-52],[8,-58],[14,-62],[10,-66],[2,-68],[-8,-70],[-16,-71],[-10,-74],[0,-76],[10,-75],[18,-76],[22,-78],[14,-80],[4,-81],[-6,-82],[-14,-82],[-20,-83],[-12,-85],[0,-86],[10,-86],[16,-87],[20,-88],[24,-88],[18,-90]];
   // anything that isn't clickable/interactive counts as a wall you can shoot at
-  const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp,.lp-vol,#aimBox,#rx,nav,.yt,#hud,#buy");
+  const empty = t => !t.closest("a,button,input,textarea,select,label,iframe,video,audio,[onclick],[role=button],[tabindex],.gtile,.clip,.mclip,.gw,.pip,.modal,#con,.snd-panel,.lp,.lp-vol,#aimBox,#rx,nav,.yt,#hud,#buy,#s3d");
   function hole(x, y, silent){
     const h = document.createElement("i"); h.className = "hole";
     h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`; h.dataset.t = performance.now();
@@ -3147,6 +3166,179 @@ const NADES = (function(){
 
 /* ---------- init ---------- */
 applyLang(store.get("langChoice") || "en");   // English by default, German only if the visitor switches
+</script>
+
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+<script type="module">
+/* ---------- R4: the setup as a 3D scene — hover a part, the spec lights up (and the other way round) ---------- */
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+const box = document.getElementById("s3d"), cv = document.getElementById("s3dCv");
+if(box){
+  const LANG_DE = ()=>document.documentElement.lang === "de";
+  const specs = {}; document.querySelectorAll(".spec[data-k]").forEach(r=>specs[r.dataset.k] = { row:r, k:r.querySelector(".sk").textContent, v:r.querySelector(".sv").textContent });
+  const renderer = new THREE.WebGLRenderer({ canvas:cv, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(32, 2, .1, 200);
+  const target = new THREE.Vector3(-1.0, 1.9, -.6);
+  // lights
+  scene.add(new THREE.HemisphereLight(0xdfe6ff, 0x1a1a1f, .9));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-6, 12, 9); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left:-12, right:12, top:10, bottom:-8, near:1, far:40 }); key.shadow.radius = 4; key.shadow.bias = -.0005;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x9fc4ff, 1.1); rim.position.set(8, 6, -9); scene.add(rim);
+  // materials
+  const M = {
+    white: ()=>new THREE.MeshStandardMaterial({ color:0xf1f1ee, roughness:.42, metalness:.05 }),
+    whiteSoft: ()=>new THREE.MeshStandardMaterial({ color:0xe6e6e2, roughness:.6 }),
+    desk: new THREE.MeshStandardMaterial({ color:0x17171a, roughness:.75 }),
+    pad: new THREE.MeshPhysicalMaterial({ color:0x111215, roughness:.35, clearcoat:1, clearcoatRoughness:.25 }),
+    dark: ()=>new THREE.MeshStandardMaterial({ color:0x2a2b30, roughness:.5, metalness:.3 }),
+    glass: new THREE.MeshPhysicalMaterial({ color:0xffffff, roughness:.05, transmission:.9, thickness:.05, transparent:true, opacity:.22 }),
+    glow: new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0xffffff, emissiveIntensity:1.6 })
+  };
+  const parts = {}, pickables = [];
+  const add = (mesh, keyName, parent=scene)=>{ mesh.castShadow = true; mesh.receiveShadow = true; parent.add(mesh); if(keyName){ mesh.userData.k = keyName; (parts[keyName] = parts[keyName] || []).push(mesh); pickables.push(mesh); } return mesh; };
+  const rbox = (w,h,d,r,mat)=>new THREE.Mesh(new RoundedBoxGeometry(w,h,d,4,r), mat);
+  // desk + pad
+  add(rbox(18, .4, 7.6, .08, M.desk)).position.set(0, -.2, 0);
+  const pad = add(rbox(11.6, .05, 4.4, .02, M.pad), "pad"); pad.position.set(.2, .025, 1.25);
+  // monitors (screens are canvases)
+  function screenTex(kind){
+    const c = document.createElement("canvas"); c.width = 640; c.height = 360; const x = c.getContext("2d");
+    if(kind === "main"){
+      const g = x.createLinearGradient(0,0,0,360); g.addColorStop(0,"#2b3a52"); g.addColorStop(.55,"#6b7a8c"); g.addColorStop(.56,"#4b3a2a"); g.addColorStop(1,"#2a2018"); x.fillStyle = g; x.fillRect(0,0,640,360);
+      x.fillStyle = "rgba(0,0,0,.35)"; for(let i=0;i<7;i++) x.fillRect(40 + i*90, 120 - i%3*20, 60, 80 + i%3*20);
+      x.strokeStyle = "#00e4ff"; x.lineWidth = 3; x.beginPath(); x.moveTo(320,170); x.lineTo(320,176); x.moveTo(320,184); x.lineTo(320,190); x.moveTo(310,180); x.lineTo(316,180); x.moveTo(324,180); x.lineTo(330,180); x.stroke();
+      x.fillStyle = "rgba(255,255,255,.85)"; x.font = "bold 22px monospace"; x.fillText("100", 24, 344); x.fillText("30 / 90", 520, 344);
+      x.fillStyle = "rgba(0,0,0,.45)"; x.fillRect(16,16,120,120); x.strokeStyle = "rgba(255,255,255,.4)"; x.strokeRect(16,16,120,120);
+      x.fillStyle = "#fff"; x.font = "bold 16px sans-serif"; x.fillText("kur", 572, 34);
+    } else {
+      x.fillStyle = "#18181b"; x.fillRect(0,0,640,360); x.fillStyle = "#0e0e10"; x.fillRect(420,0,220,360);
+      const g = x.createLinearGradient(0,0,420,0); g.addColorStop(0,"#3a2a5c"); g.addColorStop(1,"#22183a"); x.fillStyle = g; x.fillRect(12,12,396,226);
+      x.fillStyle = "#9147ff"; x.fillRect(12,250,120,10); x.fillStyle = "#555"; x.fillRect(12,270,260,8); x.fillRect(12,286,200,8);
+      for(let i=0;i<14;i++){ x.fillStyle = ["#9147ff","#ff7a59","#3ec8ff","#7ee08a"][i%4]; x.fillRect(432, 16 + i*24, 40, 8); x.fillStyle = "#666"; x.fillRect(478, 16 + i*24, 60 + (i*37)%90, 8); }
+      x.fillStyle = "#ff4d5e"; x.beginPath(); x.arc(30,30,6,0,7); x.fill();
+    }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  function monitor(keyName, x, z, rotY, tex){
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = rotY; scene.add(g);
+    const mw = M.white();
+    add(rbox(1.7, .08, 1.2, .04, mw), keyName, g).position.set(0, .04, -.2);
+    add(rbox(.32, 2.1, .18, .06, mw), keyName, g).position.set(0, 1.05, -.45);
+    const frame = add(rbox(5.5, 3.2, .16, .05, mw), keyName, g); frame.position.set(0, 2.85, -.3);
+    const scr = add(new THREE.Mesh(new THREE.PlaneGeometry(5.26, 2.96), new THREE.MeshBasicMaterial({ map:tex, toneMapped:false })), keyName, g); scr.position.set(0, 2.85, -.215);
+    const light = new THREE.PointLight(0x9fb6ff, .9, 7); light.position.set(0, 2.6, .6); g.add(light);
+    return g;
+  }
+  monitor("main", -.6, -2.1, 0, screenTex("main"));
+  monitor("second", 5.6, -1.5, -.45, screenTex("second"));
+  // keyboard (75%)
+  const kb = new THREE.Group(); kb.position.set(-1.1, .06, 1.35); kb.rotation.y = .04; scene.add(kb);
+  add(rbox(3.3, .22, 1.3, .06, M.white()), "keyboard", kb).position.y = .11;
+  const keyGeo = new RoundedBoxGeometry(.18, .1, .18, 2, .03), keyMat = M.whiteSoft();
+  const keysMesh = new THREE.InstancedMesh(keyGeo, keyMat, 6*15); let ki = 0; const dm = new THREE.Object3D();
+  for(let r=0;r<6;r++) for(let c=0;c<15;c++){ dm.position.set(-1.47 + c*.21, .27, -.52 + r*.21); dm.updateMatrix(); keysMesh.setMatrixAt(ki++, dm.matrix); }
+  add(keysMesh, "keyboard", kb);
+  // mouse
+  const mouse3 = add(rbox(.62, .32, 1.1, .16, M.white()), "mouse"); mouse3.position.set(2.7, .2, 1.55); mouse3.rotation.y = -.12;
+  // headset (lying on the desk)
+  const hs = new THREE.Group(); hs.position.set(5.6, .0, 2.0); hs.rotation.set(0, -.35, 0); scene.add(hs);
+  const band = add(new THREE.Mesh(new THREE.TorusGeometry(.95, .09, 16, 40, Math.PI), M.white()), "headset", hs); band.rotation.x = -Math.PI/2.4; band.position.y = .35;
+  for(const sx of [-1, 1]){ const cup = add(new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .3, 32), M.white()), "headset", hs); cup.rotation.z = Math.PI/2; cup.position.set(sx*.95, .42, .05);
+    const cush = add(new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .12, 32), M.dark()), "headset", hs); cush.rotation.z = Math.PI/2; cush.position.set(sx*.78, .42, .05); }
+  // mic on a little desk stand
+  const mic = new THREE.Group(); mic.position.set(-4.3, 0, 1.2); mic.rotation.y = .5; scene.add(mic);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.5, .55, .08, 32), M.dark()), "mic", mic).position.y = .04;
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1.4, 12), M.dark()), "mic", mic).position.y = .75;
+  const body = add(new THREE.Mesh(new THREE.CylinderGeometry(.24, .2, 1.2, 32), M.dark()), "mic", mic); body.position.set(0, 1.55, .25); body.rotation.x = .9;
+  const grill = add(new THREE.Mesh(new THREE.SphereGeometry(.25, 24, 16), new THREE.MeshStandardMaterial({ color:0x55565c, roughness:.35, metalness:.6 })), "mic", mic); grill.position.set(0, 1.88, .74); grill.scale.set(1, 1.15, 1);
+  // PC: Lancool 216 with the glass side towards you
+  const pc = new THREE.Group(); pc.position.set(-6.9, 0, -1.3); pc.rotation.y = -.95; scene.add(pc);
+  const W = 2.2, H = 4.9, D = 4.8, T = .08, cw = M.white();
+  add(rbox(W, T, D, .03, cw), "case", pc).position.set(0, T/2, 0);
+  add(rbox(W, T, D, .03, cw), "case", pc).position.set(0, H - T/2, 0);
+  add(rbox(T, H, D, .03, cw), "case", pc).position.set(-W/2 + T/2, H/2, 0);
+  add(rbox(W, H, T, .03, cw), "case", pc).position.set(0, H/2, -D/2 + T/2);
+  const front = add(rbox(W, H, T, .03, new THREE.MeshStandardMaterial({ color:0xd8d8d4, roughness:.9 })), "case", pc); front.position.set(0, H/2, D/2 - T/2);
+  const glass = add(new THREE.Mesh(new THREE.BoxGeometry(.02, H - .2, D - .2), M.glass), "case", pc); glass.position.set(W/2 - .01, H/2, 0); glass.castShadow = false;
+  // inside
+  add(rbox(.06, 3.2, 3.1, .02, new THREE.MeshStandardMaterial({ color:0xdcdcd8, roughness:.5, metalness:.2 })), "board", pc).position.set(-W/2 + .16, 3.0, -.55);
+  add(rbox(.5, .5, .5, .1, M.white()), "cpu", pc).position.set(-W/2 + .45, 3.55, -.4);
+  for(let i=0;i<2;i++){ const r = add(rbox(.12, 1.3, .07, .02, M.white()), "ram", pc); r.position.set(-W/2 + .3, 3.55, .25 + i*.14); const gl = add(new THREE.Mesh(new THREE.BoxGeometry(.13, .06, .07), M.glow), "ram", pc); gl.position.set(-W/2 + .3, 4.22, .25 + i*.14); }
+  add(rbox(.05, .14, .7, .02, new THREE.MeshStandardMaterial({ color:0xb8b8b4, metalness:.6, roughness:.3 })), "ssd", pc).position.set(-W/2 + .22, 2.55, -.2);
+  const gpu = add(rbox(1.2, .55, 3.0, .08, M.white()), "gpu", pc); gpu.position.set(-.35, 2.15, -.1);
+  for(let i=0;i<3;i++){ const f = add(new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .04, 28), M.whiteSoft()), "gpu", pc); f.position.set(-.35, 1.86, -1.05 + i*.95); }
+  const gpuGlow = add(new THREE.Mesh(new THREE.BoxGeometry(.04, .05, 2.6), M.glow), "gpu", pc); gpuGlow.position.set(.26, 2.3, -.1);
+  // 360 radiator + 3 fans at the front
+  add(rbox(1.6, 4.0, .3, .04, M.whiteSoft()), "cooler", pc).position.set(0, 2.75, D/2 - .3);
+  const fans = [];
+  for(let i=0;i<3;i++){ const ring = add(new THREE.Mesh(new THREE.TorusGeometry(.56, .05, 10, 40), M.glow), "cooler", pc); ring.position.set(0, 1.45 + i*1.3, D/2 - .5);
+    const blades = add(new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .06, 9, 1), M.white()), "cooler", pc); blades.rotation.x = Math.PI/2; blades.position.set(0, 1.45 + i*1.3, D/2 - .5); fans.push(blades); }
+  add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-W/2 + .45, 3.55, -.15), new THREE.Vector3(-.2, 4.2, 1.0), new THREE.Vector3(0, 3.9, D/2 - .5)]), 20, .06, 8), M.whiteSoft()), "cooler", pc);
+  // PSU shroud
+  add(rbox(W - .2, .9, D - .2, .04, M.white()), "psu", pc).position.set(0, .55, 0);
+  const caseLight = new THREE.PointLight(0xffffff, 2.2, 6); caseLight.position.set(.2, 3, 0); pc.add(caseLight);
+
+  // ---- camera control: drag to orbit a bit, idle sway
+  let yaw = -.12, pitch = .3, dist = 19.5, tYaw = yaw, tPitch = pitch, dragging = false, lx = 0, ly = 0, lastMove = 0;
+  cv.addEventListener("pointerdown", e=>{ dragging = true; lx = e.clientX; ly = e.clientY; cv.classList.add("drag"); cv.setPointerCapture(e.pointerId); document.getElementById("s3dHint").style.opacity = 0; });
+  cv.addEventListener("pointerup", e=>{ dragging = false; cv.classList.remove("drag"); });
+  cv.addEventListener("pointermove", e=>{
+    const r = cv.getBoundingClientRect(); ptr.x = (e.clientX - r.left)/r.width*2 - 1; ptr.y = -(e.clientY - r.top)/r.height*2 + 1; ptrIn = true; lastMove = performance.now();
+    if(dragging){ tYaw = Math.max(-.85, Math.min(.85, tYaw - (e.clientX - lx)*.006)); tPitch = Math.max(.12, Math.min(.75, tPitch + (e.clientY - ly)*.004)); lx = e.clientX; ly = e.clientY; }
+  });
+  cv.addEventListener("pointerleave", ()=>{ ptrIn = false; setHot(null); });
+  // ---- hover picking ↔ spec rows
+  const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let ptrIn = false, hot = null;
+  const tip = document.getElementById("s3dTip");
+  function setHot(k, fromRow){
+    if(k === hot) return;
+    if(hot) (parts[hot] || []).forEach(m=>{ const mats = Array.isArray(m.material) ? m.material : [m.material]; mats.forEach(mt=>{ if(mt.emissive && mt !== M.glow){ mt.emissive.setHex(0); mt.emissiveIntensity = 1; } }); });
+    Object.values(specs).forEach(s=>s.row.classList.remove("hot"));
+    hot = k;
+    if(k){ (parts[k] || []).forEach(m=>{ const mats = Array.isArray(m.material) ? m.material : [m.material]; mats.forEach(mt=>{ if(mt.emissive && mt !== M.glow){ mt.emissive.setHex(0x4aa8ff); mt.emissiveIntensity = .55; } }); });
+      specs[k] && specs[k].row.classList.add("hot");
+      document.getElementById("s3dK").textContent = specs[k] ? specs[k].k : k; document.getElementById("s3dV").textContent = specs[k] ? specs[k].v : "";
+      tip.hidden = false; tip._k = k;
+    } else tip.hidden = true;
+  }
+  // shared materials would light up together → give every picked mesh its own material
+  pickables.forEach(m=>{ if(m.material !== M.glow && m.material !== M.glass && m.material !== M.pad && !m.material.map) m.material = m.material.clone(); });
+  Object.entries(specs).forEach(([k,s])=>{ s.row.addEventListener("pointerenter", ()=>setHot(k, true)); s.row.addEventListener("pointerleave", ()=>setHot(null)); });
+  const tmp = new THREE.Vector3(), bb = new THREE.Box3();
+  function tipPos(){
+    if(!hot || tip.hidden) return;
+    bb.makeEmpty(); (parts[hot] || []).forEach(m=>bb.expandByObject(m)); bb.getCenter(tmp); tmp.y = bb.max.y;
+    tmp.project(cam); const r = cv.getBoundingClientRect();
+    const w = tip.offsetWidth;
+    tip.style.left = Math.max(w/2 + 10, Math.min(r.width - w/2 - 10, (tmp.x + 1)/2*r.width)) + "px";
+    tip.style.top = Math.max(tip.offsetHeight + 24, Math.min(r.height - 10, (1 - tmp.y)/2*r.height)) + "px";
+  }
+  // ---- render only while visible
+  let visible = false, raf = 0;
+  new IntersectionObserver(es=>{ visible = es[0].isIntersecting; if(visible && !raf) raf = requestAnimationFrame(loop); }, { rootMargin:"100px" }).observe(box);
+  function size(){ const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); cam.aspect = w/h; cam.fov = w < 600 ? 44 : 32; cam.updateProjectionMatrix(); }
+  addEventListener("resize", size); size();
+  const t0 = performance.now();
+  function loop(now){
+    raf = 0; if(!visible) return;
+    const t = (now - t0)/1000, idle = !dragging && now - lastMove > 2500;
+    if(idle){ tYaw += (Math.sin(t*.25)*.18 - .12 - tYaw)*.01; }
+    yaw += (tYaw - yaw)*.08; pitch += (tPitch - pitch)*.08;
+    cam.position.set(target.x + Math.sin(yaw)*Math.cos(pitch)*dist, target.y + Math.sin(pitch)*dist, target.z + Math.cos(yaw)*Math.cos(pitch)*dist); cam.lookAt(target);
+    fans.forEach((f,i)=>f.rotation.y = t*(6 + i));
+    if(ptrIn && !dragging){ ray.setFromCamera(ptr, cam); const hit = ray.intersectObjects(pickables, false)[0]; setHot(hit ? hit.object.userData.k : null); }
+    tipPos();
+    renderer.render(scene, cam);
+    raf = requestAnimationFrame(loop);
+  }
+  document.getElementById("s3dLoad").remove();
+  document.getElementById("s3dHint").textContent = LANG_DE() ? "ziehen zum umsehen · über die teile fahren" : "drag to look around · hover the gear";
+}
 </script>
 </body>
 </html>
