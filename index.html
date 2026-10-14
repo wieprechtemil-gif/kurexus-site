@@ -648,6 +648,7 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 /* contact */
 .ccard{display:flex;flex-direction:column;gap:12px}
 .ccard .who{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.ccard .who .verified{width:22px;height:22px;vertical-align:-4px;margin-right:8px;filter:drop-shadow(0 2px 6px rgba(69,189,245,.35))}
 .ccard p{color:var(--muted);font-size:14px;flex:1}
 .ccard .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .dc{font-family:var(--mono);font-size:16px;padding:8px 12px;border:1px solid var(--line-2);border-radius:10px}
@@ -1082,7 +1083,7 @@ html.xh .xhair.on{opacity:1}
           </div>
           <div class="card ccard">
             <div class="k" data-i18n="kr.prof">profile</div>
-            <div class="who">kodakosan</div>
+            <div class="who"><svg class="verified" viewBox="0 0 24 24" aria-label="verified"><circle cx="12" cy="12" r="11" fill="#45bdf5"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1d8fc8" stroke-width="1"/><path d="M6.6 12.6l3.6 3.5 7.4-8" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>kodakosan</div>
             <a class="btn primary" id="krunkerLink" href="#" target="_blank" rel="noopener" style="align-self:flex-start">krunker.io ↗</a>
           </div>
         </div>
@@ -1854,7 +1855,8 @@ const ART = {
   krunker: `<svg class="art-kr" viewBox="250 0 370 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="krT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9be6ff"/><stop offset="1" stop-color="#5ad0ff"/></linearGradient></defs>
     <g class="speed" stroke="#5ad0ff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round">${[[220,70],[180,120],[250,170],[200,215]].map(([x,y])=>`<line x1="${x}" y1="${y}" x2="${x+260}" y2="${y}"/>`).join("")}</g>
-    <g class="cubes"><image href="/img/krunker.png" x="392" y="96" width="210" height="94" preserveAspectRatio="xMidYMid meet"/></g>
+    <path d="M408 232 Q 440 70 520 100" fill="none" stroke="#9be6ff" stroke-width="2.4" stroke-dasharray="3 9" stroke-linecap="round" opacity=".85"/><circle cx="408" cy="232" r="3.5" fill="#9be6ff" opacity=".7"/><path d="M512 92 l10 8 -12 4" fill="none" stroke="#9be6ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+    <g class="cubes"><g opacity="1"><path d="M438.824 160.0L470 178L470 214L438.824 196.0Z" fill="#2f9fd6"/><path d="M470 178L501.176 160.0L501.176 196.0L470 214Z" fill="#1c6f9a"/><path d="M470 142L501.176 160.0L470 178L438.824 160.0Z" fill="#a8ecff"/><path d="M470 142L501.176 160.0L470 178L438.824 160.0Z M438.824 160.0L470 178L470 214L438.824 196.0Z M470 178L501.176 160.0L501.176 196.0L470 214Z" fill="none" stroke="#0b2a3a" stroke-opacity=".35" stroke-width="1"/></g><g opacity="1"><path d="M500.824 124.0L532 142L532 178L500.824 160.0Z" fill="#2f9fd6"/><path d="M532 142L563.176 124.0L563.176 160.0L532 178Z" fill="#1c6f9a"/><path d="M532 106L563.176 124.0L532 142L500.824 124.0Z" fill="#a8ecff"/><path d="M532 106L563.176 124.0L532 142L500.824 124.0Z M500.824 124.0L532 142L532 178L500.824 160.0Z M532 142L563.176 124.0L563.176 160.0L532 178Z" fill="none" stroke="#0b2a3a" stroke-opacity=".35" stroke-width="1"/></g><g opacity="0.9"><path d="M562.824 160.0L594 178L594 214L562.824 196.0Z" fill="#2f9fd6"/><path d="M594 178L625.176 160.0L625.176 196.0L594 214Z" fill="#1c6f9a"/><path d="M594 142L625.176 160.0L594 178L562.824 160.0Z" fill="#a8ecff"/><path d="M594 142L625.176 160.0L594 178L562.824 160.0Z M562.824 160.0L594 178L594 214L562.824 196.0Z M594 178L625.176 160.0L625.176 196.0L594 214Z" fill="none" stroke="#0b2a3a" stroke-opacity=".35" stroke-width="1"/></g><g opacity="1"><path d="M500.824 196.0L532 214L532 250L500.824 232.0Z" fill="#2f9fd6"/><path d="M532 214L563.176 196.0L563.176 232.0L532 250Z" fill="#1c6f9a"/><path d="M532 178L563.176 196.0L532 214L500.824 196.0Z" fill="#a8ecff"/><path d="M532 178L563.176 196.0L532 214L500.824 196.0Z M500.824 196.0L532 214L532 250L500.824 232.0Z M532 214L563.176 196.0L563.176 232.0L532 250Z" fill="none" stroke="#0b2a3a" stroke-opacity=".35" stroke-width="1"/></g></g>
   </svg>`,
   rdr2: `<span class="art-photo" style="background-image:url(/img/rdr2.jpg)"></span>`
 };
