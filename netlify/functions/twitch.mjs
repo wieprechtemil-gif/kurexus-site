@@ -14,15 +14,19 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 
 async function getToken(id, secret) {
   if (token && Date.now() < tokenExp) return token;
-  const r = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${id}&client_secret=${secret}&grant_type=client_credentials`, { method: "POST" });
-  if (!r.ok) throw new Error("token " + r.status);
+  const r = await fetch("https://id.twitch.tv/oauth2/token", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ client_id: id, client_secret: secret, grant_type: "client_credentials" })
+  });
+  if (!r.ok) { let m = ""; try { m = (await r.json()).message || ""; } catch (e) {} throw new Error(`token ${r.status} ${m}`.trim()); }
   const d = await r.json();
   token = d.access_token; tokenExp = Date.now() + (d.expires_in - 120) * 1000;
   return token;
 }
 
 export default async () => {
-  const id = process.env.TWITCH_CLIENT_ID, secret = process.env.TWITCH_CLIENT_SECRET;
+  const id = (process.env.TWITCH_CLIENT_ID || "").trim(), secret = (process.env.TWITCH_CLIENT_SECRET || "").trim();
   if (!id || !secret) return json({ error: "missing twitch keys" }, 503);
   try {
     const tk = await getToken(id, secret);
