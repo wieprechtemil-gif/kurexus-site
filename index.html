@@ -494,7 +494,7 @@ html.xh .xhair.on{opacity:1}
     <h2 data-i18n="r2.title">what I <em>grind</em></h2>
 
     <div class="card main-game">
-      <div class="mg-top"><h3>Counter-Strike 2</h3><span class="tag">MAIN</span></div>
+      <div class="mg-top"><h3>Counter-Strike 2</h3><span class="tag">AIMER</span></div>
       <div class="fc">
         <div>
           <div class="k">FACEIT</div>
@@ -883,10 +883,9 @@ $("langBtn").onclick = ()=>applyLang(LANG === "de" ? "en" : "de");
 function buildTicker(){
   const items = [
     "<b>emil</b>", L("<b>19</b> years old","<b>19</b> jahre"), L("from <b>germany</b>","aus <b>deutschland</b>"),
-    L("<b>cs2</b> main","<b>cs2</b> main"), L("streaming <b>almost daily</b>","streamt <b>fast täglich</b>"),
-    L("grinding <b>faceit</b>","grindet <b>faceit</b>"), L("learning <b>中文</b>","lernt <b>中文</b>"),
-    L("speaks <b>de · en</b>","spricht <b>de · en</b>"), L("<b>all-white</b> setup","<b>komplett weißes</b> setup"),
-    L("fav map <b>cache</b>","lieblingsmap <b>cache</b>"), L("next goal <b>faceit 10</b>","nächstes ziel <b>faceit 10</b>")
+    "<b>aimer</b>", L("streaming <b>almost daily</b>","streamt <b>fast täglich</b>"),
+    L("grinding <b>cs</b>","grindet <b>cs</b>"), L("learning <b>中文</b>","lernt <b>中文</b>"),
+    L("speaks <b>de · en</b>","spricht <b>de · en</b>")
   ].filter(Boolean).map(s=>`<span>${s} ✦</span>`).join("");
   $("track").innerHTML = items + items;
 }
