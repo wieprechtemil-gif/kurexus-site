@@ -654,6 +654,70 @@ html.vibing .lp{border-color:rgba(var(--tint,255,255,255),calc(.15 + var(--beat,
 .mp-x{position:absolute;right:8px;top:6px;width:24px;height:24px;border:0;background:transparent;color:rgba(255,255,255,.6);font-size:12px;border-radius:50%}
 .mp-x:hover{color:#fff;background:rgba(255,255,255,.12)}
 @media (max-width:520px){.mp-in{grid-template-columns:56px 1fr;}.mp-cv{width:56px;height:56px}.mp-ctl{grid-column:1/-1;justify-content:center;margin:0}}
+/* steam now-playing + online pill */
+.hstat{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.status.steam i{background:#7ee08a;box-shadow:0 0 0 0 rgba(126,224,138,.6);animation:onl 2s infinite}
+.status.steam{color:var(--fg)}
+.onl{display:inline-flex;align-items:center;gap:6px;margin-left:4px;color:var(--muted)}
+.onl i{width:6px;height:6px;border-radius:50%;background:#7ee08a;animation:onl 2s infinite}
+.onl b{color:var(--fg);font-weight:600}
+@keyframes onl{0%{box-shadow:0 0 0 0 rgba(126,224,138,.55)}70%{box-shadow:0 0 0 6px rgba(126,224,138,0)}100%{box-shadow:0 0 0 0 rgba(126,224,138,0)}}
+@media (max-width:900px){.onl #onlT{display:none}}
+/* faceit form */
+.fcurve{width:100%;height:140px;display:block;margin-top:14px;overflow:visible}
+.fcmeta{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--muted);margin-top:8px}
+.fcmeta b{color:var(--fg)}
+.fmatch{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.fmatch li{display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;align-items:center;padding:6px 4px;border-top:1px solid var(--line);font:500 12px var(--mono)}
+.fmatch li:first-child{border-top:0}
+.fmatch .r{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:11px}
+.fmatch .r.w{background:rgba(126,224,138,.14);color:#7ee08a}.fmatch .r.l{background:rgba(255,77,94,.14);color:#ff6b78}
+.fmatch .mp{text-transform:capitalize;color:var(--fg);font-family:var(--sans);font-weight:600;font-size:13px}
+.fmatch .sc{color:var(--muted)}
+.fmatch .kd{min-width:58px;text-align:right}
+.fmatch .kd.g{color:#7ee08a}.fmatch .kd.b{color:#ff6b78}
+/* leetify */
+.lt-grid{display:grid;grid-template-columns:150px 1fr 1fr;gap:22px;align-items:center;margin-top:8px}
+@media (max-width:760px){.lt-grid{grid-template-columns:1fr}}
+.lt-big{display:flex;flex-direction:column;gap:2px}
+.lt-big b{font:700 44px/1 var(--sans);letter-spacing:-.03em}
+.lt-big span{font:500 11px var(--mono);color:var(--muted)}
+.lt-bars{display:flex;flex-direction:column;gap:9px}
+.lt-bar{display:grid;grid-template-columns:78px 1fr 34px;gap:10px;align-items:center;font:500 11px var(--mono);color:var(--muted)}
+.lt-bar .tr{height:6px;border-radius:6px;background:color-mix(in srgb,var(--fg) 8%,transparent);overflow:hidden}
+.lt-bar .tr i{display:block;height:100%;border-radius:6px;background:var(--fg);width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.lt-bar b{color:var(--fg);text-align:right;font-weight:600}
+.lt-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lt-stats div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.lt-stats .k{font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lt-stats b{display:block;font:700 20px var(--sans);margin-top:2px}
+.lt-stats b small{font:500 11px var(--mono);color:var(--muted);margin-left:2px}
+/* stream heatmap */
+.hm-wrap{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px}
+.hm-days{display:grid;grid-template-rows:repeat(7,14px);gap:4px;font:500 9px/14px var(--mono);color:var(--muted)}
+.hm-grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);grid-auto-columns:14px;gap:4px}
+.hm-grid i{border-radius:3px;background:color-mix(in srgb,var(--fg) 6%,transparent);position:relative}
+.hm-grid i[data-l="1"]{background:color-mix(in srgb,var(--live,#ff4d5e) 30%,transparent)}
+.hm-grid i[data-l="2"]{background:color-mix(in srgb,var(--live,#ff4d5e) 52%,transparent)}
+.hm-grid i[data-l="3"]{background:color-mix(in srgb,var(--live,#ff4d5e) 75%,transparent)}
+.hm-grid i[data-l="4"]{background:var(--live,#ff4d5e)}
+.hm-grid i.today{outline:1px solid var(--fg);outline-offset:1px}
+.hm-grid i.fut{visibility:hidden}
+.hm-leg{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:10px;font:500 10px var(--mono);color:var(--muted)}
+.hm-leg i{width:12px;height:12px;border-radius:3px;background:color-mix(in srgb,var(--fg) 6%,transparent)}
+.hm-leg i:nth-of-type(2){background:color-mix(in srgb,var(--live,#ff4d5e) 30%,transparent)}.hm-leg i:nth-of-type(3){background:color-mix(in srgb,var(--live,#ff4d5e) 52%,transparent)}
+.hm-leg i:nth-of-type(4){background:color-mix(in srgb,var(--live,#ff4d5e) 75%,transparent)}.hm-leg i:nth-of-type(5){background:var(--live,#ff4d5e)}
+.hm-leg span{margin:0 4px}
+/* server stats */
+.srv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.srv-grid div:first-child{grid-column:span 2}
+@media (max-width:760px){.srv-grid{grid-template-columns:repeat(2,1fr)}}
+.srv-grid div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.srv-grid img{height:20px;width:auto;opacity:.85}
+[data-theme="light"] .srv-grid img{filter:invert(1)}
+.srv-grid b{display:block;font:700 20px var(--sans);letter-spacing:-.02em;transition:color .3s}
+.srv-grid b.bump{color:#7ee08a}
+.srv-grid span{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #smokeFx{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
 #decals{position:absolute;left:0;top:0;width:100%;height:0;z-index:4;pointer-events:none}
 .hole{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
@@ -776,7 +840,7 @@ html.xh .xhair.on{opacity:1}
 <nav>
   <div class="wrap">
     <a href="#top" class="logo" data-scope><span>k</span>kur</a>
-    <div class="score" title="kur's local time (Germany)"><span class="t" id="ktime">--:--</span><span id="kstat"></span></div>
+    <div class="score" title="kur's local time (Germany)"><span class="t" id="ktime">--:--</span><span id="kstat"></span><span class="onl" id="onl" hidden title="people on the site right now"><i></i><b id="onlN">1</b> <span id="onlT">here</span></span></div>
     <div class="nav-r">
       <div class="links">
         <a href="#about" data-scope><i>R1</i><span data-i18n="nav.about">about</span></a>
@@ -797,7 +861,7 @@ html.xh .xhair.on{opacity:1}
 
   <header class="hero">
     <div class="avatar" id="avatar"><div class="ring"></div><div class="pic" id="pic">k</div></div>
-    <div class="status" id="status"><i></i><span data-i18n="status.off">offline</span></div>
+    <div class="hstat"><div class="status" id="status"><i></i><span data-i18n="status.off">offline</span></div><div class="status steam" id="steamNow" hidden><i></i><span id="steamTxt"></span></div></div>
     <h1 id="name"><span data-t="kur">kur</span><em data-t="exus">exus</em></h1>
     <p class="aka" data-i18n="aka">aka kur — locked in, mostly</p>
     <div class="currently"><i></i><b data-i18n="cur.label">currently</b><span data-i18n="cur.text">grinding faceit · streaming almost daily · learning 中文</span></div>
@@ -828,7 +892,7 @@ html.xh .xhair.on{opacity:1}
     <div class="tstats">
       <div><b id="tFollow">—</b><span data-i18n="t.followers">followers</span></div>
       <div id="tSubWrap" style="display:none"><b id="tSubs">—</b><span data-i18n="t.subs">subs</span></div>
-      <div><b>700h</b><span data-i18n="t.hours">in cs2</span></div>
+      <div><b id="tHours">700h</b><span data-i18n="t.hours">in cs2</span></div>
     </div>
     <div class="floor"><i></i></div>
   </header>
@@ -937,6 +1001,11 @@ html.xh .xhair.on{opacity:1}
         <div id="ytBox"><div class="empty" data-i18n="loadingtxt">loading…</div></div>
       </div>
     </div>
+    <div class="card mt hm" id="hmCard" hidden>
+      <h4 class="ch"><b id="hmT">stream days</b><span id="hmSum"></span></h4>
+      <div class="hm-wrap"><div class="hm-days" id="hmDays"></div><div class="hm-grid" id="hmGrid"></div></div>
+      <div class="hm-leg"><span id="hmLess">less</span><i></i><i></i><i></i><i></i><i></i><span id="hmMore">more</span></div>
+    </div>
     <h3 class="sub" data-i18n="clips.title">top clips</h3>
     <div class="clips" id="clips"><div class="empty" style="grid-column:1/-1" data-i18n="clips.none">clips are loading… or still being cooked.</div></div>
   </section>
@@ -965,6 +1034,10 @@ html.xh .xhair.on{opacity:1}
     <div class="card mt">
       <h4 class="ch"><b data-i18n="lb.title">leaderboard</b><span data-i18n="lb.sub">top 10 · 30s</span></h4>
       <ol class="lb" id="lb"><li class="lb-empty" data-i18n="lb.empty">no scores yet. be the first.</li></ol>
+    </div>
+    <div class="card mt srv" id="srvCard">
+      <h4 class="ch"><b id="srvT">server stats</b><span id="srvS">everyone, all time</span></h4>
+      <div class="srv-grid" id="srvGrid"></div>
     </div>
     <h3 class="sub" data-i18n="rx.title">reaction test</h3>
     <button class="rx" id="rx" data-s="idle"><span class="rx-m" id="rxMsg" data-i18n="rx.start">click to start</span><span class="rx-s" id="rxSub" data-i18n="rx.hint">wait for white, then click as fast as you can · 5 tries</span></button>
@@ -1041,9 +1114,28 @@ html.xh .xhair.on{opacity:1}
     </div>
     <div class="grid g4 mt">
       <div class="card fact"><div class="k">Premier</div><div class="premier" id="premier"></div></div>
-      <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v">700<small> h</small></div></div>
+      <div class="card fact"><div class="k" data-i18n="f.hours">hours</div><div class="v"><span id="fHours">700</span><small> h</small></div></div>
       <div class="card fact"><div class="k" data-i18n="f.map">fav map</div><div class="v">Cache</div></div>
       <div class="card fact"><div class="k" data-i18n="f.weapon">fav weapon</div><div class="v">AK-47</div></div>
+    </div>
+    <div class="grid g2 mt">
+      <div class="card fform">
+        <h4 class="ch"><b id="ffT">elo · last matches</b><span id="ffD"></span></h4>
+        <svg class="fcurve" id="fCurve" viewBox="0 0 300 110" preserveAspectRatio="none"></svg>
+        <div class="fcmeta" id="fCMeta"></div>
+      </div>
+      <div class="card fform">
+        <h4 class="ch"><b id="fmT">recent matches</b><span id="fStreak"></span></h4>
+        <ol class="fmatch" id="fMatches"><li class="mu-empty">loading…</li></ol>
+      </div>
+    </div>
+    <div class="card mt ltc" id="ltCard" hidden>
+      <h4 class="ch"><b>leetify</b><a class="mini" href="https://leetify.com/app/profile/76561198437480026" target="_blank" rel="noopener">profile ↗</a></h4>
+      <div class="lt-grid">
+        <div class="lt-big"><span class="k" id="ltK">leetify rating</span><b id="ltRating">—</b><span id="ltSub"></span></div>
+        <div class="lt-bars" id="ltBars"></div>
+        <div class="lt-stats" id="ltStats"></div>
+      </div>
     </div>
         <div class="grid g2 mt">
           <div class="card ccard">
@@ -1272,7 +1364,7 @@ T.en["status.live"] = "live now on twitch";
 const t = k => (T[LANG] && T[LANG][k]) || T.en[k] || k;
 const L = (en, de) => LANG === "de" ? de : en;
 function applyLang(l){
-  setTimeout(()=>{ try{ NADES.render(); window.RADAR_RELABEL && RADAR_RELABEL(); }catch(e){} });
+  setTimeout(()=>{ try{ NADES.render(); window.RADAR_RELABEL && RADAR_RELABEL(); [window.renderFForm, window.renderLeetify, window.renderSteam, window.renderHeatmap, window.renderSrv].forEach(f=>f && f()); }catch(e){} });
   LANG = l; document.documentElement.lang = l;
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML = t(el.dataset.i18n); });
   $("langBtn").textContent = l === "de" ? "EN" : "DE";
@@ -1288,6 +1380,8 @@ const FINE = matchMedia("(pointer:fine)").matches;
 const fmt = n => Number(n).toLocaleString("en-US");
 const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 try{ localStorage.removeItem("bgMode"); }catch(e){}
+// global counters (shots, grenades, …) — collected here, sent in batches to /api/live
+const STAT = { pend:{}, bump(k, n=1){ this.pend[k] = (this.pend[k] || 0) + n; this.onBump && this.onBump(k); } };
 const store = { get(k){ try{return localStorage.getItem(k);}catch(e){return null;} }, set(k,v){ try{localStorage.setItem(k,v);}catch(e){} } };
 function show(msg){ const el=$("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(show.t); show.t = setTimeout(()=>el.classList.remove("show"), 1800); }
 function copy(text, msg){
@@ -1749,7 +1843,7 @@ document.querySelectorAll(".popt").forEach(b=>b.onclick = ()=>{
   }).catch(()=>{});
 })();
 
-$("avatar").onclick = e=>{ SFX.hit(); kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000,smoke:inSmoke(e.pageX,e.pageY)}); };
+$("avatar").onclick = e=>{ SFX.hit(); STAT.bump("hs"); kill(L("you","du"),"deagle","kurexus",{hs:true,me:true,ms:3000,smoke:inSmoke(e.pageX,e.pageY)}); };
 
 /* ---------- flashbang easter egg: type "kur" or konami ---------- */
 function flashbang(){
@@ -2534,7 +2628,7 @@ const drawSmokes = (function(){
     h.style.left = x + "px"; h.style.top = y + "px"; h.style.transform = `rotate(${Math.random()*360}deg)`; h.dataset.t = performance.now();
     layer.appendChild(h); while(layer.children.length > 40) layer.firstChild.remove();
     setTimeout(()=>h.remove(), 6600);
-    if(!silent){ tone(1700,.03,.025,"square",900,3000); noise(.04,.03,3500,900); }
+    if(!silent){ tone(1700,.03,.025,"square",900,3000); noise(.04,.03,3500,900); STAT.bump("shot"); }
   }
   window.HOLE = hole;
   // aim = where the crosshair is right now; each bullet lands at aim + recoil offset,
@@ -2563,6 +2657,7 @@ const drawSmokes = (function(){
     clearInterval(spray); spray = null;
     // grade the spray when it was a real one (10+ bullets): average distance from the group's centre
     if(hits.length >= 10){
+      STAT.bump("spray");
       const cx = hits.reduce((s,h)=>s+h[0],0)/hits.length, cy = hits.reduce((s,h)=>s+h[1],0)/hits.length;
       const spread = hits.reduce((s,h)=>s+Math.hypot(h[0]-cx,h[1]-cy),0)/hits.length;
       const grade = spread < 14 ? ["laser", "s1mple?"] : spread < 26 ? ["clean", "sauber"] : spread < 45 ? ["okay", "geht so"] : ["spray & pray", "spray & pray"];
@@ -2672,7 +2767,7 @@ const NADES = (function(){
       });
     }
   };
-  return { throw:(x, y)=>T[cur](x, y), get cur(){ return cur; }, render };
+  return { throw:(x, y)=>{ T[cur](x, y); STAT.bump(cur); }, get cur(){ return cur; }, render };
 })();
 
 /* ---------- radar: a minimap of THIS page — every section is a room, sized like the real section ---------- */
@@ -2762,6 +2857,135 @@ const NADES = (function(){
   addEventListener("load", layout);
   window.RADAR_RELABEL = ()=>{ sig = ""; if(rooms.length) layout(); };
   if(FINE){ layout(); requestAnimationFrame(tick); }
+})();
+
+
+/* ---------- live tracking: FACEIT form, Leetify, Steam, stream heatmap, visitors + global counters ---------- */
+// FACEIT: elo curve + recent matches
+(function(){
+  let data = null;
+  function render(){
+    const d = data; if(!d) return;
+    $("ffT").textContent = L("elo · last matches", "elo · letzte matches");
+    $("fmT").textContent = L("recent matches", "letzte matches");
+    const E = (d.elo || []).map(x=>x.elo).filter(Boolean);
+    if(E.length > 1){
+      const W = 300, Hh = 110, pad = 8, min = Math.min(...E), max = Math.max(...E), rng = Math.max(20, max - min);
+      const X = i=>pad + i*(W - pad*2)/(E.length - 1), Y = v=>Hh - pad - (v - min)/rng*(Hh - pad*2);
+      const line = E.map((v,i)=>`${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ");
+      const up = E[E.length-1] >= E[0], col = up ? "#7ee08a" : "#ff6b78";
+      $("fCurve").innerHTML = `<defs><linearGradient id="fcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+        <path d="${line} L${X(E.length-1).toFixed(1)} ${Hh} L${X(0).toFixed(1)} ${Hh} Z" fill="url(#fcg)"/>
+        <path d="${line}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+        <circle cx="${X(E.length-1).toFixed(1)}" cy="${Y(E[E.length-1]).toFixed(1)}" r="3.5" fill="${col}"/>`;
+      const diff = E[E.length-1] - E[0];
+      $("fCMeta").innerHTML = `<span>${L("low","tief")} <b>${fmt(min)}</b> · ${L("high","hoch")} <b>${fmt(max)}</b></span><span><b style="color:${col}">${diff >= 0 ? "+" : ""}${diff}</b> ${L("in","in")} ${E.length - 1} ${L("matches","matches")}</span>`;
+      $("ffD").textContent = `${fmt(E[E.length-1])} elo`;
+    } else { $("fCurve").innerHTML = ""; $("fCMeta").textContent = L("not enough matches yet","noch zu wenig matches"); }
+    const M = d.matches || [];
+    $("fMatches").innerHTML = M.length ? M.slice(0, 7).map(m=>`<li><span class="r ${m.win ? "w" : "l"}">${m.win ? "W" : "L"}</span><span class="mp">${esc(m.map)}</span><span class="sc">${esc((m.score || "").replace(/\s/g,""))}</span><span class="kd ${m.kd >= 1 ? "g" : "b"}">${m.k ?? "–"}/${m.d ?? "–"} · ${m.kd != null ? m.kd.toFixed(2) : "–"}</span></li>`).join("")
+      : `<li class="mu-empty">${L("no recent matches","keine matches")}</li>`;
+    $("fStreak").textContent = d.streak && d.streak.n > 1 ? (d.streak.win ? L(`${d.streak.n} win streak 🔥`, `${d.streak.n} siege in folge 🔥`) : L(`${d.streak.n} losses in a row`, `${d.streak.n} niederlagen in folge`)) : "";
+  }
+  api("/api/faceitform").then(d=>{ if(d && !d.error){ data = d; render(); } else throw 0; })
+    .catch(()=>{ $("fMatches").innerHTML = `<li class="mu-empty">${L("couldn't load matches","matches nicht ladbar")}</li>`; });
+  window.renderFForm = render;
+})();
+// Leetify aim card
+(function(){
+  let d = null;
+  function render(){
+    if(!d) return; $("ltCard").hidden = false;
+    const r = d.leetify;
+    $("ltRating").textContent = r == null ? "—" : (r > 0 ? "+" : "") + r.toFixed(2);
+    $("ltK").textContent = L("leetify rating", "leetify rating");
+    $("ltSub").textContent = [d.matches ? `${fmt(d.matches)} ${L("matches","matches")}` : "", d.winrate != null ? `${Math.round(d.winrate)}% ${L("wins","siege")}` : ""].filter(Boolean).join(" · ");
+    const B = [["aim","aim"],["positioning","positioning"],["utility","utility"],["opening","opening"],["clutch","clutch"]].filter(([k])=>d.rating && d.rating[k] != null);
+    $("ltBars").innerHTML = B.map(([k,label])=>{ const v = d.rating[k]; return `<div class="lt-bar"><span>${label}</span><span class="tr"><i data-w="${Math.max(2, Math.min(100, v))}"></i></span><b>${Math.round(v)}</b></div>`; }).join("");
+    requestAnimationFrame(()=>$("ltBars").querySelectorAll("i").forEach(i=>i.style.width = i.dataset.w + "%"));
+    const S = d.stats || {}, items = [
+      [L("reaction","reaktion"), S.reaction, "ms"], ["preaim", S.preaim, "°"],
+      [L("hs accuracy","hs-genauigkeit"), S.hs, "%"], [L("spray accuracy","spray-genauigkeit"), S.spray, "%"]
+    ].filter(x=>x[1] != null);
+    $("ltStats").innerHTML = items.map(([k,v,u])=>`<div><span class="k">${k}</span><b>${u === "ms" ? Math.round(v) : (Math.round(v*10)/10)}<small>${u}</small></b></div>`).join("");
+  }
+  api("/api/leetify").then(x=>{ if(x && !x.error){ d = x; render(); } }).catch(()=>{});
+  window.renderLeetify = render;
+})();
+// Steam: playing right now + real CS2 hours
+(function(){
+  let d = null;
+  function render(){
+    if(!d) return;
+    const on = !!d.playing; $("steamNow").hidden = !on;
+    if(on) $("steamTxt").textContent = L(`in ${d.playing} right now`, `gerade in ${d.playing}`);
+    if(d.cs2Hours){ $("tHours").textContent = fmt(d.cs2Hours) + "h"; $("fHours").textContent = fmt(d.cs2Hours); }
+  }
+  const load = ()=>api("/api/steam").then(x=>{ if(x && !x.error){ d = x; render(); } }).catch(()=>{});
+  load(); setInterval(()=>{ if(!document.hidden) load(); }, 60000);
+  window.renderSteam = render;
+})();
+// stream days heatmap (last 18 weeks, Monday first)
+(function(){
+  let days = null;
+  function render(){
+    if(!days) return; $("hmCard").hidden = false;
+    $("hmT").textContent = L("stream days", "stream-tage");
+    $("hmLess").textContent = L("less","weniger"); $("hmMore").textContent = L("more","mehr");
+    const WEEKS = 18, key = d=>new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Berlin",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
+    const today = new Date(), todayK = key(today), dow = (new Date(todayK + "T12:00:00").getDay() + 6) % 7;
+    const start = new Date(todayK + "T12:00:00"); start.setDate(start.getDate() - dow - (WEEKS-1)*7);
+    let cells = "", streams = 0, mins = 0;
+    for(let i=0;i<WEEKS*7;i++){
+      const d = new Date(start); d.setDate(start.getDate() + i); const k = key(d), m = days[k] || 0;
+      const fut = k > todayK, lvl = !m ? 0 : m < 60 ? 1 : m < 180 ? 2 : m < 300 ? 3 : 4;
+      if(m && !fut){ streams++; mins += m; }
+      const label = d.toLocaleDateString(LANG === "de" ? "de-DE" : "en-GB", { weekday:"short", day:"numeric", month:"short" });
+      cells += `<i data-l="${fut ? 0 : lvl}" class="${k === todayK ? "today" : ""}${fut ? " fut" : ""}" title="${label}${m ? ` · ${Math.floor(m/60)}h ${m%60}m` : ` · ${L("offline","offline")}`}"></i>`;
+    }
+    $("hmGrid").innerHTML = cells;
+    $("hmDays").innerHTML = (LANG === "de" ? ["Mo","","Mi","","Fr","","So"] : ["Mon","","Wed","","Fri","","Sun"]).map(x=>`<span>${x}</span>`).join("");
+    $("hmSum").textContent = `${streams} ${L("streams","streams")} · ${Math.round(mins/60)}h ${L("live","live")}`;
+  }
+  api("/api/streams").then(x=>{ if(x && x.days){ days = x.days; render(); } }).catch(()=>{});
+  window.renderHeatmap = render;
+})();
+// visitors online + global counters
+(function(){
+  const LABELS = { shot:["shots fired","schüsse"], spray:["full sprays","volle sprays"], hs:["headshots on kur","headshots auf kur"], smoke:["smokes","smokes"], molly:["molotovs","molotovs"], he:["HE grenades","HE-granaten"], flash:["flashbangs","flashbangs"] };
+  const ICON = { shot:"ak", spray:"m4", hs:"hs", smoke:"smoke", molly:"molly", he:"he", flash:"blind" };
+  let id = null; try{ id = sessionStorage.getItem("kid"); if(!id){ id = Math.random().toString(36).slice(2,12); sessionStorage.setItem("kid", id); } }catch(e){ id = Math.random().toString(36).slice(2,12); }
+  let totals = {}, online = 0;
+  function render(bumped){
+    $("srvT").textContent = L("server stats", "server-stats"); $("srvS").textContent = L("everyone, all time", "alle besucher, insgesamt");
+    const order = ["shot","spray","hs","smoke","molly","he","flash"];
+    if(!$("srvGrid").children.length) $("srvGrid").innerHTML = order.map(k=>`<div><img src="/img/kf/${ICON[k]}.png" alt=""><span class="x"><b data-k="${k}">0</b><span data-l="${k}"></span></span></div>`).join("");
+    for(const k of order){
+      const b = $("srvGrid").querySelector(`b[data-k="${k}"]`); b.textContent = fmt((totals[k] || 0) + (STAT.pend[k] || 0));
+      $("srvGrid").querySelector(`[data-l="${k}"]`).textContent = L(...LABELS[k]);
+      if(bumped === k){ b.classList.add("bump"); clearTimeout(b._t); b._t = setTimeout(()=>b.classList.remove("bump"), 500); }
+    }
+    if(online){ $("onl").hidden = false; $("onlN").textContent = online; $("onlT").textContent = online === 1 ? L("here (you)","hier (du)") : L("here","hier"); }
+  }
+  STAT.onBump = k=>render(k);
+  let busy = false;
+  function flush(){
+    if(busy) return; busy = true;
+    const ev = STAT.pend; STAT.pend = {};
+    fetch("/api/live", { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ id, ev }) })
+      .then(r=>r.ok ? r.json() : Promise.reject())
+      .then(d=>{ totals = d.totals || totals; online = d.online || online; render(); })
+      .catch(()=>{ for(const k in ev) STAT.pend[k] = (STAT.pend[k] || 0) + ev[k]; })   // keep them for the next try
+      .finally(()=>busy = false);
+  }
+  setTimeout(flush, 2500);
+  setInterval(()=>{ if(!document.hidden) flush(); }, 45000);
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.hidden && Object.keys(STAT.pend).length){ try{ navigator.sendBeacon("/api/live", new Blob([JSON.stringify({ id, ev:STAT.pend })], { type:"application/json" })); STAT.pend = {}; }catch(e){} }
+    else if(!document.hidden) flush();
+  });
+  render();
+  window.renderSrv = ()=>render();
 })();
 
 /* ---------- init ---------- */
