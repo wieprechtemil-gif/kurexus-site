@@ -3196,7 +3196,7 @@ if(box){
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 2, .1, 200);
   scene.add(new THREE.HemisphereLight(0xfff6ea, 0x24201c, 1.0));
   const sun = new THREE.DirectionalLight(0xfff1dc, 2.3); sun.position.set(-8, 14, 10); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-12, right:12, top:12, bottom:-9, near:1, far:50 }); sun.shadow.radius = 5; sun.shadow.bias = -.0004;
+  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-13, right:13, top:13, bottom:-13, near:1, far:60 }); sun.shadow.radius = 5; sun.shadow.bias = -.0004;
   scene.add(sun);
   const fill = new THREE.DirectionalLight(0xd7e4ff, .7); fill.position.set(9, 7, 7); scene.add(fill);
 
@@ -3285,14 +3285,20 @@ if(box){
     if(accent){ add(new THREE.Mesh(new THREE.BoxGeometry(w*.98,.06,.06), mat({ color:0xc8202a, emissive:0x50080c })), k, g, { cast:false }).position.set(0, -h/2 + .02, -.04); }
     return g;
   }
-  monitor("main", 5.3, 3.1, new THREE.Vector3(.7, 2.35, -.9), -.05, -.18, screen("main"));
-  monitor("second", 6.0, 3.5, new THREE.Vector3(-5.9, 2.6, -.9), .7, -.06, screen("second"), true);
+  const monMain = monitor("main", 5.3, 3.1, new THREE.Vector3(.7, 2.35, -.9), -.05, -.18, screen("main"));
+  const monSec = monitor("second", 6.0, 3.5, new THREE.Vector3(-5.9, 2.6, -.9), .7, -.06, screen("second"), true);
   const stand = new THREE.Group(); scene.add(stand); deskOnly.push(stand);
-  add(rb(1.0,.16,.7,.05, BLACK), null, stand).position.set(-1.6, .08, -1.8);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,3.0,14), BLACK), null, stand).position.set(-1.6, 1.5, -1.8);
-  const armTo = (a, b)=>{ const m = add(new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1,10), BLACK), null, stand); m.position.copy(a).add(b).multiplyScalar(.5); m.scale.y = a.distanceTo(b); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), b.clone().sub(a).normalize()); };
-  armTo(new THREE.Vector3(-1.6, 2.4, -1.8), new THREE.Vector3(.5, 2.3, -1.3));
-  armTo(new THREE.Vector3(-1.6, 2.7, -1.8), new THREE.Vector3(-5.5, 2.6, -1.3));
+  // dual monitor arm: clamp + pole at the back edge of the desk, arms reach into the VESA mounts behind each screen
+  const PX = -2.2, PZ = -3.3;
+  add(rb(.9,.22,.7,.05, BLACK), null, stand).position.set(PX, .11, PZ);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,3.4,14), BLACK), null, stand).position.set(PX, 1.7, PZ);
+  const armTo = (a, b, r=.08)=>{ const m = add(new THREE.Mesh(new THREE.CylinderGeometry(r,r,1,10), BLACK), null, stand); m.position.copy(a).add(b).multiplyScalar(.5); m.scale.y = a.distanceTo(b); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), b.clone().sub(a).normalize()); };
+  const joint = p=>add(new THREE.Mesh(new THREE.SphereGeometry(.14, 12, 8), BLACK), null, stand).position.copy(p);
+  scene.updateMatrixWorld(true);
+  for(const [mon, y, elbow] of [[monMain, 2.5, new THREE.Vector3(-.3, 2.5, -2.6)], [monSec, 2.9, new THREE.Vector3(-4.0, 2.9, -2.9)]]){
+    const mount = mon.localToWorld(new THREE.Vector3(0, 0, -.55)), base = new THREE.Vector3(PX, y, PZ);
+    armTo(base, elbow); joint(elbow); armTo(elbow, mount); joint(mount); joint(base);
+  }
 
   // ---------- keyboard (aluminium, white caps, dark accents) + white mouse
   const kb = new THREE.Group(); kb.position.set(-1.2, .06, 1.05); kb.rotation.y = .12; scene.add(kb); deskOnly.push(kb);
@@ -3331,7 +3337,14 @@ if(box){
   for(const sx of [-1, 1]){ const cup = add(new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .32, 28), BLACK), "headset", hs); cup.rotation.z = Math.PI/2; cup.position.set(sx*.62, -.1, 0); }
 
   // ---------- PC (Lancool 216 white) behind, between the monitors, glass side towards you
-  const pc = new THREE.Group(); pc.position.set(-1.6, 0, -3.1); pc.rotation.y = Math.PI/2 - .22; scene.add(pc);
+  const SHELF_Y = -.7;
+  const shelf = new THREE.Group(); shelf.position.set(-1.3, 0, -5.4); shelf.rotation.y = -.22; scene.add(shelf);
+  const shelfM = mat({ color:0xe9e6df, roughness:.75 });
+  add(rb(5.0, .14, 2.7, .03, shelfM), null, shelf).position.set(0, SHELF_Y - .07, 0);
+  add(rb(5.0, .1, 2.7, .03, shelfM), null, shelf).position.set(0, -2.9, 0);
+  for(const sx of [-2.45, 2.45]) add(rb(.1, 4.6, 2.7, .02, shelfM), null, shelf).position.set(sx, SHELF_Y - 2.3, 0);
+  add(rb(5.0, 4.6, .06, .02, mat({ color:0xdedbd3, roughness:.8 })), null, shelf).position.set(0, SHELF_Y - 2.3, -1.32);
+  const pc = new THREE.Group(); pc.position.set(-1.3, SHELF_Y, -5.4); pc.rotation.y = Math.PI/2 - .22; scene.add(pc);
   const W = 2.3, H = 4.9, D = 4.6, T = .08, caseM = mat({ color:0xf2f2ef, roughness:.5 });
   const sh = m=>{ shell.add(m); return m; };
   sh(add(rb(W, T, D, .03, caseM), "case", pc)).position.set(0, H - T/2, 0);
@@ -3381,7 +3394,7 @@ if(box){
   pc.updateMatrixWorld(true);
   const pcCenter = pc.localToWorld(new THREE.Vector3(-.2, 2.8, 0)), glassN = new THREE.Vector3(-1, 0, 0).applyQuaternion(pc.quaternion);
   const VIEWS = {
-    desk: { target:new THREE.Vector3(.2, 2.3, -.8), yaw:.12, pitch:.42, dist:23, range:.75 },
+    desk: { target:new THREE.Vector3(.0, 2.0, -1.6), yaw:.12, pitch:.4, dist:25, range:.75 },
     pc:   { target:pcCenter.clone().add(new THREE.Vector3(glassN.z, 0, -glassN.x).multiplyScalar(innerWidth > 640 ? 1.7 : 0)).add(new THREE.Vector3(0, -.2, 0)), yaw:Math.atan2(glassN.x, glassN.z), pitch:.16, dist:12.5, range:.42 }
   };
   let mode = "desk", V = VIEWS.desk, yaw = V.yaw, pitch = V.pitch, dist = V.dist, tgt = V.target.clone(), tYaw = yaw, tPitch = pitch;
