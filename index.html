@@ -3310,12 +3310,22 @@ if(box){
   const boom = new THREE.Group(); scene.add(boom); deskOnly.push(boom);
   const bArm = (a, b, k="mic")=>{ const m = add(new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1,10), BLACK), k, boom); m.position.copy(a).add(b).multiplyScalar(.5); m.scale.y = a.distanceTo(b); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), b.clone().sub(a).normalize()); };
   add(rb(.6,.3,.6,.05, BLACK), "mic", boom).position.set(7.3, .15, -2.9);
-  const P0 = new THREE.Vector3(7.3, .3, -2.9), P1 = new THREE.Vector3(7.0, 4.6, -2.3), P2 = new THREE.Vector3(5.5, 4.9, -.9), P3 = new THREE.Vector3(5.4, 3.2, -.2);
+  const P0 = new THREE.Vector3(7.3, .3, -2.9), P1 = new THREE.Vector3(7.0, 4.6, -2.3), P2 = new THREE.Vector3(5.3, 5.4, -1.2), P3 = new THREE.Vector3(4.7, 4.3, -.2);
   bArm(P0, P1); bArm(P1, P2); bArm(P2, P3);
-  const micG = new THREE.Group(); micG.position.copy(P3).add(new THREE.Vector3(0, -.9, .1)); boom.add(micG);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(.34, .34, 1.5, 28), mat({ color:0x1d1d20, roughness:.4, metalness:.4 })), "mic", micG);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(.37, .37, .7, 28), mat({ color:0x2b2c30, roughness:.95 })), "mic", micG).position.y = -.95;
-  add(new THREE.Mesh(new THREE.TorusGeometry(.35, .025, 8, 28), mat({ color:0xc9a35a, metalness:.8, roughness:.3 })), "mic", micG).rotateX(Math.PI/2).position.y = -.55;
+  // TONOR TD510 like in real life: short silver rod down from the arm, a yoke, mic body lying almost horizontal and pointing at you
+  const rodTop = P3.clone(), rodBot = P3.clone().add(new THREE.Vector3(0, -.75, 0));
+  bArm(P3.clone().add(new THREE.Vector3(0, .15, 0)), rodTop);
+  const rod = add(new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .75, 12), SILVER), "mic", boom); rod.position.copy(rodTop).add(rodBot).multiplyScalar(.5);
+  const micG = new THREE.Group(); micG.position.copy(rodBot).add(new THREE.Vector3(0, -.38, 0)); boom.add(micG);
+  micG.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-.55, -.32, 1).normalize());
+  const yoke = add(new THREE.Mesh(new THREE.TorusGeometry(.42, .05, 8, 24, Math.PI), BLACK), "mic", micG); yoke.rotation.set(0, Math.PI/2, Math.PI/2); yoke.position.y = -.15;
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.34, .34, 1.35, 30), mat({ color:0x1b1b1e, roughness:.38, metalness:.45 })), "mic", micG).position.y = -.2;
+  add(new THREE.Mesh(new THREE.TorusGeometry(.345, .03, 8, 30), mat({ color:0xc9a35a, metalness:.85, roughness:.25 })), "mic", micG).rotateX(Math.PI/2).position.y = .48;
+  const foam = add(new THREE.Mesh(new THREE.CylinderGeometry(.37, .37, .85, 30), mat({ color:0x2a2b30, roughness:.98 })), "mic", micG); foam.position.y = .92;
+  add(new THREE.Mesh(new THREE.SphereGeometry(.37, 24, 12, 0, Math.PI*2, 0, Math.PI/2), mat({ color:0x2a2b30, roughness:.98 })), "mic", micG).position.y = 1.34;
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .04, 16), mat({ color:0x3a6cff, emissive:0x1a3cff, emissiveIntensity:.8 })), "mic", micG).rotateZ(Math.PI/2).position.set(.34, .38, 0);   // blue button
+  // cable from the back of the mic up along the arm
+  add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([micG.position.clone().add(new THREE.Vector3(.4, .2, -.6)), rodBot.clone().add(new THREE.Vector3(.5, .4, -.2)), P2.clone().add(new THREE.Vector3(.2, -.2, 0))]), 16, .025, 6), BLACK), "mic", boom);
   const hs = new THREE.Group(); hs.position.set(6.1, 4.2, -1.55); hs.rotation.set(0, -.7, 0); boom.add(hs);
   add(new THREE.Mesh(new THREE.TorusGeometry(.62, .07, 12, 32, Math.PI), BLACK), "headset", hs);
   for(const sx of [-1, 1]){ const cup = add(new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .32, 28), BLACK), "headset", hs); cup.rotation.z = Math.PI/2; cup.position.set(sx*.62, -.1, 0); }
