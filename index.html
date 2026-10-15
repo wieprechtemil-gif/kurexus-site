@@ -3181,57 +3181,55 @@ applyLang(store.get("langChoice") || "en");   // English by default, German only
 
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script type="module">
-/* ---------- R4: kur's real desk in 3D — hover gear, click the PC to look inside and pick parts ---------- */
+/* ---------- R4: kur's desk in 3D (built from his photos) — hover gear, click the PC to look inside ---------- */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 const box = document.getElementById("s3d"), cv = document.getElementById("s3dCv");
 if(box){
   const DE = ()=>document.documentElement.lang === "de";
   const specs = {}; document.querySelectorAll(".spec[data-k]").forEach(r=>specs[r.dataset.k] = { row:r, k:r.querySelector(".sk").textContent, v:r.querySelector(".sv").textContent });
-  const PC_PARTS = ["cpu","cooler","ram","board","gpu","ssd","psu","case"];
+  const PC_PARTS = ["case","cooler","cpu","ram","board","ssd","gpu","psu"];
   const renderer = new THREE.WebGLRenderer({ canvas:cv, antialias:true, alpha:true, powerPreference:"high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;   // static scene → bake shadows once
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
-  const scene = new THREE.Scene();
-  const cam = new THREE.PerspectiveCamera(30, 2, .1, 200);
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 2, .1, 200);
   scene.add(new THREE.HemisphereLight(0xfff6ea, 0x24201c, 1.0));
-  const sun = new THREE.DirectionalLight(0xfff1dc, 2.4); sun.position.set(-7, 13, 8); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-12, right:12, top:12, bottom:-8, near:1, far:45 }); sun.shadow.radius = 5; sun.shadow.bias = -.0004;
+  const sun = new THREE.DirectionalLight(0xfff1dc, 2.3); sun.position.set(-8, 14, 10); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-12, right:12, top:12, bottom:-9, near:1, far:50 }); sun.shadow.radius = 5; sun.shadow.bias = -.0004;
   scene.add(sun);
-  const fill = new THREE.DirectionalLight(0xcfe0ff, .7); fill.position.set(9, 6, 6); scene.add(fill);
+  const fill = new THREE.DirectionalLight(0xd7e4ff, .7); fill.position.set(9, 7, 7); scene.add(fill);
 
-  // ---- procedural textures
-  function marble(){   // black / white / grey liquid swirl like the Nyfpad
-    const W = 1024, H = 448, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d"), img = x.createImageData(W, H), d = img.data;
+  // ---------- textures
+  const tex = (c, aniso=4)=>{ const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = aniso; return t; };
+  function marble(){   // Nyfpad 3XL Liquid: light grey/white field with navy-black swirls and thin white lines
+    const W = 1200, H = 420, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d"), img = x.createImageData(W, H), d = img.data;
     for(let j=0;j<H;j++) for(let i=0;i<W;i++){
-      const u = i/W*6, v = j/H*2.6;
-      const wx = u + .55*Math.sin(v*2.3 + Math.sin(u*1.7)*1.6) + .35*Math.sin(u*3.1 + v*1.4);
-      const wy = v + .45*Math.sin(u*1.9 + Math.cos(v*2.7)*1.3);
-      const s = Math.sin(wx*4.2 + wy*3.1 + Math.sin(wy*2.2 + wx*.7)*2.4);
-      const t = (s + 1)/2; let col;
-      if(t < .5) col = 12 + t*30;                         // black bands (dominant)
-      else if(t < .57) col = 28 + (t-.5)/.07*110;         // fade into grey
-      else if(t < .61) col = 232;                         // thin white line
-      else if(t < .74) col = 132 - (t-.61)/.13*50;        // grey
-      else col = 176 + Math.sin(t*18)*16;                 // light grey field
-      const k = (j*W + i)*4; d[k] = col; d[k+1] = col + 1; d[k+2] = col + 5; d[k+3] = 255;
+      const u = i/W*11, v = j/H*3.9;
+      const wx = u + .6*Math.sin(v*2.1 + Math.sin(u*1.3)*1.8) + .3*Math.sin(u*2.7 + v*1.7);
+      const wy = v + .5*Math.sin(u*1.6 + Math.cos(v*2.4)*1.4);
+      const t = (Math.sin(wx*3.6 + wy*3.4 + Math.sin(wy*2.5 + wx*.8)*2.2) + 1)/2;
+      let r, g, b;
+      if(t < .3){ r = 26; g = 30; b = 44; }                                   // navy-black
+      else if(t < .36){ const k = (t-.3)/.06; r = 26 + k*84; g = 30 + k*86; b = 44 + k*90; }
+      else if(t < .39){ r = 236; g = 238; b = 242; }                          // thin white line
+      else if(t < .5){ const k = (t-.39)/.11; r = 112 - k*20; g = 118 - k*20; b = 134 - k*18; }   // blue-grey
+      else { const k = Math.sin(t*14)*8; r = 214 + k; g = 216 + k; b = 222 + k; }                  // light field (dominant)
+      const p = (j*W + i)*4; d[p] = r; d[p+1] = g; d[p+2] = b; d[p+3] = 255;
     }
-    x.putImageData(img, 0, 0);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+    x.putImageData(img, 0, 0); return tex(c, 8);
   }
   function wood(){
     const c = document.createElement("canvas"); c.width = 1024; c.height = 256; const x = c.getContext("2d");
-    x.fillStyle = "#d6b385"; x.fillRect(0,0,1024,256);
-    for(let i=0;i<140;i++){ x.strokeStyle = `rgba(${120 + Math.random()*40|0},${80 + Math.random()*30|0},40,${.08 + Math.random()*.12})`; x.lineWidth = .6 + Math.random()*1.6; x.beginPath(); const y = Math.random()*256; x.moveTo(0, y); for(let k=0;k<=1024;k+=64) x.lineTo(k, y + Math.sin(k*.01 + i)*4); x.stroke(); }
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    x.fillStyle = "#cfa16a"; x.fillRect(0,0,1024,256);
+    for(let i=0;i<160;i++){ x.strokeStyle = `rgba(${130 + Math.random()*40|0},${85 + Math.random()*30|0},40,${.07 + Math.random()*.12})`; x.lineWidth = .6 + Math.random()*1.6; x.beginPath(); const y = Math.random()*256; x.moveTo(0, y); for(let k=0;k<=1024;k+=64) x.lineTo(k, y + Math.sin(k*.008 + i)*5); x.stroke(); }
+    return tex(c);
   }
-  function screenTex(kind){
+  function screen(kind){
     const c = document.createElement("canvas"); c.width = 640; c.height = 360; const x = c.getContext("2d");
     if(kind === "main"){
       const g = x.createLinearGradient(0,0,0,360); g.addColorStop(0,"#5b7fa8"); g.addColorStop(.52,"#c9d6e2"); g.addColorStop(.53,"#a4835c"); g.addColorStop(1,"#5d4630"); x.fillStyle = g; x.fillRect(0,0,640,360);
       x.fillStyle = "rgba(60,48,36,.85)"; [[30,110,90,90],[150,90,70,110],[250,130,120,70],[400,80,80,120],[500,115,110,85]].forEach(r=>x.fillRect(...r));
-      x.fillStyle = "#2f5f3a"; x.fillRect(255, 165, 110, 18);
       x.strokeStyle = "#00e4ff"; x.lineWidth = 3; x.beginPath(); x.moveTo(320,169); x.lineTo(320,175); x.moveTo(320,185); x.lineTo(320,191); x.moveTo(309,180); x.lineTo(315,180); x.moveTo(325,180); x.lineTo(331,180); x.stroke();
       x.fillStyle = "rgba(0,0,0,.45)"; x.fillRect(14,14,110,110); x.strokeStyle = "rgba(255,255,255,.35)"; x.strokeRect(14,14,110,110);
       x.fillStyle = "#fff"; x.font = "bold 22px monospace"; x.fillText("100", 22, 344); x.fillText("30 / 90", 530, 344);
@@ -3241,129 +3239,175 @@ if(box){
       for(let i=0;i<14;i++){ x.fillStyle = ["#9147ff","#ff7a59","#3ec8ff","#7ee08a"][i%4]; x.fillRect(436, 16 + i*24, 40, 8); x.fillStyle = "#5a5a60"; x.fillRect(482, 16 + i*24, 60 + (i*37)%90, 8); }
       x.fillStyle = "#ff4d5e"; x.beginPath(); x.arc(28,28,6,0,7); x.fill();
     }
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    return tex(c);
+  }
+  function boardTex(){   // B850 AORUS Ice: white/silver PCB, traces, slots, logo
+    const c = document.createElement("canvas"); c.width = 512; c.height = 512; const x = c.getContext("2d");
+    x.fillStyle = "#e9eaec"; x.fillRect(0,0,512,512);
+    x.strokeStyle = "rgba(150,155,165,.35)"; x.lineWidth = 1;
+    for(let i=0;i<90;i++){ x.beginPath(); let px = Math.random()*512, py = Math.random()*512; x.moveTo(px, py); for(let k=0;k<4;k++){ Math.random() < .5 ? px += (Math.random()-.5)*120 : py += (Math.random()-.5)*120; x.lineTo(px, py); } x.stroke(); }
+    x.fillStyle = "#cfd1d5"; x.fillRect(150,120,120,120);                  // socket area
+    x.strokeStyle = "#9a9da4"; x.lineWidth = 3; x.strokeRect(160,130,100,100);
+    x.fillStyle = "#2b2d33"; for(let i=0;i<4;i++) x.fillRect(320 + i*22, 60, 10, 260);   // dimm slots
+    x.fillStyle = "#3a3c42"; x.fillRect(40, 330, 400, 16); x.fillRect(40, 420, 300, 10);   // pcie slots
+    x.fillStyle = "#bfc2c8"; x.fillRect(60, 270, 200, 40);                 // m.2 cover
+    x.fillStyle = "#6c7078"; x.font = "bold 26px sans-serif"; x.fillText("AORUS", 300, 470);
+    x.fillStyle = "#8a8e96"; x.font = "11px monospace"; x.fillText("B850 AORUS ICE", 300, 490);
+    return tex(c, 8);
+  }
+  function perfTex(){
+    const c = document.createElement("canvas"); c.width = 256; c.height = 128; const x = c.getContext("2d");
+    x.fillStyle = "#f2f2ef"; x.fillRect(0,0,256,128); x.fillStyle = "#c9c9c5";
+    for(let r=0;r<10;r++) for(let k=0;k<14;k++) x.fillRect(6 + k*18 + (r%2)*9, 6 + r*12, 10, 4);
+    return tex(c);
   }
 
-  // ---- helpers
-  const parts = {}, pick = [], deskOnly = [];   // deskOnly: hidden while looking into the PC
-  const mat = (o)=>new THREE.MeshStandardMaterial(o);
+  // ---------- helpers
+  const parts = {}, pick = [], deskOnly = [], shell = new Set();
+  const mat = o=>new THREE.MeshStandardMaterial(o);
   const add = (mesh, k, parent=scene, opt={})=>{ mesh.castShadow = opt.cast !== false; mesh.receiveShadow = true; parent.add(mesh);
-    if(k){ mesh.userData.k = k; (parts[k] = parts[k] || []).push(mesh); pick.push(mesh); if(mesh.material && !mesh.material.map && !opt.shared) mesh.material = mesh.material.clone(); } return mesh; };
+    if(k){ mesh.userData.k = k; (parts[k] = parts[k] || []).push(mesh); pick.push(mesh); if(mesh.material && !opt.shared) mesh.material = Array.isArray(mesh.material) ? mesh.material.map(m=>m.clone()) : mesh.material.clone(); } return mesh; };
   const rb = (w,h,d,r,m)=>new THREE.Mesh(new RoundedBoxGeometry(w,h,d,3,r), m);
-  const WHITE = mat({ color:0xf0f0ec, roughness:.45 }), WHITE2 = mat({ color:0xe2e2dd, roughness:.7 }), BLACK = mat({ color:0x141416, roughness:.5, metalness:.2 }), ALU = mat({ color:0xb9bbbe, roughness:.35, metalness:.75 });
+  const WHITE = mat({ color:0xf0f0ec, roughness:.45 }), WHITE2 = mat({ color:0xe0e0dc, roughness:.7 }), BLACK = mat({ color:0x141416, roughness:.5, metalness:.2 }),
+        ALU = mat({ color:0xbfc1c4, roughness:.35, metalness:.75 }), SILVER = mat({ color:0xd5d7da, roughness:.3, metalness:.8 });
 
-  // ---- desk (oak top, white legs) + mousepad
-  add(rb(17, .32, 7.4, .05, mat({ map:wood(), roughness:.7 }))).position.set(0, -.16, 0);
-  for(const [lx,lz] of [[-8,-3.3],[8,-3.3],[-8,3.3],[8,3.3]]) add(new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,5,16), WHITE)).position.set(lx, -2.8, lz);
-  const pad = add(rb(12.6, .05, 4.7, .03, mat({ map:marble(), roughness:.8 })), "pad"); pad.position.set(.6, .025, 1.2);
+  // ---------- desk + pad
+  add(rb(17, .32, 7.6, .05, mat({ map:wood(), roughness:.7 }))).position.set(0, -.16, 0);
+  for(const [lx,lz] of [[-8,-3.4],[8,-3.4],[-8,3.4],[8,3.4]]) add(new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,5,16), WHITE)).position.set(lx, -2.8, lz);
+  add(rb(13, .05, 4.6, .03, mat({ map:marble(), roughness:.85 })), "pad").position.set(.6, .025, 1.45);
 
-  // ---- monitor pole + two black monitors (ASUS front/low, AOC behind/high)
-  const pole = add(new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,6.4,16), BLACK)); pole.position.set(.6, 3.2, -3.1); deskOnly.push(pole);
-  add(rb(1.1,.18,.7,.05, BLACK)).position.set(.6, .09, -3.1);
-  function monitor(k, x, y, z, ry, rx, tex, accent){
-    const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.set(rx, ry, 0); scene.add(g); deskOnly.push(g);
-    add(rb(5.5, 3.2, .2, .04, BLACK), k, g);
-    const scr = add(new THREE.Mesh(new THREE.PlaneGeometry(5.3, 3.0), new THREE.MeshBasicMaterial({ map:tex, toneMapped:false })), k, g, { cast:false, shared:true }); scr.position.z = .105;
+  // ---------- monitors: ASUS centre/front on a pole arm, AOC on the left angled in (red accent)
+  function monitor(k, w, h, pos, ry, rx, t, accent){
+    const g = new THREE.Group(); g.position.copy(pos); g.rotation.set(rx, ry, 0, "YXZ"); scene.add(g); deskOnly.push(g);
+    add(rb(w, h, .2, .04, BLACK), k, g);
+    add(new THREE.Mesh(new THREE.PlaneGeometry(w - .2, h - .2), new THREE.MeshBasicMaterial({ map:t, toneMapped:false })), k, g, { cast:false, shared:true }).position.z = .105;
     add(rb(1.2,.9,.5,.08, BLACK), k, g).position.set(0, 0, -.32);
-    if(accent){ const a = add(new THREE.Mesh(new THREE.BoxGeometry(1.2,.05,.02), mat({ color:0xd4202a, emissive:0x6a0a10 })), k, g, { cast:false }); a.position.set(0, -1.62, .1); }
+    if(accent){ add(new THREE.Mesh(new THREE.BoxGeometry(w*.98,.06,.06), mat({ color:0xc8202a, emissive:0x50080c })), k, g, { cast:false }).position.set(0, -h/2 + .02, -.04); }
     return g;
   }
-  monitor("second", -1.3, 4.55, -2.75, .12, -.04, screenTex("second"), true);   // AOC
-  monitor("main", 1.9, 2.55, -1.15, -.18, -.22, screenTex("main"));            // ASUS
-  // arms
-  for(const [y, tx, tz] of [[4.55, -1.0, -2.95], [2.7, 1.6, -1.5]]){ const arm = add(new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,1,10), BLACK)); deskOnly.push(arm); arm.position.set((.6 + tx)/2, y, (-3.1 + tz)/2); arm.lookAt(new THREE.Vector3(tx, y, tz).add(new THREE.Vector3(0,0,0))); arm.rotateX(Math.PI/2); arm.scale.y = Math.hypot(tx - .6, tz + 3.1); }
+  monitor("main", 5.3, 3.1, new THREE.Vector3(.7, 2.35, -.9), -.05, -.18, screen("main"));
+  monitor("second", 6.0, 3.5, new THREE.Vector3(-5.9, 2.6, -.9), .7, -.06, screen("second"), true);
+  const stand = new THREE.Group(); scene.add(stand); deskOnly.push(stand);
+  add(rb(1.0,.16,.7,.05, BLACK), null, stand).position.set(-1.6, .08, -1.8);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,3.0,14), BLACK), null, stand).position.set(-1.6, 1.5, -1.8);
+  const armTo = (a, b)=>{ const m = add(new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1,10), BLACK), null, stand); m.position.copy(a).add(b).multiplyScalar(.5); m.scale.y = a.distanceTo(b); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), b.clone().sub(a).normalize()); };
+  armTo(new THREE.Vector3(-1.6, 2.4, -1.8), new THREE.Vector3(.5, 2.3, -1.3));
+  armTo(new THREE.Vector3(-1.6, 2.7, -1.8), new THREE.Vector3(-5.5, 2.6, -1.3));
 
-  // ---- keyboard: aluminium case, white caps, a few dark accents
-  const kb = new THREE.Group(); kb.position.set(.4, .06, .95); kb.rotation.y = -.22; scene.add(kb); deskOnly.push(kb);
+  // ---------- keyboard (aluminium, white caps, dark accents) + white mouse
+  const kb = new THREE.Group(); kb.position.set(-1.2, .06, 1.05); kb.rotation.y = .12; scene.add(kb); deskOnly.push(kb);
   add(rb(3.4, .3, 1.35, .07, ALU), "keyboard", kb).position.y = .15;
   const kg = new RoundedBoxGeometry(.19, .12, .19, 2, .035), keyW = mat({ color:0xeeeeea, roughness:.6 }), keyD = mat({ color:0x2a2b2f, roughness:.6 });
-  const im = new THREE.InstancedMesh(kg, keyW, 90), dm = new THREE.Object3D(); let n = 0; const darkKeys = [];
-  for(let r=0;r<6;r++) for(let c=0;c<15;c++){ dm.position.set(-1.5 + c*.214, .33, -.54 + r*.215); dm.updateMatrix(); if((r === 5 && c > 2 && c < 6) || (r === 0 && c === 0)) darkKeys.push(dm.matrix.clone()); else im.setMatrixAt(n++, dm.matrix); }
+  const im = new THREE.InstancedMesh(kg, keyW, 90), dm = new THREE.Object3D(); let n = 0; const dk = [];
+  for(let r=0;r<6;r++) for(let c=0;c<15;c++){ dm.position.set(-1.5 + c*.214, .33, -.54 + r*.215); dm.updateMatrix(); if((r === 5 && c > 2 && c < 6) || (r === 0 && c === 0) || (r === 3 && c === 14)) dk.push(dm.matrix.clone()); else im.setMatrixAt(n++, dm.matrix); }
   im.count = n; add(im, "keyboard", kb, { shared:true });
-  const imd = new THREE.InstancedMesh(kg, keyD, darkKeys.length); darkKeys.forEach((m,i)=>imd.setMatrixAt(i, m)); add(imd, "keyboard", kb, { shared:true });
-  // ---- mouse: white, black wheel
-  const ms = new THREE.Group(); ms.position.set(1.9, .02, 2.35); ms.rotation.y = -.15; scene.add(ms); deskOnly.push(ms);
-  const mb = add(rb(.66, .38, 1.2, .2, WHITE), "mouse", ms); mb.position.y = .19; mb.scale.set(1, 1, 1);
+  const imd = new THREE.InstancedMesh(kg, keyD, dk.length); dk.forEach((m,i)=>imd.setMatrixAt(i, m)); add(imd, "keyboard", kb, { shared:true });
+  const ms = new THREE.Group(); ms.position.set(2.9, .02, .85); ms.rotation.y = -.1; scene.add(ms); deskOnly.push(ms);
+  add(rb(.66, .38, 1.2, .2, WHITE), "mouse", ms).position.y = .19;
   add(rb(.08, .1, .2, .03, BLACK), "mouse", ms).position.set(0, .4, -.32);
 
-  // ---- PC (Lancool 216, white) behind on the right, glass side towards you
-  const pc = new THREE.Group(); pc.position.set(5.1, 0, -2.2); pc.rotation.y = .5; scene.add(pc);
-  const W = 2.3, H = 4.9, D = 4.6, T = .08;
-  const caseM = mat({ color:0xf2f2ef, roughness:.5 });
-  add(rb(W, T, D, .03, caseM), "case", pc).position.set(0, H - T/2, 0);
-  add(rb(W, .5, D, .03, caseM), "case", pc).position.set(0, .25, 0);
-  add(rb(T, H, D, .03, caseM), "case", pc).position.set(W/2 - T/2, H/2, 0);                // right side (solid)
-  add(rb(W, H, T, .03, caseM), "case", pc).position.set(0, H/2, -D/2 + T/2);               // back
-  add(rb(W, H, T, .03, mat({ color:0xe6e6e2, roughness:.9 })), "case", pc).position.set(0, H/2, D/2 - T/2);  // mesh front
-  const glass = add(new THREE.Mesh(new THREE.BoxGeometry(.02, H - .55, D - .16), new THREE.MeshPhysicalMaterial({ color:0xffffff, roughness:.04, transparent:true, opacity:.14, metalness:0 })), "case", pc, { cast:false, shared:true });
-  glass.position.set(-W/2 + .01, H/2 + .25, 0);
-  // inside (seen through the glass on the -x side)
-  add(rb(.06, 3.0, 3.0, .02, mat({ color:0xd9d9d6, roughness:.55, metalness:.25 })), "board", pc).position.set(W/2 - .2, 3.0, -.4);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.25,32), WHITE), "cpu", pc).rotateZ(Math.PI/2).position.set(W/2 - .4, 3.45, -.55);
-  for(let i=0;i<2;i++) add(rb(.1, 1.35, .08, .02, mat({ color:0x2a2020, roughness:.5 })), "ram", pc).position.set(W/2 - .3, 3.45, .2 + i*.15);
-  add(rb(.05, .12, .65, .02, mat({ color:0xb4b4b0, roughness:.3, metalness:.7 })), "ssd", pc).position.set(W/2 - .26, 2.4, -.3);
-  // GPU: white ASUS Prime, horizontal, with support pillar + white cables
-  const gpu = add(rb(1.25, .6, 3.2, .06, WHITE), "gpu", pc); gpu.position.set(.15, 2.05, .05);
-  add(rb(1.27, .14, 3.0, .03, mat({ color:0x8a7a60, roughness:.4, metalness:.6 })), "gpu", pc).position.set(.15, 1.75, .05);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,1.2,10), WHITE), "gpu", pc).position.set(-.25, 1.15, 1.2);
-  add(new THREE.Mesh(new THREE.TorusGeometry(.35,.07,8,20, Math.PI), WHITE2), "gpu", pc).rotateY(Math.PI/2).position.set(-.35, 1.55, .2);
-  // 360 AIO on top: 3 fans + radiator, white sleeved tubes to the pump
-  add(rb(1.5, .35, 4.0, .04, WHITE2), "cooler", pc).position.set(.1, H - .35, 0);
-  const fans = [];
-  for(let i=0;i<3;i++){ const f = add(new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,.06,9), WHITE), "cooler", pc); f.position.set(.1, H - .58, -1.3 + i*1.3); fans.push(f); f.castShadow = false; }
-  for(const dz of [-.08, .12]) add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(W/2 - .5, 3.45, -.55 + dz), new THREE.Vector3(-.3, 3.6, -1.2 + dz), new THREE.Vector3(-.5, 4.1, -1.9 + dz)]), 20, .08, 8), WHITE2), "cooler", pc);
-  // front intake fans + PSU shroud
-  for(let i=0;i<2;i++){ const f = add(new THREE.Mesh(new THREE.TorusGeometry(.55,.05,8,28), WHITE), "case", pc); f.position.set(0, 2.2 + i*1.35, D/2 - .3); }
-  add(rb(W - .16, .85, D - .2, .03, WHITE), "psu", pc).position.set(0, .93, 0);
-  const pcLight = new THREE.PointLight(0xffffff, 1.6, 5); pcLight.position.set(-.3, 3, .3); pc.add(pcLight);
+  // ---------- mic on a boom arm (right), headset hanging on the arm
+  const boom = new THREE.Group(); scene.add(boom); deskOnly.push(boom);
+  const bArm = (a, b, k="mic")=>{ const m = add(new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1,10), BLACK), k, boom); m.position.copy(a).add(b).multiplyScalar(.5); m.scale.y = a.distanceTo(b); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), b.clone().sub(a).normalize()); };
+  add(rb(.6,.3,.6,.05, BLACK), "mic", boom).position.set(7.3, .15, -2.9);
+  const P0 = new THREE.Vector3(7.3, .3, -2.9), P1 = new THREE.Vector3(7.0, 4.6, -2.3), P2 = new THREE.Vector3(5.5, 4.9, -.9), P3 = new THREE.Vector3(5.4, 3.2, -.2);
+  bArm(P0, P1); bArm(P1, P2); bArm(P2, P3);
+  const micG = new THREE.Group(); micG.position.copy(P3).add(new THREE.Vector3(0, -.9, .1)); boom.add(micG);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.34, .34, 1.5, 28), mat({ color:0x1d1d20, roughness:.4, metalness:.4 })), "mic", micG);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.37, .37, .7, 28), mat({ color:0x2b2c30, roughness:.95 })), "mic", micG).position.y = -.95;
+  add(new THREE.Mesh(new THREE.TorusGeometry(.35, .025, 8, 28), mat({ color:0xc9a35a, metalness:.8, roughness:.3 })), "mic", micG).rotateX(Math.PI/2).position.y = -.55;
+  const hs = new THREE.Group(); hs.position.set(6.1, 4.2, -1.55); hs.rotation.set(0, -.7, 0); boom.add(hs);
+  add(new THREE.Mesh(new THREE.TorusGeometry(.62, .07, 12, 32, Math.PI), BLACK), "headset", hs);
+  for(const sx of [-1, 1]){ const cup = add(new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .32, 28), BLACK), "headset", hs); cup.rotation.z = Math.PI/2; cup.position.set(sx*.62, -.1, 0); }
 
-  // ---- camera rig: overview ↔ PC close-up, all damped
+  // ---------- PC (Lancool 216 white) behind, between the monitors, glass side towards you
+  const pc = new THREE.Group(); pc.position.set(-1.6, 0, -3.1); pc.rotation.y = Math.PI/2 - .22; scene.add(pc);
+  const W = 2.3, H = 4.9, D = 4.6, T = .08, caseM = mat({ color:0xf2f2ef, roughness:.5 });
+  const sh = m=>{ shell.add(m); return m; };
+  sh(add(rb(W, T, D, .03, caseM), "case", pc)).position.set(0, H - T/2, 0);
+  sh(add(rb(W, .5, D, .03, mat({ color:0xe8e8e4, roughness:.85 })), "case", pc)).position.set(0, .25, 0);
+  sh(add(rb(T, H, D, .03, caseM), "case", pc)).position.set(W/2 - T/2, H/2, 0);
+  sh(add(rb(W, H, T, .03, caseM), "case", pc)).position.set(0, H/2, -D/2 + T/2);
+  sh(add(rb(W, H, T, .03, mat({ map:perfTex(), roughness:.9 })), "case", pc)).position.set(0, H/2, D/2 - T/2);
+  const glass = new THREE.Mesh(new THREE.BoxGeometry(.02, H - .55, D - .16), new THREE.MeshPhysicalMaterial({ color:0xffffff, roughness:.04, transparent:true, opacity:.12 }));
+  glass.position.set(-W/2 + .01, H/2 + .25, 0); pc.add(glass);
+  // front intake fans (inside the mesh front)
+  for(let i=0;i<2;i++){ const f = add(new THREE.Mesh(new THREE.TorusGeometry(.55,.06,8,28), WHITE), "case", pc); f.position.set(0, 2.4 + i*1.3, D/2 - .28); }
+  // motherboard: textured PCB + VRM heatsinks, chipset, M.2 cover, 24-pin, PCIe slot
+  const BX = W/2 - .14;
+  const pcb = add(new THREE.Mesh(new THREE.BoxGeometry(.05, 3.0, 3.1), [mat({ color:0xd8d9dc }), mat({ map:boardTex(), roughness:.55 }), mat({ color:0xd8d9dc }), mat({ color:0xd8d9dc }), mat({ color:0xd8d9dc }), mat({ color:0xd8d9dc })]), "board", pc);
+  pcb.position.set(BX, 3.0, -.45); pcb.rotation.y = Math.PI;   // textured face towards the glass
+  add(rb(.28, .5, 1.3, .03, SILVER), "board", pc).position.set(BX - .17, 4.25, -.65);          // top VRM heatsink
+  add(rb(.28, 1.2, .38, .03, SILVER), "board", pc).position.set(BX - .17, 3.55, -1.6);         // left VRM heatsink
+  add(rb(.12, .55, .55, .03, SILVER), "board", pc).position.set(BX - .1, 1.85, -1.2);          // chipset
+  add(rb(.2, .55, .2, .02, WHITE), "board", pc).position.set(BX - .13, 3.3, .95);              // 24-pin
+  add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(BX - .25, 3.3, .95), new THREE.Vector3(BX - .5, 3.0, 1.25), new THREE.Vector3(BX - .2, 2.2, 1.4)]), 12, .1, 6), WHITE2), "board", pc);
+  add(rb(.08, .1, 2.0, .02, BLACK), "board", pc).position.set(BX - .07, 2.45, -.55);           // pcie x16
+  add(rb(.07, .3, 1.1, .02, SILVER), "ssd", pc).position.set(BX - .08, 2.75, -.9);             // M.2 under its cover
+  // CPU + AIO pump (white round block with grille)
+  add(rb(.12, .55, .55, .03, SILVER), "cpu", pc).position.set(BX - .08, 3.55, -.65);
+  const pump = add(new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .3, 36), WHITE), "cooler", pc); pump.rotation.z = Math.PI/2; pump.position.set(BX - .32, 3.55, -.65);
+  add(new THREE.Mesh(new THREE.CircleGeometry(.3, 32), mat({ color:0xcfd0d2, roughness:.6, metalness:.4 })), "cooler", pc).rotateY(-Math.PI/2).position.set(BX - .48, 3.55, -.65);
+  // RAM (2 sticks, dark with red)
+  for(let i=0;i<2;i++){ add(rb(.32, 1.25, .1, .02, mat({ color:0x231d1f, roughness:.5 })), "ram", pc).position.set(BX - .2, 3.45, .15 + i*.2);
+    add(new THREE.Mesh(new THREE.BoxGeometry(.33, .06, .11), mat({ color:0xa3212b, emissive:0x400a0e })), "ram", pc).position.set(BX - .2, 4.1, .15 + i*.2); }
+  // GPU: white ASUS Prime, horizontal, fin stack, 3 white power cables, support pillar
+  const gpu = add(rb(1.3, .62, 3.25, .06, WHITE), "gpu", pc); gpu.position.set(.05, 2.1, -.05);
+  add(rb(1.32, .16, 3.05, .03, mat({ color:0x8c7c62, roughness:.4, metalness:.6 })), "gpu", pc).position.set(.05, 1.78, -.05);
+  add(new THREE.Mesh(new THREE.BoxGeometry(.01, .18, .7), mat({ color:0x222222 })), "gpu", pc).position.set(-.61, 2.15, .9);
+  for(let i=0;i<3;i++) add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.3, 2.42, -.2 + i*.16), new THREE.Vector3(-.5, 2.0, -.25 + i*.16), new THREE.Vector3(-.45, 1.25, -.1 + i*.1)]), 10, .05, 6), WHITE2), "gpu", pc);
+  add(new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,1.1,10), WHITE), "gpu", pc).position.set(-.25, 1.25, 1.25);
+  // 360 radiator + 3 fans at the top, sleeved tubes to the pump
+  add(rb(1.5, .32, 4.0, .04, WHITE2), "cooler", pc).position.set(.1, H - .32, 0);
+  const fans = [];
+  for(let i=0;i<3;i++){ const ring = add(new THREE.Mesh(new THREE.TorusGeometry(.56,.05,8,28), WHITE), "cooler", pc); ring.rotation.x = Math.PI/2; ring.position.set(.1, H - .56, -1.3 + i*1.3);
+    const bl = add(new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.04,9), WHITE2), "cooler", pc, { cast:false }); bl.position.set(.1, H - .56, -1.3 + i*1.3); fans.push(bl); }
+  for(const dz of [-.1, .12]) add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(BX - .45, 3.6, -.65 + dz), new THREE.Vector3(-.35, 3.9, -1.3 + dz), new THREE.Vector3(-.4, 4.35, -1.9 + dz)]), 20, .085, 8), WHITE2), "cooler", pc);
+  // PSU shroud (perforated)
+  add(rb(W - .16, .85, D - .2, .03, mat({ map:perfTex(), roughness:.8 })), "psu", pc).position.set(0, .93, 0);
+  const pcLight = new THREE.PointLight(0xffffff, 1.5, 5); pcLight.position.set(-.5, 3, .3); pc.add(pcLight);
+
+  // ---------- views
+  pc.updateMatrixWorld(true);
+  const pcCenter = pc.localToWorld(new THREE.Vector3(-.2, 2.8, 0)), glassN = new THREE.Vector3(-1, 0, 0).applyQuaternion(pc.quaternion);
   const VIEWS = {
-    desk: { target:new THREE.Vector3(.6, 2.6, -.6), yaw:-.38, pitch:.3, dist:23.5 },
-    pc:   { target:new THREE.Vector3(5.6, 2.5, -1.4), yaw:-1.05, pitch:.2, dist:8.2 }
+    desk: { target:new THREE.Vector3(.2, 2.3, -.8), yaw:.12, pitch:.42, dist:23, range:.75 },
+    pc:   { target:pcCenter.clone().add(new THREE.Vector3(glassN.z, 0, -glassN.x).multiplyScalar(innerWidth > 640 ? 1.7 : 0)).add(new THREE.Vector3(0, -.2, 0)), yaw:Math.atan2(glassN.x, glassN.z), pitch:.16, dist:12.5, range:.42 }
   };
   let mode = "desk", V = VIEWS.desk, yaw = V.yaw, pitch = V.pitch, dist = V.dist, tgt = V.target.clone(), tYaw = yaw, tPitch = pitch;
-  const back = document.getElementById("s3dBack"), list = document.getElementById("s3dParts");
+  const back = document.getElementById("s3dBack"), list = document.getElementById("s3dParts"), tip = document.getElementById("s3dTip");
+  let hot = null, selected = null, tipAt = null, fade = 1, fadeT = 1;
   function setMode(m){
     mode = m; V = VIEWS[m]; tYaw = V.yaw; tPitch = V.pitch; selected = null;
-    box.classList.toggle("pcmode", m === "pc"); back.hidden = m !== "pc"; list.hidden = m !== "pc";
-    fadeT = m === "pc" ? 0 : 1;
+    box.classList.toggle("pcmode", m === "pc"); back.hidden = m !== "pc"; list.hidden = m !== "pc"; fadeT = m === "pc" ? 0 : 1;
     setHot(null);
   }
   list.innerHTML = PC_PARTS.map(k=>`<button data-k="${k}"><span>${specs[k] ? specs[k].k : k}</span><b>${specs[k] ? specs[k].v : ""}</b></button>`).join("");
-  list.addEventListener("click", e=>{ const b = e.target.closest("button"); if(b){ selected = b.dataset.k; setHot(selected); } });
+  list.addEventListener("click", e=>{ const b = e.target.closest("button"); if(b){ selected = b.dataset.k; tipAt = null; setHot(selected); } });
+  list.addEventListener("pointerover", e=>{ const b = e.target.closest("button"); if(b){ tipAt = null; setHot(b.dataset.k); } });
+  list.addEventListener("pointerleave", ()=>setHot(selected));
   back.addEventListener("click", ()=>setMode("desk"));
   addEventListener("keydown", e=>{ if(e.key === "Escape" && mode === "pc") setMode("desk"); });
 
-  let dragging = false, moved = 0, lx = 0, ly = 0, lastMove = 0, ptrIn = false, hot = null, selected = null;
-  const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(), tip = document.getElementById("s3dTip");
-  cv.addEventListener("pointerdown", e=>{ dragging = true; moved = 0; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId); });
-  cv.addEventListener("pointerup", e=>{
-    dragging = false; cv.classList.remove("drag");
-    if(moved < 6){   // a click, not a drag
-      const k = pickAt(e);
-      if(mode === "desk" && k && PC_PARTS.includes(k)) setMode("pc");
-      else if(mode === "pc"){ if(k && PC_PARTS.includes(k)){ selected = k; setHot(k); } else if(!k) setMode("desk"); }
-    }
-  });
-  cv.addEventListener("pointermove", e=>{
-    const r = cv.getBoundingClientRect(); ptr.x = (e.clientX - r.left)/r.width*2 - 1; ptr.y = -(e.clientY - r.top)/r.height*2 + 1; ptrIn = true; lastMove = performance.now();
-    if(dragging){ const dx = e.clientX - lx, dy = e.clientY - ly; moved += Math.abs(dx) + Math.abs(dy); if(moved > 6){ cv.classList.add("drag"); document.getElementById("s3dHint").style.opacity = 0; }
-      tYaw = Math.max(V.yaw - .7, Math.min(V.yaw + .7, tYaw - dx*.005)); tPitch = Math.max(.08, Math.min(.72, tPitch + dy*.004)); lx = e.clientX; ly = e.clientY; }
-  });
-  cv.addEventListener("pointerleave", ()=>{ ptrIn = false; if(!selected) setHot(null); });
-  function pickAt(e){ const r = cv.getBoundingClientRect(); ptr.x = (e.clientX - r.left)/r.width*2 - 1; ptr.y = -(e.clientY - r.top)/r.height*2 + 1; ray.setFromCamera(ptr, cam); const h = ray.intersectObjects(pick, false).find(h=>h.object !== glass || mode === "desk"); return h ? h.object.userData.k : null; }
-  // in the overview every PC part answers as "the PC" (click to open); inside, parts answer for themselves
+  // ---------- picking: inside the PC, the inner parts win over the case shell
+  const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+  function pickAt(cx, cy){
+    const r = cv.getBoundingClientRect(); ptr.x = (cx - r.left)/r.width*2 - 1; ptr.y = -(cy - r.top)/r.height*2 + 1; ray.setFromCamera(ptr, cam);
+    const hits = ray.intersectObjects(pick, false).filter(h=>h.object.visible && (mode === "desk" || PC_PARTS.includes(h.object.userData.k)));
+    if(!hits.length) return null;
+    if(mode === "pc"){ const inner = hits.find(h=>!shell.has(h.object)); if(inner && (!shell.has(hits[0].object) || inner.distance - hits[0].distance < 3)) return inner.object.userData.k; }
+    return hits[0].object.userData.k;
+  }
   const groupKey = k=>mode === "desk" && PC_PARTS.includes(k) ? "pc" : k;
   function paint(k, on){
-    const ks = k === "pc" ? PC_PARTS : [k];
-    ks.forEach(kk=>(parts[kk] || []).forEach(m=>{ const mt = m.material; if(mt && mt.emissive && m !== glass && !(mt.map)){ mt.emissive.setHex(on ? 0x4aa8ff : 0); mt.emissiveIntensity = on ? (k === "pc" ? .28 : .6) : 1; } }));
+    (k === "pc" ? PC_PARTS : [k]).forEach(kk=>(parts[kk] || []).forEach(m=>{ (Array.isArray(m.material) ? m.material : [m.material]).forEach(mt=>{ if(mt && mt.emissive && !mt.map){ mt.emissive.setHex(on ? 0x4aa8ff : (mt.userData.e0 ?? (mt.userData.e0 = mt.emissive.getHex(), mt.userData.e0))); mt.emissiveIntensity = on ? (k === "pc" ? .25 : .65) : 1; } }); }));
   }
+  (()=>{ pick.forEach(m=>(Array.isArray(m.material) ? m.material : [m.material]).forEach(mt=>{ if(mt && mt.emissive) mt.userData.e0 = mt.emissive.getHex(); })); })();
   function setHot(k){
-    k = k ? groupKey(k) : (selected || null);
+    k = k ? groupKey(k) : null;
     if(k === hot) return;
     if(hot) paint(hot, false);
-    Object.values(specs).forEach(s=>s.row.classList.remove("hot")); list.querySelectorAll("button").forEach(b=>b.classList.remove("on"));
+    Object.values(specs).forEach(s=>s.row.classList.remove("hot")); list.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.k === selected));
     hot = k;
     if(!k){ tip.hidden = true; return; }
     paint(k, true);
@@ -3372,34 +3416,58 @@ if(box){
       document.getElementById("s3dK").textContent = specs[k] ? specs[k].k : k; document.getElementById("s3dV").textContent = specs[k] ? specs[k].v : ""; }
     tip.hidden = false;
   }
-  Object.entries(specs).forEach(([k,s])=>{ s.row.addEventListener("pointerenter", ()=>{ if(parts[k]) setHot(k); }); s.row.addEventListener("pointerleave", ()=>setHot(null)); });
+  Object.entries(specs).forEach(([k,s])=>{ s.row.addEventListener("pointerenter", ()=>{ if(parts[k]){ tipAt = null; setHot(k); } }); s.row.addEventListener("pointerleave", ()=>setHot(selected)); });
+
+  // ---------- pointer: drag = look around, click = enter PC / pick a part
+  let dragging = false, moved = 0, lx = 0, ly = 0, lastMove = 0, ptrIn = false, px = 0, py = 0;
+  cv.addEventListener("pointerdown", e=>{ dragging = true; moved = 0; lx = e.clientX; ly = e.clientY; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointerup", e=>{
+    dragging = false;
+    if(moved >= 6) return;
+    const k = pickAt(e.clientX, e.clientY);
+    if(mode === "desk"){ if(k && PC_PARTS.includes(k)) setMode("pc"); }
+    else { selected = k && PC_PARTS.includes(k) ? k : null; setHot(selected); }
+  });
+  cv.addEventListener("pointermove", e=>{
+    const r = cv.getBoundingClientRect(); px = e.clientX; py = e.clientY; ptrIn = true; lastMove = performance.now();
+    if(dragging){ const dx = e.clientX - lx, dy = e.clientY - ly; moved += Math.abs(dx) + Math.abs(dy); if(moved > 6) document.getElementById("s3dHint").style.opacity = 0;
+      tYaw = Math.max(V.yaw - V.range, Math.min(V.yaw + V.range, tYaw - dx*.005)); tPitch = Math.max(-.05, Math.min(.72, tPitch + dy*.004)); lx = e.clientX; ly = e.clientY; }
+  });
+  cv.addEventListener("pointerleave", ()=>{ ptrIn = false; setHot(selected); });
+
   const tmp = new THREE.Vector3(), bb = new THREE.Box3();
-  function tipPos(){
+  function placeTip(){
     if(!hot || tip.hidden) return;
-    bb.makeEmpty(); (hot === "pc" ? PC_PARTS : [hot]).forEach(kk=>(parts[kk] || []).forEach(m=>bb.expandByObject(m))); bb.getCenter(tmp); tmp.y = bb.max.y;
-    tmp.project(cam); const r = cv.getBoundingClientRect(), w = tip.offsetWidth;
-    tip.style.left = Math.max(w/2 + 10, Math.min(r.width - w/2 - 10, (tmp.x + 1)/2*r.width)) + "px";
-    tip.style.top = Math.max(tip.offsetHeight + 20, Math.min(r.height - 10, (1 - tmp.y)/2*r.height)) + "px";
+    const r = cv.getBoundingClientRect(), w = tip.offsetWidth; let x, y;
+    if(tipAt){ x = tipAt.x - r.left; y = tipAt.y - r.top - 8; }
+    else { bb.makeEmpty(); (hot === "pc" ? PC_PARTS : [hot]).forEach(kk=>(parts[kk] || []).forEach(m=>bb.expandByObject(m))); bb.getCenter(tmp); tmp.y = bb.max.y; tmp.project(cam); x = (tmp.x + 1)/2*r.width; y = (1 - tmp.y)/2*r.height; }
+    const maxX = mode === "pc" && innerWidth > 640 ? r.width - 260 : r.width;
+    tip.style.left = Math.max(w/2 + 10, Math.min(maxX - w/2 - 10, x)) + "px";
+    tip.style.top = Math.max(tip.offsetHeight + 16, Math.min(r.height - 10, y)) + "px";
   }
-  // ---- loop: only while on screen
-  let visible = false, raf = 0, frames = 0, fade = 1, fadeT = 1;
+
+  // ---------- loop (only while on screen)
+  let visible = false, raf = 0, frames = 0;
   new IntersectionObserver(es=>{ visible = es[0].isIntersecting; if(visible && !raf) raf = requestAnimationFrame(loop); }, { rootMargin:"120px" }).observe(box);
-  function size(){ const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); cam.aspect = w/h; cam.fov = w < 640 ? 42 : 30; cam.updateProjectionMatrix(); }
+  function size(){ const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); cam.aspect = w/h; cam.fov = w < 640 ? 44 : 30; cam.updateProjectionMatrix(); }
   addEventListener("resize", size); size();
   const t0 = performance.now();
   function loop(now){
     raf = 0; if(!visible) return;
-    const t = (now - t0)/1000;
-    if(!dragging && now - lastMove > 3000) tYaw += (V.yaw + Math.sin(t*.22)*.16 - tYaw)*.008;   // slow idle sway
-    const k = .075;
+    const t = (now - t0)/1000, dt = Math.min(.1, (now - (loop.last || now))/1000); loop.last = now;
+    if(mode === "desk" && !dragging && now - lastMove > 3000) tYaw += (V.yaw + Math.sin(t*.22)*.18 - tYaw)*.008;
+    const k = 1 - Math.pow(.006, dt);
     yaw += (tYaw - yaw)*k; pitch += (tPitch - pitch)*k; dist += (V.dist - dist)*k; tgt.lerp(V.target, k);
     cam.position.set(tgt.x + Math.sin(yaw)*Math.cos(pitch)*dist, tgt.y + Math.sin(pitch)*dist, tgt.z + Math.cos(yaw)*Math.cos(pitch)*dist); cam.lookAt(tgt);
     fans.forEach((f,i)=>f.rotation.y = t*(5 + i));
-    // fade the desk gear out/in when entering/leaving the PC view
-    if(Math.abs(fade - fadeT) > .001){ fade += (fadeT - fade)*.12; deskOnly.forEach(o=>{ o.visible = fade > .04; o.traverse(m=>{ if(m.material){ const tr = fade < .99; if(m.material.transparent !== tr){ m.material.transparent = tr; m.material.needsUpdate = true; } m.material.opacity = fade; } }); }); renderer.shadowMap.needsUpdate = true; }
-    if(ptrIn && !dragging && !selected){ ray.setFromCamera(ptr, cam); const h = ray.intersectObjects(pick, false).find(h=>h.object !== glass || mode === "desk"); setHot(h ? h.object.userData.k : null); }
-    cv.style.cursor = dragging && moved > 6 ? "grabbing" : hot ? "pointer" : "grab";
-    tipPos();
+    if(Math.abs(fade - fadeT) > .002){
+      fade += Math.sign(fadeT - fade) * Math.min(Math.abs(fadeT - fade), dt/.35); 
+      deskOnly.forEach(o=>{ o.visible = fade > .03; o.traverse(m=>{ if(m.material) (Array.isArray(m.material) ? m.material : [m.material]).forEach(mt=>{ const tr = fade < .999; if(mt.transparent !== tr){ mt.transparent = tr; mt.needsUpdate = true; } mt.opacity = fade; }); }); });
+      renderer.shadowMap.needsUpdate = true;
+    }
+    if(ptrIn && !dragging){ const kk = pickAt(px, py); if(kk){ tipAt = { x:px, y:py }; setHot(kk); } else { tipAt = null; setHot(selected); } }
+    cv.style.cursor = dragging && moved > 6 ? "grabbing" : hot && hot !== selected ? "pointer" : "grab";
+    placeTip();
     if(frames++ < 3) renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, cam);
     raf = requestAnimationFrame(loop);
