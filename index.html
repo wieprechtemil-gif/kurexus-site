@@ -2811,7 +2811,7 @@ const drawSmokes = (function(){
   const fire = ()=>{
     const [dx, dy] = SPRAY[shot], x = ax + scrollX + dx*1.6 + (Math.random()-.5)*4, y = ay + scrollY + dy*1.6 + (Math.random()-.5)*4;
     hole(x, y); hits.push([x, y]);
-    if(inSmoke(x, y)){ cutSmoke(x, y, 15 + Math.random()*5, 1.4 + Math.random()*.5); const ax2 = ax + scrollX, ay2 = ay + scrollY; cutSmoke((x + ax2)/2, (y + ay2)/2, 9, 1.0); }
+    if(inSmoke(x, y)) cutSmoke(x, y, 15 + Math.random()*5, 1.4 + Math.random()*.5);
     // brass flies out to the right and drops to the floor of the screen
     if(!REDUCED){ CASINGS.push({ x:ax + 12, y:ay - 4, vx:160 + Math.random()*170, vy:-(260 + Math.random()*200), rot:Math.random()*6, vr:(Math.random()-.5)*40, floor:innerHeight - 6 - Math.random()*14 }); if(CASINGS.length > 60) CASINGS.shift(); }
   };
