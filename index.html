@@ -2589,10 +2589,14 @@ if(!REDUCED){
 const inSmoke = (x, y)=>{ const now = performance.now(); return SMOKES.some(k=>{ const age = (now-k.t)/1000; return age < 9 && Math.hypot(x-k.x, y-k.y) < k.r*.9; }); };
 const FIRES = [], BLASTS = [], CASINGS = [], FLAMES = [];
 const inFire = (x, y)=>{ const now = performance.now(); return FIRES.some(f=>{ const age = (now-f.t)/1000; return age < 7 && Math.hypot(x-f.x, y-f.y) < f.r; }); };
+// holes punched into smokes (page coords): bullets make small tunnels, an HE clears the smoke for a moment — both refill like in CS2
+const SMOKE_CUTS = [];
+const cutSmoke = (x, y, r0, life, grow=.06)=>{ SMOKE_CUTS.push({ x, y, r0, life, grow, t:performance.now() }); if(SMOKE_CUTS.length > 120) SMOKE_CUTS.shift(); };
 const drawSmokes = (function(){
   const cv = $("smokeFx"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio||1,2);
+  const sc = document.createElement("canvas"), sctx = sc.getContext("2d");   // smokes are drawn here first so the cuts only erase smoke
   let W = 0, H = 0, had = false, last = performance.now(), lastTink = 0;
-  const resize = ()=>{ W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+  const resize = ()=>{ W = innerWidth; H = innerHeight; cv.width = sc.width = W*dpr; cv.height = sc.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); sctx.setTransform(dpr,0,0,dpr,0,0); };
   resize(); addEventListener("resize", resize);
   return tt=>{
     const now = performance.now(), dt = Math.min(.05, (now - last)/1000); last = now;
@@ -2602,12 +2606,12 @@ const drawSmokes = (function(){
     ctx.globalCompositeOperation = "lighter";
     for(let i=FIRES.length-1;i>=0;i--){
       const f = FIRES[i], age = (now - f.t)/1000;
-      if(age > 7.6){ FIRES.splice(i,1); continue; }
+      if(age > 7.6 || (f.out && now - f.out > 650)){ FIRES.splice(i,1); continue; }
       if(!f.cells){
         f.h = [Math.random()*6, Math.random()*6, Math.random()*6];
         f.cells = Array.from({length:120}, ()=>{ const a = Math.random()*6.283, d = Math.sqrt(Math.random()); return { a, d, s:13 + Math.random()*18, ph:Math.random()*6.3, sp:6 + Math.random()*10 }; });
       }
-      const grow = 1-Math.pow(1-Math.min(1, age/.9),3), fade = age > 6.4 ? 1-(age-6.4)/1.2 : 1;
+      const grow = 1-Math.pow(1-Math.min(1, age/.9),3), fade = Math.min(age > 6.4 ? 1-(age-6.4)/1.2 : 1, f.out ? Math.max(0, 1 - (now - f.out)/650) : 1);
       f.r = 120*grow;
       const x = f.x - scrollX, y = f.y - scrollY;
       if(y < -200 || y > H+200) continue;
@@ -2626,7 +2630,7 @@ const drawSmokes = (function(){
         ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx,cy,sz,0,7); ctx.fill();
       }
       // sparks drift outwards across the ground
-      if(age < 6.6 && Math.random() < .5){ const a = Math.random()*6.283, d = f.r*Math.random()*.8, v = 30 + Math.random()*60; FLAMES.push({ x:f.x + Math.cos(a)*d, y:f.y + Math.sin(a)*d, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:.5 + Math.random()*.7, t:now, ember:true }); }
+      if(age < 6.6 && !f.out && Math.random() < .5){ const a = Math.random()*6.283, d = f.r*Math.random()*.8, v = 30 + Math.random()*60; FLAMES.push({ x:f.x + Math.cos(a)*d, y:f.y + Math.sin(a)*d, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:.5 + Math.random()*.7, t:now, ember:true }); }
       if(Math.random() < .05) noise(.08,.012,3200,900);   // crackle
     }
     for(let i=FLAMES.length-1;i>=0;i--){
@@ -2647,7 +2651,9 @@ const drawSmokes = (function(){
       for(const d of b.debris){ const px = x + d.vx*age, py = y + d.vy*age + 500*age*age; ctx.fillStyle = `rgba(255,${200-k*120|0},120,${1-k})`; ctx.fillRect(px,py,2,2); }
     }
     ctx.globalCompositeOperation = "source-over";
-    // ---- smokes (page coords → follow the page while scrolling)
+    // ---- smokes (page coords → follow the page while scrolling), drawn offscreen, then cut, then composited
+    const mainCtx = ctx; let ctxS = sctx;
+    if(SMOKES.length) sctx.clearRect(0,0,W,H);
     for(let i=SMOKES.length-1;i>=0;i--){
       const k = SMOKES[i], age = (now - k.t)/1000, life = k.life || 11, hold = life - 3;
       if(age > life){ SMOKES.splice(i,1); continue; }
@@ -2656,11 +2662,27 @@ const drawSmokes = (function(){
       for(const pf of k.puffs){
         const px = x + pf.dx*k.r, py = y + pf.dy*k.r - age*3, pr = k.r*pf.s*(1+.04*Math.sin(tt+pf.ph));
         if(py + pr < 0 || py - pr > H) continue;
-        const g = ctx.createRadialGradient(px,py,0,px,py,pr); const al = (k.alpha || .4)*fade*pf.a;
+        const g = ctxS.createRadialGradient(px,py,0,px,py,pr); const al = (k.alpha || .4)*fade*pf.a;
         g.addColorStop(0,`rgba(${k.col},${al})`); g.addColorStop(.7,`rgba(${k.col},${al*.6})`); g.addColorStop(1,`rgba(${k.col},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px,py,pr,0,7); ctx.fill();
+        ctxS.fillStyle = g; ctxS.beginPath(); ctxS.arc(px,py,pr,0,7); ctxS.fill();
       }
     }
+    if(SMOKES.length){
+      const nowC = performance.now();
+      sctx.globalCompositeOperation = "destination-out";
+      for(let i=SMOKE_CUTS.length-1;i>=0;i--){
+        const c = SMOKE_CUTS[i], age = (nowC - c.t)/1000;
+        if(age > c.grow + c.life){ SMOKE_CUTS.splice(i,1); continue; }
+        const open = age < c.grow ? age/c.grow : 1, close = age < c.grow ? 0 : (age - c.grow)/c.life;
+        const r = c.r0 * open * (1 - close*close*(3 - 2*close));   // smoothstep refill
+        if(r < 1) continue;
+        const x = c.x - scrollX, y = c.y - scrollY, g = sctx.createRadialGradient(x, y, r*.35, x, y, r);
+        g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+        sctx.fillStyle = g; sctx.beginPath(); sctx.arc(x, y, r, 0, 7); sctx.fill();
+      }
+      sctx.globalCompositeOperation = "source-over";
+      mainCtx.save(); mainCtx.setTransform(1,0,0,1,0,0); mainCtx.drawImage(sc, 0, 0); mainCtx.restore();
+    } else SMOKE_CUTS.length = 0;
     // ---- shell casings (viewport coords): fly out right, fall, bounce, settle, fade
     for(let i=CASINGS.length-1;i>=0;i--){
       const c = CASINGS[i];
@@ -2789,6 +2811,7 @@ const drawSmokes = (function(){
   const fire = ()=>{
     const [dx, dy] = SPRAY[shot], x = ax + scrollX + dx*1.6 + (Math.random()-.5)*4, y = ay + scrollY + dy*1.6 + (Math.random()-.5)*4;
     hole(x, y); hits.push([x, y]);
+    if(inSmoke(x, y)){ cutSmoke(x, y, 15 + Math.random()*5, 1.4 + Math.random()*.5); const ax2 = ax + scrollX, ay2 = ay + scrollY; cutSmoke((x + ax2)/2, (y + ay2)/2, 9, 1.0); }
     // brass flies out to the right and drops to the floor of the screen
     if(!REDUCED){ CASINGS.push({ x:ax + 12, y:ay - 4, vx:160 + Math.random()*170, vy:-(260 + Math.random()*200), rot:Math.random()*6, vr:(Math.random()-.5)*40, floor:innerHeight - 6 - Math.random()*14 }); if(CASINGS.length > 60) CASINGS.shift(); }
   };
@@ -2878,14 +2901,23 @@ const NADES = (function(){
     smoke(x, y){
       SMOKES.push({ x, y, t:performance.now(), r:40, col:grey(), puffs:puffs(9) }); while(SMOKES.length > 4) SMOKES.shift();
       noise(1.6,.06,700,2400); tone(140,.25,.03,"sine",70);
+      // smoke extinguishes molotovs it lands on (like in CS2) — once it has spread a bit
+      const sx = x, sy = y, t0 = performance.now();
+      FIRES.forEach(f=>{ if(Math.hypot(f.x - sx, f.y - sy) < 200 + (f.r || 0)) after(Math.min(700, 250 + Math.hypot(f.x - sx, f.y - sy)*2), ()=>{ if(!f.out){ f.out = performance.now(); noise(.7,.05,6000,1500,"highpass"); } }); });
     },
     molly(x, y){
+      if(inSmoke(x, y)){   // thrown into a smoke → it fizzles out
+        noise(.16,.07,7000,2600,"highpass"); after(80, ()=>noise(.5,.05,6000,1800,"highpass"));
+        FLAMES.push(...Array.from({length:10}, ()=>{ const a = Math.random()*6.283, v = 40 + Math.random()*60; return { x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:.4 + Math.random()*.4, t:performance.now(), ember:true }; }));
+        return;
+      }
       FIRES.push({ x, y, t:performance.now(), r:0 }); while(FIRES.length > 3) FIRES.shift();
       noise(.16,.07,7000,2600,"highpass"); after(70, ()=>noise(.7,.06,500,2600)); after(400, ()=>scorch(x, y));
     },
     he(x, y){
       tone(2600,.03,.02,"square");                                      // pin
       after(450, ()=>{
+        if(SMOKES.some(k=>Math.hypot(k.x - x, k.y - y) < k.r + 170)) cutSmoke(x, y, 270, 2.8, .22);
         BLASTS.push({ x, y, t:performance.now(), debris:Array.from({length:22}, ()=>{ const a = Math.random()*6.283, v = 200+Math.random()*420; return { vx:Math.cos(a)*v, vy:Math.sin(a)*v - 150 }; }) });
         SMOKES.push({ x, y, t:performance.now(), r:30, col:"120,114,108", scale:.5, alpha:.24, life:5, puffs:puffs(6) });
         noise(.9,.16,900,50,"lowpass"); tone(58,.7,.09,"sine",28); noise(.25,.05,5000,1500);
